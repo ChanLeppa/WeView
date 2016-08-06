@@ -8,9 +8,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
-/**
- * Created by ${HananAvramovich} on 17/02/2016.
- */
 @SpringBootApplication
 @ComponentScan
 public class Application {
