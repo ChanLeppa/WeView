@@ -42,3 +42,8 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+/weview.iml
+.idea/workspace.xml
+src/test/
+target/
+/.idea/
