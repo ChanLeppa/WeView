@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WeView</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="/javascripts/playerApp.js"></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <!--<script src="/javascripts/com.weview.js"></script>-->
+</head>
+<body>
+<div id="videolink-container" >
+    Video URL: <input type="text" id="link-URL"><br>
+    <input id="btnVideoLink" type="button" value="Submit">
+    <p>https://dl.dropboxusercontent.com/u/5534803/Rick%20and%20Morty%20S01E01%20Pilot%20(1280x720)%20%5BPhr0stY%5D.mkv</p>
+    <p>https://dl.dropboxusercontent.com/u/5534803/video-2012-06-13-21-28-09.mp4</p>
+    <p>"http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"</p>
+</div>
+<div class="container">
+    <div class="row">
+        <div claa="page-header">
+            <h1>WeView</h1>
+        </div>
+        <div class="video-container well well-lg">
+            <video id="video"  class="player" autobuffer preload="auto" width="720" height="400" data-setup="{}">
+                <source src='http://vjs.zencdn.net/v/oceans.mp4' type='video/mp4'>
+                <p>Your browser does not support the video tag.</p>
+            </video>
+            <div id="video-controls" class="controls ">
+                <div class="btn-group btn-group-md">
+                    <button id="play-pause-button" type="button" class="play btn btn-primary" title="play">
+                        <span class="glyphicon glyphicon-play"></span>
+                    </button>
+                    <button id="stop-button" type="button" class="stop btn btn-primary" title="stop">
+                        <span class="glyphicon glyphicon-stop"></span>
+                    </button>
+                </div>
+                Time: <span id="current">0.0</span> of <span id="duration"></span> Played:<span id="percentage">0</span>%
+                <div class="progress" style="width:65%">
+                    <progress  id='progress-bar' class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                    </progress>
+                </div>
+                <div class="btn-group btn-group-md">
+                    <button id="mute-button" type="button" class="mute btn btn-primary" title="mute">
+                        <span class='glyphicon glyphicon-volume-off'></span>
+                    </button>
+                    <button id="vol-inc-button" type="button" class='volume-plus btn btn-primary' title='increase volume' onclick='onVolumeChanged("+");'>
+                        Vol <span class="glyphicon glyphicon-plus-sign"></span>
+                    </button>
+                    <button id="vol-dec-button" type="button" class='volume-minus btn btn-primary' title='deccrease volume' onclick='onVolumeChanged("-");'>
+                        Vol <span class="glyphicon glyphicon-minus-sign"></span>
+                    </button>
+                    <button id="fullscreen" type="button" class='full-screen btn btn-primary' title='full screen'>
+                        <span class="glyphicon glyphicon-fullscreen"></span>
+                    </button>
+                </div>
+            </div>
+        </div >
+    </div>
+</div>
+</div >
+</body>
+</html>
