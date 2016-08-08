@@ -3,7 +3,7 @@ package com.weview.model;
 import java.io.Serializable;
 import java.util.Date;
 
-public class PlayerSubscriberData implements Serializable{
+public class PlayerSubscriberData implements Serializable {
 
     private final String username;
     private String playerID;

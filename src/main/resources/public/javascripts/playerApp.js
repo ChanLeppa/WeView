@@ -16,6 +16,7 @@ var fullscreenButton;
 var videoTag = '<video id="video" class="player"></video>';
 var videoContainer;
 var playerID;
+var username;
 //video.src = "https://dl.dropboxusercontent.com/u/5534803/Rick%20and%20Morty%20S01E01%20Pilot%20(1280x720)%20%5BPhr0stY%5D.mkv";
 
 $(onLoad);
@@ -73,7 +74,6 @@ function initializePlayer(videoSource){
     $('#video-container').prepend(videoTag);
     video = $('#video')[0];
     videoControls = $('#video-controls')[0];
-
     initializePlayerVideo(videoSource);
     initializePlayerControls();
 }
@@ -265,7 +265,13 @@ function connect(){
         console.log("Connected: " + frame);
         var dest = '/topic/' + playerID + '/videoplayer';
         subscibtion = stompClient.subscribe(dest, subscribtionCallBack);
+        subscribeToPlayer();
     });
+}
+
+function subscribeToPlayer() {
+    var dest = '/app/' + playerID + '/subscribe';
+    stompClient.send(dest);
 }
 
 function playVideo() {
