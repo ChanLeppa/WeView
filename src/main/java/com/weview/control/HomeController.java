@@ -1,7 +1,10 @@
 package com.weview.control;
 
+import com.weview.model.dropbox.DropboxManager;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +14,15 @@ public class HomeController {
 
     private Integer guestUserNum = 0;
     private Map<Integer, String> userParams = new HashMap<>();
+    private DropboxManager dropbox = DropboxManager.getInstance();
+
+    @CrossOrigin
+    @RequestMapping(value = "/{playerID}/dropbox", method = RequestMethod.GET)
+    public String redirectToDropbox(@PathVariable("playerID") String playerID,
+                                  HttpServletRequest request){
+        String uri = dropbox.getToDropboxRedirectUri(request.getSession(true),"dropbox-auth-csrf-token", playerID);
+        return uri;
+    }
 
     @RequestMapping(value = "/guest", method = RequestMethod.GET)
     public String guest() {

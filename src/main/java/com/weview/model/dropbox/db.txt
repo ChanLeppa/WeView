@@ -1,0 +1,5 @@
+{
+	"key": "rz82vb6w1c2dsgd",
+	"secret": "7np3pwsphspipdv"
+}
+

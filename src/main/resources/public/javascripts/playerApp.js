@@ -24,6 +24,8 @@ function onLoad() {
     videoContainer = $('#video-container').detach();
     playerID = getPlayerID();
     getActivePlayerSrc();
+    initDropBoxSignInButton();
+    initDropBoxGetFilePathButton();
 }
 
 function getPlayerID() {
@@ -33,7 +35,7 @@ function getPlayerID() {
 }
 
 function getActivePlayerSrc() {
-    var playerIDSrc = replacePlayerToSourceURL();
+    var playerIDSrc = replacePlayerToNameInURL("source");
     $.get(playerIDSrc, function(response) {
         if(!!response) {
             disconnect();
@@ -48,10 +50,11 @@ function getActivePlayerSrc() {
     });
 }
 
-function replacePlayerToSourceURL() {
+function replacePlayerToNameInURL(name) {
     var url = $(location).attr('href');
-    return url.replace("player", "source");
+    return url.replace("player", name);
 }
+
 
 function initVideoLinkButton() {
     $('#btnVideoLink').click(function(){
@@ -63,9 +66,33 @@ function initVideoLinkButton() {
     });
 }
 
+function initDropBoxSignInButton(){
+    $('#reg-dropbox-button').click(function(){
+        var uri = replacePlayerToNameInURL("dropbox");
+        $.get(uri, function(response) {
+            location.href = response;
+        });
+    })
+}
+
+//To Change Later
+function initDropBoxGetFilePathButton(){
+    $('#dropbox-file-path').click(function(){
+        var uri = replacePlayerToNameInURL("filepath");
+        $.get(uri, function(response) {
+            response.forEach(addDropboxFilePathToHtml);
+
+        });
+    })
+}
+
+function addDropboxFilePathToHtml(path){
+    var p = "<p>" + path + "</p>";
+    $('div#filepaths').append(p);
+}
 function updateServerUserPlayer(videoSrc) {
-    var userID = replacePlayerToSourceURL();
-    $.post(userID, {src: videoSrc});
+    var uri = replacePlayerToNameInURL("source");
+    $.post(uri, {src: videoSrc});
 }
 
 function initializePlayer(videoSource){
@@ -87,13 +114,6 @@ function initializePlayerVideo(videoSource) {
     video.onloadedmetadata = function() {
         $('#duration').text(video.duration.toFixed(1));
     };
-}
-
-function onVolumeChangeEvent() {
-    if (video.muted)
-        changeButtonType(muteButton, 'unmute', 'mute', "<span class='glyphicon glyphicon-volume-up'></span>");
-    else
-        changeButtonType(muteButton, 'mute', 'unmute',"<span class='glyphicon glyphicon-volume-off'></span>" );
 }
 
 function initializePlayerControls() {
@@ -128,18 +148,6 @@ function initializePlayerControls() {
     };
 }
 
-function sync(pageX){
-    var currentTime = updatebar(pageX);
-    syncBean = {
-        callBackName: "Sync",
-        time : parseFloat(currentTime).toFixed(1),
-        canPlay: true,
-        playing: !video.paused
-    };
-    onSyncPressed(syncBean);
-    //video.currentTime = currentTime; //to delete when done stompClient.send()
-}
-
 function onCanPlay(){
     var dest = '/app/' + playerID + '/canplay';
     stompClient.send(dest);
@@ -166,6 +174,18 @@ function onSyncPressed(syncBean) {
     stompClient.send(dest, {}, data);
 }
 
+function sync(pageX){
+    var currentTime = updatebar(pageX);
+    syncBean = {
+        callBackName: "Sync",
+        time : parseFloat(currentTime).toFixed(1),
+        canPlay: true,
+        playing: !video.paused
+    };
+    onSyncPressed(syncBean);
+    //video.currentTime = currentTime; //to delete when done stompClient.send()
+}
+
 function subscribtionCallBack(message, headers) {
     console.log("Server sent:" + message.body);
     if(message !== undefined){
@@ -190,6 +210,25 @@ function subscribtionCallBack(message, headers) {
     }
 }
 
+function connect(){
+    var socket = new SockJS('/connect');
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function(frame){
+        console.log("Connected: " + frame);
+        var dest = '/topic/' + playerID + '/videoplayer';
+        subscibtion = stompClient.subscribe(dest, subscribtionCallBack);
+    });
+}
+
+function disconnect(){
+    if(stompClient != null){
+        stompClient.disconnect();
+    }
+    //do something after disconnecting
+    console.log("Disconnected");
+}
+
+//player controls
 function onVolumeChanged(direction){
     if(direction === '+'){
         video.volume += (video.volume == 1 ? 0 : 0.1);
@@ -225,27 +264,26 @@ function changeButtonType(button, valueToSet, valueToChange, innerHtml){
     button.addClass(valueToSet).removeClass(valueToChange);
 
 }
-
 function updateProgressBar(){
     $('#current').text(video.currentTime.toFixed(1));
     var percentage = Math.floor((100 / video.duration) * video.currentTime);
     $('#percentage').text(percentage);
     $(progressBar).width(percentage + "%");
 }
-
 function updatebar(x) {
+
     var maxduration = video.duration;
     var clickPosition = x - $(".progress")[0].offsetLeft //Click pos
     var percentage = 100 * clickPosition / $(".progress")[0].offsetWidth;
-
-    //Check within range
     if(percentage > 100) {
         percentage = 100;
     }
     if(percentage < 0) {
         percentage = 0;
     }
+
     return (maxduration * percentage) / 100;
+
 };
 
 function doPause(){
@@ -258,14 +296,11 @@ function doPlay() {
     video.play();
 }
 
-function connect(){
-    var socket = new SockJS('/connect');
-    stompClient = Stomp.over(socket);
-    stompClient.connect({}, function(frame){
-        console.log("Connected: " + frame);
-        var dest = '/topic/' + playerID + '/videoplayer';
-        subscibtion = stompClient.subscribe(dest, subscribtionCallBack);
-    });
+function onVolumeChangeEvent() {
+    if (video.muted)
+        changeButtonType(muteButton, 'unmute', 'mute', "<span class='glyphicon glyphicon-volume-up'></span>");
+    else
+        changeButtonType(muteButton, 'mute', 'unmute',"<span class='glyphicon glyphicon-volume-off'></span>" );
 }
 
 function playVideo() {
@@ -275,23 +310,3 @@ function playVideo() {
 function pauseVideo() {
     video.pause();
 }
-
-function disconnect(){
-    if(stompClient != null){
-        stompClient.disconnect();
-    }
-    //do something after disconnecting
-    console.log("Disconnected");
-}
-
-
-
-
-
-
-
-
-
-//var VideoSubscriberData = {
-//    username : username,
-//}
