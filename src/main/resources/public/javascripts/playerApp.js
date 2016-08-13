@@ -25,6 +25,8 @@ function onLoad() {
     videoContainer = $('#video-container').detach();
     playerID = getPlayerID();
     getActivePlayerSrc();
+    initDropBoxSignInButton();
+    initDropBoxGetFileNames();
 }
 
 function getPlayerID() {
@@ -34,7 +36,7 @@ function getPlayerID() {
 }
 
 function getActivePlayerSrc() {
-    var playerIDSrc = replacePlayerToSourceURL();
+    var playerIDSrc = replacePlayerToNameInURL("source");
     $.get(playerIDSrc, function(response) {
         if(!!response) {
             disconnect();
@@ -49,9 +51,9 @@ function getActivePlayerSrc() {
     });
 }
 
-function replacePlayerToSourceURL() {
+function replacePlayerToNameInURL(name) {
     var url = $(location).attr('href');
-    return url.replace("player", "source");
+    return url.replace("player", name);
 }
 
 function initVideoLinkButton() {
@@ -64,9 +66,44 @@ function initVideoLinkButton() {
     });
 }
 
+function initDropBoxSignInButton(){
+    $('#reg-dropbox-button').click(function(){
+        var uri = replacePlayerToNameInURL("dropbox");
+        $.get(uri, function(response) {
+            location.href = response;
+        });
+    })
+}
+
+//To Change Later
+function initDropBoxGetFileNames(){
+    $('#dropbox-file-names').click(function(){
+        var uri = replacePlayerToNameInURL("filenames");
+        $.get(uri, function(response) {
+            $('div#filenames').html("");
+            $.each(response, addDropboxFilePathToHtml);
+        });
+    })
+}
+
+function addDropboxFilePathToHtml(index, fileName){
+    var b = "<button id='dbx-button" + index + "' type='button'>" + fileName + "</button>";
+    $('div#filenames').append(b);
+    $('div#filenames').on("click", "#dbx-button" + index, function() {
+        var uri = replacePlayerToNameInURL("dbxlink");
+        $.get(uri, { fileName : fileName }, function(response) {
+            $('#link-dbx').html("");
+            $('#link-dbx').html(response);
+        });
+    });
+}
+
+// $("h2").on("click", "p.test", function(){
+//     alert($(this).text());
+// });
 function updateServerUserPlayer(videoSrc) {
-    var userID = replacePlayerToSourceURL();
-    $.post(userID, {src: videoSrc});
+    var uri = replacePlayerToNameInURL("source");
+    $.post(uri, {src: videoSrc});
 }
 
 function initializePlayer(videoSource){
@@ -74,6 +111,7 @@ function initializePlayer(videoSource){
     $('#video-container').prepend(videoTag);
     video = $('#video')[0];
     videoControls = $('#video-controls')[0];
+
     initializePlayerVideo(videoSource);
     initializePlayerControls();
 }
@@ -166,6 +204,18 @@ function onSyncPressed(syncBean) {
     stompClient.send(dest, {}, data);
 }
 
+function sync(pageX){
+    var currentTime = updatebar(pageX);
+    syncBean = {
+        callBackName: "Sync",
+        time : parseFloat(currentTime).toFixed(1),
+        canPlay: true,
+        playing: !video.paused
+    };
+    onSyncPressed(syncBean);
+    //video.currentTime = currentTime; //to delete when done stompClient.send()
+}
+
 function subscribtionCallBack(message, headers) {
     console.log("Server sent:" + message.body);
     if(message !== undefined){
@@ -190,6 +240,25 @@ function subscribtionCallBack(message, headers) {
     }
 }
 
+function connect(){
+    var socket = new SockJS('/connect');
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function(frame){
+        console.log("Connected: " + frame);
+        var dest = '/topic/' + playerID + '/videoplayer';
+        subscibtion = stompClient.subscribe(dest, subscribtionCallBack);
+    });
+}
+
+function disconnect(){
+    if(stompClient != null){
+        stompClient.disconnect();
+    }
+    //do something after disconnecting
+    console.log("Disconnected");
+}
+
+//player controls
 function onVolumeChanged(direction){
     if(direction === '+'){
         video.volume += (video.volume == 1 ? 0 : 0.1);
@@ -267,6 +336,11 @@ function connect(){
         subscibtion = stompClient.subscribe(dest, subscribtionCallBack);
         subscribeToPlayer();
     });
+function onVolumeChangeEvent() {
+    if (video.muted)
+        changeButtonType(muteButton, 'unmute', 'mute', "<span class='glyphicon glyphicon-volume-up'></span>");
+    else
+        changeButtonType(muteButton, 'mute', 'unmute',"<span class='glyphicon glyphicon-volume-off'></span>" );
 }
 
 function subscribeToPlayer() {
