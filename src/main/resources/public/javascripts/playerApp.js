@@ -327,15 +327,17 @@ function doPlay() {
     video.play();
 }
 
-function connect(){
+function connect() {
     var socket = new SockJS('/connect');
     stompClient = Stomp.over(socket);
-    stompClient.connect({}, function(frame){
+    stompClient.connect({}, function (frame) {
         console.log("Connected: " + frame);
         var dest = '/topic/' + playerID + '/videoplayer';
         subscibtion = stompClient.subscribe(dest, subscribtionCallBack);
         subscribeToPlayer();
     });
+}
+
 function onVolumeChangeEvent() {
     if (video.muted)
         changeButtonType(muteButton, 'unmute', 'mute', "<span class='glyphicon glyphicon-volume-up'></span>");
@@ -363,6 +365,7 @@ function disconnect(){
     //do something after disconnecting
     console.log("Disconnected");
 }
+
 
 
 
