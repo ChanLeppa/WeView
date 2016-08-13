@@ -25,7 +25,7 @@ function onLoad() {
     playerID = getPlayerID();
     getActivePlayerSrc();
     initDropBoxSignInButton();
-    initDropBoxGetFilePathButton();
+    initDropBoxGetFileNames();
 }
 
 function getPlayerID() {
@@ -76,20 +76,31 @@ function initDropBoxSignInButton(){
 }
 
 //To Change Later
-function initDropBoxGetFilePathButton(){
-    $('#dropbox-file-path').click(function(){
-        var uri = replacePlayerToNameInURL("filepath");
+function initDropBoxGetFileNames(){
+    $('#dropbox-file-names').click(function(){
+        var uri = replacePlayerToNameInURL("filenames");
         $.get(uri, function(response) {
-            response.forEach(addDropboxFilePathToHtml);
-
+            $('div#filenames').html("");
+            $.each(response, addDropboxFilePathToHtml);
         });
     })
 }
 
-function addDropboxFilePathToHtml(path){
-    var p = "<p>" + path + "</p>";
-    $('div#filepaths').append(p);
+function addDropboxFilePathToHtml(index, fileName){
+    var b = "<button id='dbx-button" + index + "' type='button'>" + fileName + "</button>";
+    $('div#filenames').append(b);
+    $('div#filenames').on("click", "#dbx-button" + index, function() {
+        var uri = replacePlayerToNameInURL("dbxlink");
+        $.get(uri, { fileName : fileName }, function(response) {
+            $('#link-dbx').html("");
+            $('#link-dbx').html(response);
+        });
+    });
 }
+
+// $("h2").on("click", "p.test", function(){
+//     alert($(this).text());
+// });
 function updateServerUserPlayer(videoSrc) {
     var uri = replacePlayerToNameInURL("source");
     $.post(uri, {src: videoSrc});

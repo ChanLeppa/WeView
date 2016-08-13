@@ -89,41 +89,37 @@ public class DropboxManager {
     }
 
 
-    public List<String> getListOfFilePaths(String playerID, String path) throws DbxException {
+    public List<String> getListOfFileNames(String playerID, String path) throws DbxException {
         DbxClientV2 client = getDbxClient(playerID);
         List<String> filePaths = new ArrayList<>();
-//        TreeMap<String,Metadata> children = new TreeMap<String,Metadata>();
 
         ListFolderResult listFolderResult = client.files().listFolder(path);
-
-
-        for (Metadata data: listFolderResult.getEntries()) {
-            filePaths.add(data.getName());
+        while(true){
+            for (Metadata data: listFolderResult.getEntries()) {
+                filePaths.add(data.getName());
+            }
+            if (!listFolderResult.getHasMore()) {
+                break;
+            }
+            listFolderResult = client.files().listFolderContinue(listFolderResult.getCursor());
         }
-//            GetTemporaryLinkResult temporaryLink = client.files().getTemporaryLink(data.getPathLower());
-//            String link = temporaryLink.getLink();
-//            filePaths.add(link);
-
-//        while(true) {
-//            for (Metadata metadata : listFolderResult.getEntries()) {
-//                if (metadata instanceof DeletedMetadata) {
-//                    children.remove(metadata.getPathLower());
-//                } else {
-//                    children.put(metadata.getPathLower(), metadata);
-//                }
-//            }
-//
-//            if (!listFolderResult.getHasMore())
-//                break;
-//
-//            listFolderResult = client.files().listFolderContinue(listFolderResult.getCursor());
-//        }
-
-//        for (Metadata metadata : children.values()) {
-//            filePaths.add(metadata.getName());
-//        }
 
         return filePaths;
+    }
+
+    public String getSourceLinkToFile(String playerID, String fileName){
+        DbxClientV2 client = getDbxClient(playerID);
+        String link = "";
+
+        try {
+            DbxUserFilesRequests files = client.files();
+            GetTemporaryLinkResult temporaryLink = files.getTemporaryLink("/" + fileName);
+            link = temporaryLink.getLink();
+        } catch (DbxException e) {
+            e.printStackTrace();
+        }
+
+        return link;
     }
 
     private DbxClientV2 getDbxClient(String playerID){

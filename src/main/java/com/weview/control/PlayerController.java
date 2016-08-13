@@ -12,9 +12,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import sun.invoke.empty.Empty;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
@@ -33,15 +31,22 @@ public class PlayerController {
         return "/player.html";
     }
 
-    @RequestMapping(value = "/{playerID}/filepath", method = RequestMethod.GET)
+    @RequestMapping(value = "/{playerID}/filenames", method = RequestMethod.GET)
     public @ResponseBody List<String> getFilePathsDropbox(@PathVariable("playerID") String playerID) {
         List<String> pathFiles = new ArrayList<>();
         try {
-            pathFiles =  dropbox.getListOfFilePaths(playerID, "");
+            pathFiles =  dropbox.getListOfFileNames(playerID, "");
         } catch (DbxException e) {
             e.printStackTrace();
         }
         return pathFiles;
+    }
+
+    @RequestMapping(value = "/{playerID}/dbxlink", method = RequestMethod.GET)
+    public @ResponseBody String getDropboxLinkToFile(@PathVariable("playerID") String playerID,
+                                                     @RequestParam("fileName") String fileName){
+        String link = dropbox.getSourceLinkToFile(playerID, fileName);
+        return link;
     }
 
     @RequestMapping(value = "/dropbox-finish", method = RequestMethod.GET)
