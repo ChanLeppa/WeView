@@ -25,8 +25,8 @@ function onLoad() {
     videoContainer = $('#video-container').detach();
     playerID = getPlayerID();
     getActivePlayerSrc();
-    initDropBoxSignInButton();
-    initDropBoxGetFileNames();
+    checkForAccessToken();
+    //initDropBoxGetFileNames();
 }
 
 function getPlayerID() {
@@ -49,6 +49,20 @@ function getActivePlayerSrc() {
             initVideoLinkButton();
         }
     });
+}
+
+function checkForAccessToken(){
+    var accessToken = replacePlayerToNameInURL("token");
+    $.get(accessToken, function(response) {
+        if(response === true) {
+            $('#reg-dropbox-button').remove();
+            getFileNames();
+        }
+        else {
+            initDropBoxSignInButton();
+        }
+    });
+
 }
 
 function replacePlayerToNameInURL(name) {
@@ -76,15 +90,35 @@ function initDropBoxSignInButton(){
 }
 
 //To Change Later
-function initDropBoxGetFileNames(){
-    $('#dropbox-file-names').click(function(){
-        var uri = replacePlayerToNameInURL("filenames");
-        $.get(uri, function(response) {
-            $('div#filenames').html("");
-            $.each(response, addDropboxFilePathToHtml);
-        });
-    })
+// function initDropBoxGetFileNames(){
+//     $('#dropbox-file-names').click(function(){
+//         var uri = replacePlayerToNameInURL("filenames");
+//         $.get(uri, function(response) {
+//             $('div#filenames').html("");
+//             $.each(response, addDropboxFilePathToHtml);
+//         });
+//     })
+// }
+
+function getFileNames(){
+    var uri = replacePlayerToNameInURL("filenames");
+    $.get(uri, function(response) {
+        $('div#filenames').html("");
+        $.each(response, addDropboxFilePathToHtml);
+    });
 }
+
+// function addDropboxFilePathToHtml(index, fileName){
+//     var b = "<button id='dbx-button" + index + "' type='button'>" + fileName + "</button>";
+//     $('div#filenames').append(b);
+//     $('div#filenames').on("click", "#dbx-button" + index, function() {
+//         var uri = replacePlayerToNameInURL("dbxlink");
+//         $.get(uri, { fileName : fileName }, function(response) {
+//             $('#link-dbx').html("");
+//             $('#link-dbx').html(response);
+//         });
+//     });
+// }
 
 function addDropboxFilePathToHtml(index, fileName){
     var b = "<button id='dbx-button" + index + "' type='button'>" + fileName + "</button>";
@@ -166,18 +200,6 @@ function initializePlayerControls() {
     };
 }
 
-function sync(pageX){
-    var currentTime = updatebar(pageX);
-    syncBean = {
-        callBackName: "Sync",
-        time : parseFloat(currentTime).toFixed(1),
-        canPlay: true,
-        playing: !video.paused
-    };
-    onSyncPressed(syncBean);
-    //video.currentTime = currentTime; //to delete when done stompClient.send()
-}
-
 function onCanPlay(){
     var dest = '/app/' + playerID + '/canplay';
     stompClient.send(dest);
@@ -230,7 +252,7 @@ function subscribtionCallBack(message, headers) {
             video.currentTime = 0;
             progressBar.value = 0;
         }
-        else if(message.body !== undefined) {
+        else if(message.body !== undefined && message.body !== "CanPlay updated" && message.body !== "Subscribed to player") {
             var syncBean = $.parseJSON(message.body);
             if(syncBean.callBackName === "Sync")
             {
@@ -304,7 +326,7 @@ function updateProgressBar(){
 
 function updatebar(x) {
     var maxduration = video.duration;
-    var clickPosition = x - $(".progress")[0].offsetLeft //Click pos
+    var clickPosition = x - $("#center-page")[0].offsetLeft - $(".progress")[0].offsetLeft //Click pos
     var percentage = 100 * clickPosition / $(".progress")[0].offsetWidth;
 
     //Check within range
@@ -365,16 +387,3 @@ function disconnect(){
     //do something after disconnecting
     console.log("Disconnected");
 }
-
-
-
-
-
-
-
-
-
-
-//var VideoSubscriberData = {
-//    username : username,
-//}

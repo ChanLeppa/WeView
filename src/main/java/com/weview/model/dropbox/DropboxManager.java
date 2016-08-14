@@ -4,11 +4,9 @@ import com.dropbox.core.*;
 import com.dropbox.core.v1.DbxEntry;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.*;
-
 import javax.servlet.http.HttpSession;
 import java.text.MessageFormat;
 import java.util.*;
-
 import static com.sun.activation.registries.LogSupport.log;
 
 public class DropboxManager {
@@ -21,9 +19,6 @@ public class DropboxManager {
 
     private DropboxManager() {
         try {
-            //URL uri = DropboxManager.class.getResource("/dropbox/db")
-            //String path = uri.getPath();
-            //this.appInfo = DbxAppInfo.Reader.readFromFile(path);
             this.appInfo = DbxAppInfo.Reader.readFromFile("D:/IntelliJ Projects/weview/src/main/java/com/weview/model/dropbox/db.txt");
         } catch (Exception e) {
             e.printStackTrace();
@@ -120,6 +115,16 @@ public class DropboxManager {
         }
 
         return link;
+    }
+
+    public Boolean checkAccessToken(String playerID) {
+        Boolean res = false;
+
+        if(getAccessTokenByPlayerID(playerID) != null) {
+            res = true;
+        }
+
+        return res;
     }
 
     private DbxClientV2 getDbxClient(String playerID){

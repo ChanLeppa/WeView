@@ -3,39 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>WeView</title>
+    <title>We View</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="/javascripts/playerApp.js"></script>
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <!--<script src="/javascripts/com.weview.js"></script>-->
 </head>
 <body>
-<div id="videolink-container" >
-    Video URL: <input type="text" id="link-URL"><br>
-    <input id="btnVideoLink" type="button" value="Submit">
-    <p>https://dl.dropboxusercontent.com/u/5534803/Rick%20and%20Morty%20S01E01%20Pilot%20(1280x720)%20%5BPhr0stY%5D.mkv</p>
-    <p>https://dl.dropboxusercontent.com/u/5534803/video-2012-06-13-21-28-09.mp4</p>
-    <p>"http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"</p>
-    <button id="reg-dropbox-button" type="button" title="Sign in to your dropbox">Sign in to your dropbox</button>
-    <button id="dropbox-file-names" type="button" title="Get file names">Get file names in dropbox</button>
-    <div id="filenames">
-    </div>
-    <p id="link-dbx"></p>
-</div>
-<div class="container">
-    <div class="row">
-        <div claa="page-header">
-            <h1>WeView</h1>
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">We View</a>
         </div>
-        <div class="video-container well well-lg">
-            <video id="video"  class="player" autobuffer preload="auto" width="720" height="400" data-setup="{}">
-                <source src='http://vjs.zencdn.net/v/oceans.mp4' type='video/mp4'>
-                <p>Your browser does not support the video tag.</p>
-            </video>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Dropbox <span class="fa fa-dropbox"></span> <span class="caret"></span></a>
+                    <ul id="dbx-menu" class="dropdown-menu">
+                        <li><a href="#" id="reg-dropbox-button">Sign in to your dropbox</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <!--<div class="row">-->
+        <!--<div class="page-header">-->
+            <!--<h1>WeView</h1>-->
+        <!--</div>-->
+    <!--</div>-->
+    <div class="row" id="video-container well well-lg">
+        <div class="col-md-2">
+        </div>
+        <div id="center-page" class="col-md-8">
+            <div id="videolink-container" >
+                <!--Enter video URL to watch: <input type="text" id="link-URL"><br>-->
+                <!--<input id="btnVideoLink" type="button" value="Submit">-->
+                <form role="form">
+                    <div class="form-group">
+                        <label for="link-URL">Enter video URL to watch:</label>
+                        <textarea class="form-control" rows="2" id="link-URL"></textarea>
+                    </div>
+                    <input id="btnVideoLink" type="button" class="btn btn-default" value="Submit"></input>
+                </form>
+                <br><br>
+                <!--<button id="reg-dropbox-button" type="button" title="Sign in to your dropbox">Sign in to your dropbox</button>-->
+                <!--<button id="dropbox-file-names" type="button" title="Get file names">Get file names in dropbox</button>-->
+                <div id="filenames">
+                </div>
+                <p id="link-dbx"></p>
+            </div>
+            <div class="embed-responsive embed-responsive-16by9">
+                    <video id="video"  class="player embed-responsive-item" autobuffer preload="auto" width="720" height="400" data-setup="{}">
+                        <source src='http://vjs.zencdn.net/v/oceans.mp4' type='video/mp4'>
+                        <p>Your browser does not support the video tag.</p>
+                    </video>
+            </div>
             <div id="video-controls" class="controls ">
                 <div class="btn-group btn-group-md">
                     <button id="play-pause-button" type="button" class="play btn btn-primary" title="play">
@@ -46,11 +85,7 @@
                     </button>
                 </div>
                 Time: <span id="current">0.0</span> of <span id="duration"></span> Played:<span id="percentage">0</span>%
-                <div class="progress" style="width:65%">
-                    <progress  id='progress-bar' class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
-                    </progress>
-                </div>
-                <div class="btn-group btn-group-md">
+                <div class="btn-group btn-group-md pull-right">
                     <button id="mute-button" type="button" class="mute btn btn-primary" title="mute">
                         <span class='glyphicon glyphicon-volume-off'></span>
                     </button>
@@ -64,10 +99,15 @@
                         <span class="glyphicon glyphicon-fullscreen"></span>
                     </button>
                 </div>
+                <div class="progress" style="width:100%">
+                    <progress  id='progress-bar' class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                    </progress>
+                </div>
             </div>
-        </div >
+            <div class="col-md-2">
+            </div>
+        </div>
     </div>
-</div>
 </div >
 </body>
 </html>

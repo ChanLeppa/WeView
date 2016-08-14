@@ -2,6 +2,7 @@ package com.weview.control;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxWebAuth;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.weview.model.PlayerSubscriberData;
 import com.weview.model.PlayerSynchronizationData;
 import com.weview.model.RedisPlayerRepository;
@@ -51,9 +52,14 @@ public class PlayerController {
         return pathFiles;
     }
 
+    @RequestMapping(value = "/{playerID}/token", method = RequestMethod.GET)
+    public @ResponseBody Boolean checkForAccessToken(@PathVariable("playerID") String playerID) {
+        return dropbox.checkAccessToken(playerID);
+    }
+
     @RequestMapping(value = "/{playerID}/dbxlink", method = RequestMethod.GET)
     public @ResponseBody String getDropboxLinkToFile(@PathVariable("playerID") String playerID,
-                                                     @RequestParam("fileName") String fileName){
+                                                     @RequestParam("fileName") String fileName) {
         String link = dropbox.getSourceLinkToFile(playerID, fileName);
         return link;
     }
