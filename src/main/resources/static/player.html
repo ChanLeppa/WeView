@@ -12,7 +12,7 @@
     <script src="/javascripts/playerApp.js"></script>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <!--<script src="/javascripts/com.weview.js"></script>-->
+    <link rel="stylesheet" type="text/css" href="/css/playerApp.css">
 </head>
 <body>
 <nav class="navbar navbar-inverse">
@@ -28,9 +28,24 @@
         <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav">
                 <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Dropbox <span class="fa fa-dropbox"></span> <span class="caret"></span></a>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="fa fa-dropbox"></span> Dropbox <span class="caret"></span></a>
                     <ul id="dbx-menu" class="dropdown-menu">
                         <li><a href="#" id="reg-dropbox-button">Sign in to your dropbox</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a id="link-dropdown-btn" class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="fa fa-external-link"></span> Video Link <span class="caret"></span></a>
+                    <ul id="link-menu" class="dropdown-menu">
+                        <li>
+                            <div id="videolink-container" >
+                                <form role="form">
+                                    <div class="form-group">
+                                        <textarea id="link-URL" class="form-control" placeholder="Enter link to video you want to watch" rows="2"></textarea>
+                                    </div>
+                                    <input id="btnVideoLink" type="button" class="btn btn-default pull-right" value="Submit"/>
+                                </form>
+                            </div>
+                        </li>
                     </ul>
                 </li>
             </ul>
@@ -43,37 +58,15 @@
 </nav>
 
 <div class="container-fluid">
-    <!--<div class="row">-->
-        <!--<div class="page-header">-->
-            <!--<h1>WeView</h1>-->
-        <!--</div>-->
-    <!--</div>-->
     <div class="row" id="video-container well well-lg">
         <div class="col-md-2">
         </div>
         <div id="center-page" class="col-md-8">
-            <div id="videolink-container" >
-                <!--Enter video URL to watch: <input type="text" id="link-URL"><br>-->
-                <!--<input id="btnVideoLink" type="button" value="Submit">-->
-                <form role="form">
-                    <div class="form-group">
-                        <label for="link-URL">Enter video URL to watch:</label>
-                        <textarea class="form-control" rows="2" id="link-URL"></textarea>
-                    </div>
-                    <input id="btnVideoLink" type="button" class="btn btn-default" value="Submit"></input>
-                </form>
-                <br><br>
-                <!--<button id="reg-dropbox-button" type="button" title="Sign in to your dropbox">Sign in to your dropbox</button>-->
-                <!--<button id="dropbox-file-names" type="button" title="Get file names">Get file names in dropbox</button>-->
-                <div id="filenames">
-                </div>
-                <p id="link-dbx"></p>
-            </div>
             <div class="embed-responsive embed-responsive-16by9">
-                    <video id="video"  class="player embed-responsive-item" autobuffer preload="auto" width="720" height="400" data-setup="{}">
-                        <source src='http://vjs.zencdn.net/v/oceans.mp4' type='video/mp4'>
-                        <p>Your browser does not support the video tag.</p>
-                    </video>
+                <video id="video"  class="player embed-responsive-item" autobuffer preload="auto" width="720" height="400" data-setup="{}">
+                    <source src='http://vjs.zencdn.net/v/oceans.mp4' type='video/mp4'>
+                    <p>Your browser does not support the video tag.</p>
+                </video>
             </div>
             <div id="video-controls" class="controls ">
                 <div class="btn-group btn-group-md">
@@ -108,6 +101,27 @@
             </div>
         </div>
     </div>
+    <!-- Modal -->
+    <div class="modal fade" id="dropbox-modal" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Choose video to watch:</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="filenames">
+                    </div>
+                    <p id="link-dbx"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Modal-->
 </div >
 </body>
 </html>

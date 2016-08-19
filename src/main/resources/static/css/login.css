@@ -1,0 +1,11 @@
+.header-row {
+    margin-bottom: 0px;
+}
+
+.caption {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+#second-line {
+    text-shadow: -1px 0 #666666,0 1px #666666,1px 0 #666666,0 -1px #666666;
+}

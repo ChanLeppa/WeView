@@ -2,16 +2,50 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>WeView</title>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-    <script src="/javascripts/login.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>We View</title>
+    <!--<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">-->
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" type="text/css" href="/css/login.css">
 </head>
 <body>
-<div id="login-container">
-    <button id="btnGuest">Guest</button>
-    <button id="btnLogin">Login</button>
-    <button id="btnRegister">Register</button>
-</div>
+    <header class="blue accent-3 bz-depth-3">
+        <img class="brand-logo" src="../images/weview_logo_small.png" />
+    </header>
+    <main>
+        <div class="parallax-container">
+            <div class="caption center-align">
+                <h1 class="white-text">Sharing Experiences!</h1>
+                <h3 id="second-line" class="blue-grey-text text-lighten-2">Start watching with your friends and family</h3>
+            </div>
+            <div class="parallax">
+                <img src="../images/home-office-569153_1920.jpg">
+            </div>
+        </div>
+        <div class="section white">
+            <div id="login-container" class="container vertical-align: middle">
+                <div class="row">
+                    <button id="btnGuest" class="blue accent-3 waves-effect waves-light btn-large col m4 offset-m4">Guest</button>
+                </div>
+                <div class=" row">
+                    <button id="btnLogin" class="blue accent-3 waves-effect waves-light btn-large col m4 offset-m4">Login</button>
+                </div>
+                <div class="row">
+                    <button id="btnRegister" class="blue accent-3 waves-effect waves-light btn-large col m4 offset-m4">Register</button>
+                </div>
+            </div>
+        </div>
+        <div class="parallax-container">
+            <div class="parallax"><img src="../images/popcorn-1433326_1920.jpg"></div>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+    <script src="/javascripts/login.js"></script>
 </body>
 </html>

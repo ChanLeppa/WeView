@@ -6,6 +6,9 @@ $(onLoad);
 
 function onLoad() {
     initLoginButtons();
+    $(document).ready(function(){
+        $('.parallax').parallax();
+    });
 }
 
 function initLoginButtons() {

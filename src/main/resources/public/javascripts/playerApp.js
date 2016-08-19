@@ -56,7 +56,10 @@ function checkForAccessToken(){
     $.get(accessToken, function(response) {
         if(response === true) {
             $('#reg-dropbox-button').remove();
-            getFileNames();
+            $('#dbx-menu').append("<li><a href='#dropbox-modal' id='choose-video-dropbox-button' data-toggle='modal'>Choose which video to watch</a></li>");
+            $('#dbx-menu').on("click", "#choose-video-dropbox-button", function() {
+                getFileNames();
+            });
         }
         else {
             initDropBoxSignInButton();
@@ -75,6 +78,8 @@ function initVideoLinkButton() {
         disconnect();
         connect();
         var videoSrc = $('#link-URL')[0].value;
+        $('#link-URL').val('');
+        $("#link-dropdown-btn").dropdown("toggle");
         initializePlayer(videoSrc);
         updateServerUserPlayer(videoSrc);
     });
@@ -89,7 +94,6 @@ function initDropBoxSignInButton(){
     })
 }
 
-//To Change Later
 // function initDropBoxGetFileNames(){
 //     $('#dropbox-file-names').click(function(){
 //         var uri = replacePlayerToNameInURL("filenames");
@@ -108,29 +112,21 @@ function getFileNames(){
     });
 }
 
-// function addDropboxFilePathToHtml(index, fileName){
-//     var b = "<button id='dbx-button" + index + "' type='button'>" + fileName + "</button>";
-//     $('div#filenames').append(b);
-//     $('div#filenames').on("click", "#dbx-button" + index, function() {
-//         var uri = replacePlayerToNameInURL("dbxlink");
-//         $.get(uri, { fileName : fileName }, function(response) {
-//             $('#link-dbx').html("");
-//             $('#link-dbx').html(response);
-//         });
-//     });
-// }
-
 function addDropboxFilePathToHtml(index, fileName){
+    //first chaeck the video format...if it is video only then add to the page
     var b = "<button id='dbx-button" + index + "' type='button'>" + fileName + "</button>";
     $('div#filenames').append(b);
     $('div#filenames').on("click", "#dbx-button" + index, function() {
         var uri = replacePlayerToNameInURL("dbxlink");
         $.get(uri, { fileName : fileName }, function(response) {
+            //TO-DO:after getting the file path...add to the player and delete the printing of the link
             $('#link-dbx').html("");
             $('#link-dbx').html(response);
         });
     });
 }
+
+
 
 // $("h2").on("click", "p.test", function(){
 //     alert($(this).text());

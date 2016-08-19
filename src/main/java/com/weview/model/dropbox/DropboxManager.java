@@ -7,6 +7,7 @@ import com.dropbox.core.v2.files.*;
 import javax.servlet.http.HttpSession;
 import java.text.MessageFormat;
 import java.util.*;
+
 import static com.sun.activation.registries.LogSupport.log;
 
 public class DropboxManager {
@@ -86,21 +87,33 @@ public class DropboxManager {
 
     public List<String> getListOfFileNames(String playerID, String path) throws DbxException {
         DbxClientV2 client = getDbxClient(playerID);
-        List<String> filePaths = new ArrayList<>();
+        List<String> fileNames = new ArrayList<>();
+        DbxUserFilesRequests files = client.files();
+        ListFolderResult listFolderResult = files.listFolder(path);
 
-        ListFolderResult listFolderResult = client.files().listFolder(path);
         while(true){
             for (Metadata data: listFolderResult.getEntries()) {
-                filePaths.add(data.getName());
+                fileNames.add(data.getName());
             }
             if (!listFolderResult.getHasMore()) {
                 break;
             }
-            listFolderResult = client.files().listFolderContinue(listFolderResult.getCursor());
+            listFolderResult = files.listFolderContinue(listFolderResult.getCursor());
         }
 
-        return filePaths;
+        return fileNames;
     }
+
+//    private List<String> getListOfVideoNames(DbxUserFilesRequests files, List<String> fileNames) {
+//        List<String> videoNames = new ArrayList<>();
+//        for (String name : fileNames) {
+//            try {
+//                Metadata metadata = files.getMetadata(name);
+//            } catch (DbxException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
     public String getSourceLinkToFile(String playerID, String fileName){
         DbxClientV2 client = getDbxClient(playerID);
