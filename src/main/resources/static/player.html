@@ -2,126 +2,136 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>We View</title>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="/javascripts/playerApp.js"></script>
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/css/playerApp.css">
 </head>
 <body>
-<nav class="navbar navbar-inverse">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">We View</a>
-        </div>
-        <div class="collapse navbar-collapse" id="myNavbar">
-            <ul class="nav navbar-nav">
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="fa fa-dropbox"></span> Dropbox <span class="caret"></span></a>
-                    <ul id="dbx-menu" class="dropdown-menu">
-                        <li><a href="#" id="reg-dropbox-button">Sign in to your dropbox</a></li>
-                    </ul>
+<header>
+    <nav class="top-nav">
+        <div class="nav-wrapper blue accent-3 bz-depth-3">
+            <img class="brand-logo" src="../images/weview_logo_small.png" />
+            <!--<a href="#" data-activates="mobile-buttons" class="button-collapse"><i class="material-icons">menu</i></a>-->
+            <ul id="top-nav" class="right hide-on-small-only">
+                <li>
+                    <a class="modal-trigger" href="#link-menu"><span class="fa fa-external-link"></span> Video Link</a>
                 </li>
-                <li class="dropdown">
-                    <a id="link-dropdown-btn" class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="fa fa-external-link"></span> Video Link <span class="caret"></span></a>
-                    <ul id="link-menu" class="dropdown-menu">
-                        <li>
-                            <div id="videolink-container" >
-                                <form role="form">
-                                    <div class="form-group">
-                                        <textarea id="link-URL" class="form-control" placeholder="Enter link to video you want to watch" rows="2"></textarea>
-                                    </div>
-                                    <input id="btnVideoLink" type="button" class="btn btn-default pull-right" value="Submit"/>
-                                </form>
-                            </div>
-                        </li>
-                    </ul>
+                <li>
+                    <a class="dropdown-button" href="#" data-beloworigin="true" data-activates="dbx-menu"><span class="fa fa-dropbox"></span> Dropbox<i class="material-icons right">arrow_drop_down</i></a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Login</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-user-plus" aria-hidden="true"></i> Sign up</span></a>
                 </li>
             </ul>
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-                <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-            </ul>
         </div>
-    </div>
-</nav>
-
-<div class="container-fluid">
-    <div class="row" id="video-container well well-lg">
-        <div class="col-md-2">
-        </div>
-        <div id="center-page" class="col-md-8">
-            <div class="embed-responsive embed-responsive-16by9">
-                <video id="video"  class="player embed-responsive-item" autobuffer preload="auto" width="720" height="400" data-setup="{}">
-                    <source src='http://vjs.zencdn.net/v/oceans.mp4' type='video/mp4'>
-                    <p>Your browser does not support the video tag.</p>
-                </video>
-            </div>
-            <div id="video-controls" class="controls ">
-                <div class="btn-group btn-group-md">
-                    <button id="play-pause-button" type="button" class="play btn btn-primary" title="play">
-                        <span class="glyphicon glyphicon-play"></span>
-                    </button>
-                    <button id="stop-button" type="button" class="stop btn btn-primary" title="stop">
-                        <span class="glyphicon glyphicon-stop"></span>
-                    </button>
+    </nav>
+    <!--<div class="container">-->
+        <!--<a href="#" data-activates="nav-mobile" class="button-collapse top-nav full hide-on-large-only"><i class="material-icons">menu</i></a>-->
+    <!--</div>-->
+    <!--<ul id="nav-mobile" class="side-nav fixed" style="overflow: auto; transform: translateX(0%);">-->
+        <!--<li class="logo">-->
+            <!--<img class="brand-logo" src="../images/weview_logo_small.png" />-->
+        <!--</li>-->
+        <!--<li class="bold">Friends</li>-->
+    <!--</ul>-->
+</header>
+    <main>
+        <div id="player-container">
+            <div class="row" id="video-controls-container">
+                <div class="col m2 black">
                 </div>
-                Time: <span id="current">0.0</span> of <span id="duration"></span> Played:<span id="percentage">0</span>%
-                <div class="btn-group btn-group-md pull-right">
-                    <button id="mute-button" type="button" class="mute btn btn-primary" title="mute">
-                        <span class='glyphicon glyphicon-volume-off'></span>
-                    </button>
-                    <button id="vol-inc-button" type="button" class='volume-plus btn btn-primary' title='increase volume' onclick='onVolumeChanged("+");'>
-                        Vol <span class="glyphicon glyphicon-plus-sign"></span>
-                    </button>
-                    <button id="vol-dec-button" type="button" class='volume-minus btn btn-primary' title='deccrease volume' onclick='onVolumeChanged("-");'>
-                        Vol <span class="glyphicon glyphicon-minus-sign"></span>
-                    </button>
-                    <button id="fullscreen" type="button" class='full-screen btn btn-primary' title='full screen'>
-                        <span class="glyphicon glyphicon-fullscreen"></span>
-                    </button>
-                </div>
-                <div class="progress" style="width:100%">
-                    <progress  id='progress-bar' class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
-                    </progress>
-                </div>
-            </div>
-            <div class="col-md-2">
-            </div>
-        </div>
-    </div>
-    <!-- Modal -->
-    <div class="modal fade" id="dropbox-modal" role="dialog">
-        <div class="modal-dialog modal-lg">
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Choose video to watch:</h4>
-                </div>
-                <div class="modal-body">
-                    <div id="filenames">
+                <div id="center-page" class="col m8">
+                    <div class="video-container">
                     </div>
-                    <p id="link-dbx"></p>
+                    <div id="video-controls" class="controls row black">
+                        <div class="col m2" id="play-controls">
+                            <button id="play-pause-button" type="button" class="play waves-effect waves-light btn blue accent-3" title="play">
+                                <i class="tiny material-icons">play_arrow</i>
+                            </button>
+                            <button id="stop-button" type="button" class="stop waves-effect waves-light btn blue accent-3" title="stop">
+                                <i class="tiny material-icons">stop</i>
+                            </button>
+                        </div>
+                        <div class="col m6" id="progress-controls">
+                            <div class="progress-bar black">
+                                <div class="time-bar center-align"><span id="percentage">0</span>%</div>
+                            </div>
+                        </div>
+                        <div class="col m4 right-align" id="volume-controls">
+                            <span id="current" class="white-text bold">0.0</span>
+                            <span class="white-text bold"> / </span>
+                            <span id="duration" class="white-text bold">0.0</span>
+                            <button id="mute-button" type="button" class="mute waves-effect waves-light btn blue accent-3" title="mute">
+                                <i class="tiny material-icons">volume_off</i>
+                            </button>
+                            <button id="vol-inc-button" type="button" class="volume-plus waves-effect waves-light btn blue accent-3" title="increase volume" onclick="onVolumeChanged('+');">
+                                <i class="tiny material-icons">volume_up</i>
+                            </button>
+                            <button id="vol-dec-button" type="button" class="volume-minus waves-effect waves-light btn blue accent-3" title="deccrease volume" onclick="onVolumeChanged('-');">
+                                <i class="tiny material-icons">volume_down</i>
+                            </button>
+                            <!--<button id="light-btn" type="button" class="waves-effect waves-light btn blue accent-3" title="light">-->
+                                <!--<i class="tiny material-icons">aspect_ratio</i>-->
+                            <!--</button>-->
+                            <button id="fullscreen" type="button" class="full-screen waves-effect waves-light btn blue accent-3" title="full screen">
+                                <i class="tiny material-icons">aspect_ratio</i>
+                            </button>
+                        </div>
+                    </div>
+                    <!--<div class="row" id="time-data">-->
+                        <!--<h6 class="center-align white-text">Time: <span id="current">0.0</span> of <span id="duration"></span> Played:<span id="percentage">0</span>%</h6>-->
+                    <!--</div>-->
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <div class="col m2 black">
                 </div>
             </div>
+        </div >
+    </main>
+    <!--<footer class="page-footer blue accent-3">-->
+
+    <!--</footer>-->
+
+    <!--video links modal-->
+    <div class="modal grey darken-3" id="dropbox-modal">
+        <div class="modal-content" id="filenames-container">
+            <h4 class="modal-title white-text">Choose video to watch</h4>
+            <div class="collection with-header" id="filenames">
+            </div>
+            <p id="link-dbx"></p>
+        </div>
+        <div class="modal-footer grey darken-3">
+            <button type="close" class="modal-action modal-close btn waves-effect waves-light blue accent-3">Close</button>
         </div>
     </div>
-    <!--Modal-->
-</div >
+    <!-- dropdown dropbox button -->
+    <ul id="dbx-menu" class="dropdown-content">
+        <li id="reg-dropbox-list"><a href="#" class="light-blue-text text-accent-3" id="reg-dropbox-button">Login to your dropbox</a></li>
+    </ul>
+    <!--video link modal-->
+    <div id="link-menu" class="modal">
+        <div class="modal-content" id="videolink-container">
+            <form>
+                <div class="input-field">
+                    <textarea id="link-URL" class="materialize-textarea"></textarea>
+                    <label for="link-URL" class="light-blue-text text-accent-3">Enter link to video you want to watch</label>
+                </div>
+                <button id="btnVideoLink" class="btn waves-effect waves-light blue accent-3" type="submit">Submit
+                    <i class="material-icons right">send</i>
+                </button>
+            </form>
+        </div>
+    </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+<!-- <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+<script src="/javascripts/playerApp.js"></script>
 </body>
 </html>
