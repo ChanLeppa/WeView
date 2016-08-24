@@ -6,10 +6,14 @@ $(onLoad);
 
 function onLoad() {
     initLoginButtons();
-    $(document).ready(function(){
-        $('.parallax').parallax();
-    });
 }
+
+$(document).ready(function(){
+    $('.parallax').parallax();
+    $('.modal-trigger').leanModal();
+    // $('#submit-login').prop('disabled',true);
+    // $('#submit-signup').prop('disabled',true);
+});
 
 function initLoginButtons() {
     $('#btnGuest').click(guestLogin);

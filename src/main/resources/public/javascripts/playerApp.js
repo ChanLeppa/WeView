@@ -101,16 +101,6 @@ function initDropBoxSignInButton(){
     })
 }
 
-// function initDropBoxGetFileNames(){
-//     $('#dropbox-file-names').click(function(){
-//         var uri = replacePlayerToNameInURL("filenames");
-//         $.get(uri, function(response) {
-//             $('div#filenames').html("");
-//             $.each(response, addDropboxFilePathToHtml);
-//         });
-//     })
-// }
-
 function getFileNames(){
     var uri = replacePlayerToNameInURL("filenames");
     $.get(uri, function(response) {
@@ -154,27 +144,26 @@ function initializePlayer(videoSource){
 
 function initializePlayerVideo(videoSource) {
     video.src = videoSource;
-    //video.controls = false;
     video.oncanplay = onCanPlay;
     video.ontimeupdate = updateProgressBar;
     video.onvolumechange = onVolumeChangeEvent;
     video.onloadedmetadata = function() {
-        $('#duration').text(video.duration.toFixed(1));
+        $('#duration').text(formatTime(video.duration));
+        $('#current').text(formatTime(0));
     };
 }
 
 function initializePlayerControls() {
-    playPauseButton = $('#play-pause-button')[0];
-    stopButton = $('#stop-button')[0];
-    muteButton = $('#mute-button')[0];
-    volumeinc = $('#vol-inc-button')[0];
-    volumedec = $('#vol-dec-button')[0];
-    progressBar = $('#progress-bar')[0];
-    // fullscreenButton = $('#fullscreen')[0];
+    playPauseButton = $('#play-pause-button');
+    stopButton = $('#stop-button');
+    muteButton = $('#mute-button');
+    volumeinc = $('#vol-inc-button');
+    volumedec = $('#vol-dec-button');
+    progressBar = $('#progress-bar');
 
-    playPauseButton.onclick = togglePlay;
-    stopButton.onclick = onStopPressed;
-    muteButton.onclick = toggleMute;
+    playPauseButton.click(togglePlay);
+    stopButton.click(onStopPressed);
+    muteButton.click(toggleMute);
     $('#fullscreen').on('click', function() {
         video.webkitEnterFullscreen();
 
@@ -241,7 +230,7 @@ function onSyncPressed(syncBean) {
 
 
 function sync(pageX){
-    var currentTime = updatebar(pageX);
+    var currentTime = getUpdatedTime(pageX, video.duration);
     syncBean = {
         callBackName: "Sync",
         time : parseFloat(currentTime).toFixed(1),
@@ -275,15 +264,10 @@ function subscribtionCallBack(message, headers) {
     }
 }
 
-// function connect(){
-//     var socket = new SockJS('/connect');
-//     stompClient = Stomp.over(socket);
-//     stompClient.connect({}, function(frame){
-//         console.log("Connected: " + frame);
-//         var dest = '/topic/' + playerID + '/videoplayer';
-//         subscibtion = stompClient.subscribe(dest, subscribtionCallBack);
-//     });
-// }
+function subscribeToPlayer() {
+    var dest = '/app/' + playerID + '/subscribe';
+    stompClient.send(dest);
+}
 
 function connect() {
     var socket = new SockJS('/connect');
@@ -307,13 +291,15 @@ function disconnect(){
 
 //player controls
 function onVolumeChanged(direction){
+    var volume = video.volume;
+
     if(direction === '+'){
-        video.volume += (video.volume == 1 ? 0 : 0.1);
+        video.volume += (volume === 1 ? 0 : 0.1);
     }
     else{
-        video.volume -= (video.volume == 0 ? 0 : 0.1);
+        video.volume -= (volume === 0 ? 0 : 0.1);
     }
-    video.volume = parseFloat(video.volume).toFixed(1);
+    // video.volume = parseFloat(video.volume).toFixed(1);
 }
 
 function toggleMute(){
@@ -334,25 +320,29 @@ function togglePlay(){
     }
 }
 
-
 function changeButtonType(button, valueToSet, valueToChange, innerHtml){
-    button.innerHTML = innerHtml;
-    button.setAttribute("type", valueToSet);
-    button = $(button);
+    button.html(innerHtml);
+    button.attr("type", valueToSet);
     button.addClass(valueToSet).removeClass(valueToChange);
-
 }
 
 function updateProgressBar(){
-    $('#current').text(video.currentTime.toFixed(1));
-    var percentage = Math.floor((100 / video.duration) * video.currentTime);
+    var duration = video.duration;
+    var currentTime = video.currentTime;
+    setValuesToProgressBar(duration, currentTime);
+}
+
+function setValuesToProgressBar(duration, currentTime){
+    $('#current').text(formatTime(currentTime));
+    $('#duration').text(formatTime(duration));
+    var percentage = Math.floor((100 / duration) * currentTime);
     $('#percentage').text(percentage);
     $('.time-bar').css('width', percentage+'%');
 }
 
-function updatebar(x) {
+function getUpdatedTime(x, duration) {
         var progress = $('.progress-bar');
-        var maxduration = video.duration; //Video duraiton
+        var maxduration = duration; //Video duraiton
         var position = x - progress.offset().left; //Click pos
         var percentage = 100 * position / progress.width();
 
@@ -365,7 +355,14 @@ function updatebar(x) {
         }
 
         return maxduration * percentage / 100;
-    };
+}
+
+function onVolumeChangeEvent() {
+    if (video.muted)
+        changeButtonType(muteButton, 'unmute', 'mute', "<i class='tiny material-icons'>volume_mute</i>");
+    else
+        changeButtonType(muteButton, 'mute', 'unmute', "<i class='tiny material-icons'>volume_off</i>");
+}
 
 function doPause(){
     changeButtonType(playPauseButton, 'play', 'pause', "<i class='tiny material-icons'>play_arrow</i>");
@@ -377,25 +374,13 @@ function doPlay() {
     video.play();
 }
 
+function formatTime(time){
+    time = Math.round(time);
 
+    var minutes = Math.floor(time / 60);
+    var seconds = time - minutes * 60;
 
-function onVolumeChangeEvent() {
-    if (video.muted)
-        changeButtonType(muteButton, 'unmute', 'mute', "<i class='tiny material-icons'>volume_mute</i>");
-    else
-        changeButtonType(muteButton, 'mute', 'unmute', "<i class='tiny material-icons'>volume_off</i>");
+    seconds = seconds < 10 ? '0' + seconds : seconds;
+
+    return minutes + ":" + seconds;
 }
-
-function subscribeToPlayer() {
-    var dest = '/app/' + playerID + '/subscribe';
-    stompClient.send(dest);
-}
-
-function playVideo() {
-    video.play();
-}
-
-function pauseVideo() {
-    video.pause();
-}
-

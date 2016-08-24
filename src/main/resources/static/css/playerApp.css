@@ -48,6 +48,11 @@ video::-webkit-media-controls-enclosure {
     display:none !important;
 }
 
+/*textarea input[type=text]:focus {*/
+    /*border-bottom: 1px solid #00b0ff;*/
+    /*box-shadow: 0 1px 0 0 #00b0ff;*/
+/*}*/
+
 /*.overlay {*/
     /*position: absolute;*/
     /*height: inherit;*/

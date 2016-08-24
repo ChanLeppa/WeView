@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>We View</title>
-    <!--<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">-->
-    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
     <link rel="stylesheet" href="http://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" type="text/css" href="/css/login.css">
@@ -25,15 +24,15 @@
             </div>
         </div>
         <div class="section white">
-            <div id="login-container" class="container vertical-align: middle">
-                <div class="row">
-                    <button id="btnGuest" class="blue accent-3 waves-effect waves-light btn-large col m4 offset-m4">Guest</button>
-                </div>
+            <div id="reg-container" class="container vertical-align: middle">
                 <div class=" row">
-                    <button id="btnLogin" class="blue accent-3 waves-effect waves-light btn-large col m4 offset-m4">Login</button>
+                    <button id="btnLogin" class="modal-trigger blue accent-3 waves-effect waves-light btn-large col s4 offset-s4" data-target="login-modal">Login</button>
                 </div>
                 <div class="row">
-                    <button id="btnRegister" class="blue accent-3 waves-effect waves-light btn-large col m4 offset-m4">Sign up</button>
+                    <button id="btnRegister" class="modal-trigger blue accent-3 waves-effect waves-light btn-large col s4 offset-s4" data-target="signup-modal">Sign up</button>
+                </div>
+                <div class="row">
+                    <button id="btnGuest" class="blue accent-3 waves-effect waves-light btn-large col s4 offset-s4">Guest</button>
                 </div>
             </div>
         </div>
@@ -41,6 +40,78 @@
             <div class="parallax"><img src="../images/popcorn-1433326_1920.jpg"></div>
         </div>
     </main>
+
+    <div class="modal" id="signup-modal">
+        <div class="modal-content" id="signup-container">
+            <form>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input id="fname" type="text" class="validate">
+                        <label for="fname" class="light-blue-text text-accent-3">First Name</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="lname" type="text" class="validate">
+                        <label for="lname" class="light-blue-text text-accent-3">Last Name</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input id="username-signup" type="text" class="validate">
+                        <label for="username-signup" class="light-blue-text text-accent-3">Username</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="password-signup" type="password" class="validate">
+                        <label for="password-signup" class="light-blue-text text-accent-3">Password</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input id="email" type="email" class="validate">
+                        <label for="email" class="light-blue-text text-accent-3" data-error="not a valid email">Email</label>
+                    </div>
+                    <!--<form>-->
+                    <!--<form action="#">-->
+                    <div class="file-field input-field col s6">
+                        <div class="blue accent-3 btn">
+                            <span>Photo</span>
+                            <input type="file">
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text">
+                        </div>
+                    </div>
+                    <!--</form>-->
+                </div>
+                <div class="row right">
+                    <a id="cancel-signup" class="modal-action modal-close waves-effect waves-teal btn-flat">Cancel</a>
+                    <button id="submit-signup" class="modal-action modal-close btn waves-effect waves-light blue accent-3" type="submit">Signup <span class="fa fa-sign-in"></span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="login-modal">
+        <div class="modal-content" id="login-container">
+            <form>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="username-login" type="text" class="validate">
+                        <label for="username-login" class="light-blue-text text-accent-3">Username</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="password-login" type="password" class="validate">
+                        <label for="password-login" class="light-blue-text text-accent-3">Password</label>
+                    </div>
+                </div>
+                <div class="row right">
+                    <a id="cancel-login" class="modal-action modal-close waves-effect waves-teal btn-flat">Cancel</a>
+                    <button id="submit-login" class="modal-action modal-close btn waves-effect waves-light blue accent-3" type="submit">Login <span class="fa fa-sign-in"></span></button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.min.js"></script>

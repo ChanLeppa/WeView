@@ -12,18 +12,18 @@ import static com.sun.activation.registries.LogSupport.log;
 
 public class DropboxManager {
     private static DropboxManager instance = null;
-    private DbxAppInfo appInfo;
+    private DbxAppInfo appInfo = new DbxAppInfo("rz82vb6w1c2dsgd", "7np3pwsphspipdv");
     private DbxRequestConfig reqConfig;
     private DbxWebAuth webAuth;
     private static Map<String, String> userAccessToken = new HashMap<>();
     private static Map<String, String> sessionPlayerID = new HashMap<>();
 
     private DropboxManager() {
-        try {
-            this.appInfo = DbxAppInfo.Reader.readFromFile("D:/IntelliJ Projects/weview/src/main/java/com/weview/model/dropbox/db.txt");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            this.appInfo = DbxAppInfo.Reader.readFromFile("D:/IntelliJ Projects/weview/src/main/java/com/weview/model/dropbox/db.txt");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         this.reqConfig = new DbxRequestConfig("weview");
         webAuth = new DbxWebAuth(reqConfig, appInfo);
     }
