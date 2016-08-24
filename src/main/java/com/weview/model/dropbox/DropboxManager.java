@@ -8,15 +8,13 @@ import javax.servlet.http.HttpSession;
 import java.text.MessageFormat;
 import java.util.*;
 
-import static com.sun.activation.registries.LogSupport.log;
-
 public class DropboxManager {
     private static DropboxManager instance = null;
     private DbxAppInfo appInfo = new DbxAppInfo("rz82vb6w1c2dsgd", "7np3pwsphspipdv");
     private DbxRequestConfig reqConfig;
     private DbxWebAuth webAuth;
-    private static Map<String, String> userAccessToken = new HashMap<>();
-    private static Map<String, String> sessionPlayerID = new HashMap<>();
+    private Map<String, String> userAccessToken = new HashMap<>();
+    private Map<String, String> sessionPlayerID = new HashMap<>();
 
     private DropboxManager() {
 //        try {
