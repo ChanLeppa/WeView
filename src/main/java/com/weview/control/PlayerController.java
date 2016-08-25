@@ -24,6 +24,7 @@ import java.util.List;
 public class PlayerController {
 
     private DropboxManager dropbox = DropboxManager.getInstance();
+
     @Autowired
     private RedisPlayerRepository playerRepository;
 
@@ -60,8 +61,7 @@ public class PlayerController {
     @RequestMapping(value = "/{playerID}/dbxlink", method = RequestMethod.GET)
     public @ResponseBody String getDropboxLinkToFile(@PathVariable("playerID") String playerID,
                                                      @RequestParam("fileName") String fileName) {
-        String link = dropbox.getSourceLinkToFile(playerID, fileName);
-        return link;
+        return dropbox.getSourceLinkToFile(playerID, fileName);
     }
 
     @RequestMapping(value = "/dropbox-finish", method = RequestMethod.GET)

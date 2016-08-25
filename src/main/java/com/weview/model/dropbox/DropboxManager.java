@@ -9,6 +9,7 @@ import java.text.MessageFormat;
 import java.util.*;
 
 public class DropboxManager {
+
     private static DropboxManager instance = null;
     private DbxAppInfo appInfo = new DbxAppInfo("rz82vb6w1c2dsgd", "7np3pwsphspipdv");
     private DbxRequestConfig reqConfig;
@@ -63,6 +64,7 @@ public class DropboxManager {
     public String getAccessToken(HttpSession session, String sessionKey, Map paramMap)
             throws DbxWebAuth.NotApprovedException, DbxWebAuth.BadRequestException, DbxException,
             DbxWebAuth.CsrfException, DbxWebAuth.BadStateException, DbxWebAuth.ProviderException {
+
         DbxSessionStore csrfTokenStore = new DbxStandardSessionStore(session, sessionKey);
         String redirectUri = getRedirectUriFinish();
         DbxAuthFinish authFinish = webAuth.finishFromRedirect(redirectUri, csrfTokenStore, paramMap);
