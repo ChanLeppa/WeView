@@ -1,18 +1,14 @@
 package com.weview.control;
 
-import com.weview.model.PlayerSubscriberData;
-import com.weview.model.PlayerSynchronizationData;
+import com.weview.model.player.playerdb.PlayerSynchronizationData;
 import com.weview.model.RandomIDGenerator;
-import com.weview.model.RedisPlayerRepository;
+import com.weview.model.player.RedisPlayerRepository;
 import com.weview.model.dropbox.DropboxManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 public class HomeController {

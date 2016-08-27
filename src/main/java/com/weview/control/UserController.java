@@ -18,13 +18,12 @@ public class UserController {
                   @RequestParam("lname") String lname,
                   @RequestParam("email") String email)
     {
-        User user = new User();
+        User user = new User(username);
 
-        user.setFname(fname);
+        user.setFirstName(fname);
         user.setLname(lname);
         user.setEmail(email);
         user.setPassword(password);
-        user.setUsername(username);
 
         try {
             userRepository.save(user);

@@ -9,44 +9,54 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String fname;
+    private String firstName;
 
-    private String lname;
+    private String lastName;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "USERNAME", unique = true, nullable = false)
     private String username;
 
-    @Column(unique = true)
+    @Column(name = "EMAIL", unique = true)
     private String email;
 
     private String password;
 
-    private String dbxtoken;
+    private String dbxToken;
 
-    private Boolean isloggedin;
+    private Boolean isLoggedin = false;
 
     private String photo;
 
-    public User(){}
+    protected User(){}
+
+    public User(String username) {
+        this.username = username;
+    }
+
+    public User(String firstName, String lastName, String username) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+    }
 
     public Long getId() {
         return id;
     }
 
-    public String getFname() {
-        return fname;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFname(String fname) {
-        this.fname = fname;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public String getLname() {
-        return lname;
+        return lastName;
     }
 
     public void setLname(String lname) {
-        this.lname = lname;
+        this.lastName = lname;
     }
 
     public String getUsername() {
@@ -73,20 +83,20 @@ public class User {
         this.password = password;
     }
 
-    public String getDbxtoken() {
-        return dbxtoken;
+    public String getDbxToken() {
+        return dbxToken;
     }
 
-    public void setDbxtoken(String dbxtoken) {
-        this.dbxtoken = dbxtoken;
+    public void setDbxToken(String dbxToken) {
+        this.dbxToken = dbxToken;
     }
 
     public Boolean getLoggedIn() {
-        return isloggedin;
+        return isLoggedin;
     }
 
     public void setLoggedIn(Boolean loggedIn) {
-        isloggedin = loggedIn;
+        isLoggedin = loggedIn;
     }
 
     public String getPhoto() {
@@ -95,6 +105,31 @@ public class User {
 
     public void setPhoto(String userPhoto) {
         this.photo = userPhoto;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        if (!id.equals(user.id)) return false;
+        if (firstName != null ? !firstName.equals(user.firstName) : user.firstName != null) return false;
+        if (lastName != null ? !lastName.equals(user.lastName) : user.lastName != null) return false;
+        if (!username.equals(user.username)) return false;
+        return email != null ? email.equals(user.email) : user.email == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
+        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        result = 31 * result + username.hashCode();
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        return result;
     }
 }
 

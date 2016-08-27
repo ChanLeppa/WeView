@@ -1,7 +1,9 @@
-package com.weview.model;
+package com.weview.model.player;
 
+import com.weview.model.player.playerdb.PlayerRepository;
+import com.weview.model.player.playerdb.PlayerSubscriberData;
+import com.weview.model.player.playerdb.PlayerSynchronizationData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.ValueOperations;
@@ -13,7 +15,7 @@ import java.util.Collection;
 import java.util.Set;
 
 @Component
-public class RedisPlayerRepository implements PlayerRepository{
+public class RedisPlayerRepository implements PlayerRepository {
 
     private RedisTemplate<String, Object> redisTemplate;
 

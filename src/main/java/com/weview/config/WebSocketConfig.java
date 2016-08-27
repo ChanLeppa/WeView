@@ -1,6 +1,5 @@
 package com.weview.config;
 
-import com.weview.model.PlayerSubscriberData;
 import com.weview.model.RandomIDGenerator;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
@@ -12,9 +11,7 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
 import java.security.Principal;
-import java.text.MessageFormat;
 import java.util.Map;
-import java.util.Random;
 
 @Configuration
 @EnableWebSocketMessageBroker

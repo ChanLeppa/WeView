@@ -2,10 +2,9 @@ package com.weview.control;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxWebAuth;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import com.weview.model.PlayerSubscriberData;
-import com.weview.model.PlayerSynchronizationData;
-import com.weview.model.RedisPlayerRepository;
+import com.weview.model.player.playerdb.PlayerSubscriberData;
+import com.weview.model.player.playerdb.PlayerSynchronizationData;
+import com.weview.model.player.RedisPlayerRepository;
 import com.weview.model.dropbox.DropboxManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;

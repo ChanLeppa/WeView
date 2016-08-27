@@ -9,6 +9,16 @@ var fullscreenButton;
 var timeDrag = false;
 var updateBarInterval;
 
+////////////////////////////////////////////
+var playerID = getPlayerID();
+var stompClient;
+function getPlayerID() {
+    var url = $(location).attr('href');
+    var splitURL = url.split("/");
+    return splitURL[splitURL.length - 2];
+}
+////////////////////////////////////////////
+
 function onYouTubeIframeAPIReady() {
 
     //to recieve the link to a youtube movie
@@ -27,7 +37,7 @@ function onYouTubeIframeAPIReady() {
     });
 }
 
-function onPlayerReady(){
+function onPlayerReady() {
     initializePlayerControls();
     updateProgressBar();
 

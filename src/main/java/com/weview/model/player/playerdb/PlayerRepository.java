@@ -1,10 +1,10 @@
-package com.weview.model;
+package com.weview.model.player.playerdb;
 
 import java.util.Collection;
 
 
 /*Should we split into PlayerRepo and PlayerSubscriberRepo?!?!?*/
-interface PlayerRepository {
+public interface PlayerRepository {
 
     void addPlayer(String playerID, PlayerSynchronizationData playerData/*, SyncBean or other player representation*/);
 

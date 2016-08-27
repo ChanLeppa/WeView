@@ -1,4 +1,4 @@
-package com.weview.model;
+package com.weview.model.player.playerdb;
 
 import java.io.Serializable;
 import java.util.Date;
