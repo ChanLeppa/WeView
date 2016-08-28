@@ -1,4 +1,4 @@
-package com.weview.model;
+package com.weview.utils;
 
 import java.text.MessageFormat;
 import java.util.Random;

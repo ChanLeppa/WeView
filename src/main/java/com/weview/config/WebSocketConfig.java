@@ -1,6 +1,6 @@
 package com.weview.config;
 
-import com.weview.model.RandomIDGenerator;
+import com.weview.utils.RandomIDGenerator;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

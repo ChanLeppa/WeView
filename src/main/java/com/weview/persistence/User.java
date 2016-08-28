@@ -1,6 +1,8 @@
 package com.weview.persistence;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class User {
@@ -9,34 +11,43 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(nullable = false)
     private String firstName;
 
+    @Column(nullable = false)
     private String lastName;
 
-    @Column(name = "USERNAME", unique = true, nullable = false)
+    @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(name = "EMAIL", unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
     private String dbxToken;
 
-    private Boolean isLoggedin = false;
-
     private String photo;
+
+    @ManyToMany
+    @JoinTable(
+            name = "friends",
+            joinColumns = @JoinColumn(name = "user_a"),
+            inverseJoinColumns = @JoinColumn(name = "user_b"))
+    private Set<User> friends = new HashSet<>();
+
+    @ManyToMany(mappedBy = "friends", cascade = CascadeType.ALL)
+    private Set<User> friendedBy = new HashSet<>();
 
     protected User(){}
 
-    public User(String username) {
-        this.username = username;
-    }
-
-    public User(String firstName, String lastName, String username) {
+    public User(String firstName, String lastName, String username, String email, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
+        this.email = email;
+        this.password = password;
     }
 
     public Long getId() {
@@ -51,12 +62,12 @@ public class User {
         this.firstName = firstName;
     }
 
-    public String getLname() {
+    public String getLastName() {
         return lastName;
     }
 
-    public void setLname(String lname) {
-        this.lastName = lname;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getUsername() {
@@ -91,20 +102,32 @@ public class User {
         this.dbxToken = dbxToken;
     }
 
-    public Boolean getLoggedIn() {
-        return isLoggedin;
-    }
-
-    public void setLoggedIn(Boolean loggedIn) {
-        isLoggedin = loggedIn;
-    }
-
     public String getPhoto() {
         return photo;
     }
 
     public void setPhoto(String userPhoto) {
         this.photo = userPhoto;
+    }
+
+    public Set<User> getFriends() {
+        return friends;
+    }
+
+    public Set<User> getFriendedBy() {
+        return friendedBy;
+    }
+
+    public Set<User> getAllFriends() {
+        Set<User> allFriends = friends;
+
+        for (User friend :friendedBy) {
+            if (!allFriends.contains(friend)) {
+                allFriends.add(friend);
+            }
+        }
+
+        return allFriends;
     }
 
     @Override
@@ -117,8 +140,7 @@ public class User {
         if (!id.equals(user.id)) return false;
         if (firstName != null ? !firstName.equals(user.firstName) : user.firstName != null) return false;
         if (lastName != null ? !lastName.equals(user.lastName) : user.lastName != null) return false;
-        if (!username.equals(user.username)) return false;
-        return email != null ? email.equals(user.email) : user.email == null;
+        return username.equals(user.username) && (email != null ? email.equals(user.email) : user.email == null);
 
     }
 

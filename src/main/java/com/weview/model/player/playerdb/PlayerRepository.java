@@ -14,7 +14,7 @@ public interface PlayerRepository {
 
     void addSubscriber(String playerID, PlayerSubscriberData subscriber);
 
-    void removeSubscriber(String playerID, PlayerSubscriberData subscriber);
+    void removeSubscriber(String playerID, String subscriberID);
 
     Collection<PlayerSubscriberData> getSubscribers(String playerID);
 
@@ -25,4 +25,6 @@ public interface PlayerRepository {
     Boolean doesPlayerExist(String playerID);
 
     Boolean isSubscriber(String playerID, String subscriberID);
+
+    void updateSubscriber(String playerID, PlayerSubscriberData subscriber);
 }

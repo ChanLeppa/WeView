@@ -1,8 +1,8 @@
 package com.weview.control;
 
 import com.weview.model.player.playerdb.PlayerSynchronizationData;
-import com.weview.model.RandomIDGenerator;
-import com.weview.model.player.RedisPlayerRepository;
+import com.weview.utils.RandomIDGenerator;
+import com.weview.model.player.RedisUserPlayerRepository;
 import com.weview.model.dropbox.DropboxManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +14,7 @@ import java.text.MessageFormat;
 public class HomeController {
 
     @Autowired
-    private RedisPlayerRepository playerRepository;
+    private RedisUserPlayerRepository playerRepository;
     private Integer guestUserNum = 0;
     private RandomIDGenerator randomIDGenerator = new RandomIDGenerator();
     private DropboxManager dropbox = DropboxManager.getInstance();

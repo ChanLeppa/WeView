@@ -2,9 +2,9 @@ package com.weview.control;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxWebAuth;
+import com.weview.model.player.RedisUserPlayerRepository;
 import com.weview.model.player.playerdb.PlayerSubscriberData;
 import com.weview.model.player.playerdb.PlayerSynchronizationData;
-import com.weview.model.player.RedisPlayerRepository;
 import com.weview.model.dropbox.DropboxManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -25,7 +25,7 @@ public class PlayerController {
     private DropboxManager dropbox = DropboxManager.getInstance();
 
     @Autowired
-    private RedisPlayerRepository playerRepository;
+    private RedisUserPlayerRepository playerRepository;
 
     @RequestMapping(value = "/{playerID}/player", method = RequestMethod.GET)
     public String player(@PathVariable("playerID") String playerID, HttpServletRequest request, HttpServletResponse response) {
@@ -104,7 +104,7 @@ public class PlayerController {
     private void updateSubscriberSetCanPlay(String playerID, String subscriberID) {
         synchronized (this) {
             PlayerSubscriberData psd = playerRepository.getSubscriber(playerID, subscriberID);
-            playerRepository.removeSubscriber(playerID, psd);
+            playerRepository.removeSubscriber(playerID, subscriberID);
             psd.setCanPlay();
             playerRepository.addSubscriber(playerID, psd);
         }
