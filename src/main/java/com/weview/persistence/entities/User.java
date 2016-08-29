@@ -1,7 +1,9 @@
 package com.weview.persistence.entities;
 
 import javax.persistence.*;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Entity
@@ -42,7 +44,7 @@ public class User {
 
     @OneToMany
     @JoinColumn(name = "notification_id")
-    private Set<FriendRequestNotification> friendRequests = new HashSet<>();
+    private Map<String, FriendRequestNotification> friendRequests = new HashMap();
 
     protected User(){}
 
@@ -138,58 +140,34 @@ public class User {
         friends.add(user);
     }
 
-    public Set<FriendRequestNotification> getFriendRequests() {
+    public Map<String, FriendRequestNotification> getFriendRequests() {
         return friendRequests;
     }
 
     public void addFriendRequest(FriendRequestNotification request) {
-        if (!isAlreadyRequested(request)) {
-            friendRequests.add(request);
+        if (!isAlreadyRequested(request.getRequestingUsername())) {
+            friendRequests.put(request.getRequestingUsername(), request);
         }
         else {
             updateRequest(request);
         }
     }
 
-
-    private Boolean isAlreadyRequested(FriendRequestNotification request) {
-        Boolean isAlreadyRequested = false;
-        for (FriendRequestNotification req :friendRequests) {
-            if (req.getRequestingUsername().equals(request.getRequestingUsername())) {
-                isAlreadyRequested = true;
-                break;
-            }
-        }
-
-        return isAlreadyRequested;
+    private Boolean isAlreadyRequested(String username) {
+        return friendRequests.containsKey(username);
     }
 
     private void updateRequest(FriendRequestNotification request) {
-        FriendRequestNotification frn = null;
-        for (FriendRequestNotification req :friendRequests) {
-            if (req.getRequestingUsername().equals(request.getRequestingUsername())) {
-                frn = req;
-                break;
-            }
-        }
-
-        if (frn != null) {
-            removeFriendRequest(frn.getRequestingUsername());
+        FriendRequestNotification oldRequest = friendRequests.get(request.getRequestingUsername());
+        if (oldRequest != null) {
+            removeFriendRequest(oldRequest.getRequestingUsername());
             addFriendRequest(request);
         }
     }
 
     public void removeFriendRequest(String username) {
-        FriendRequestNotification requestToRemove = null;
-        for (FriendRequestNotification request :friendRequests) {
-            if (username.equals(request.getRequestingUsername())) {
-                requestToRemove = request;
-                break;
-            }
-        }
-
-        if (requestToRemove != null) {
-            friendRequests.remove(requestToRemove);
+        if (isAlreadyRequested(username)) {
+            friendRequests.remove(username);
         }
     }
 
