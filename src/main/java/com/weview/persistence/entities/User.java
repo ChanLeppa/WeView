@@ -143,7 +143,40 @@ public class User {
     }
 
     public void addFriendRequest(FriendRequestNotification request) {
-        friendRequests.add(request);
+        if (!isAlreadyRequested(request)) {
+            friendRequests.add(request);
+        }
+        else {
+            updateRequest(request);
+        }
+    }
+
+
+    private Boolean isAlreadyRequested(FriendRequestNotification request) {
+        Boolean isAlreadyRequested = false;
+        for (FriendRequestNotification req :friendRequests) {
+            if (req.getRequestingUsername().equals(request.getRequestingUsername())) {
+                isAlreadyRequested = true;
+                break;
+            }
+        }
+
+        return isAlreadyRequested;
+    }
+
+    private void updateRequest(FriendRequestNotification request) {
+        FriendRequestNotification frn = null;
+        for (FriendRequestNotification req :friendRequests) {
+            if (req.getRequestingUsername().equals(request.getRequestingUsername())) {
+                frn = req;
+                break;
+            }
+        }
+
+        if (frn != null) {
+            removeFriendRequest(frn.getRequestingUsername());
+            addFriendRequest(request);
+        }
     }
 
     public void removeFriendRequest(String username) {

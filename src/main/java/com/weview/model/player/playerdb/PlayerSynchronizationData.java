@@ -66,6 +66,14 @@ public class PlayerSynchronizationData implements Serializable {
         subscribers.remove(subscriberId);
     }
 
+    public void updateSubscriber(PlayerSubscriberData subscriber) {
+        if (isSubscriber(subscriber.getUsername())) {
+            subscribers.remove(subscriber.getUsername());
+        }
+
+        subscribers.put(subscriber.getUsername(), subscriber);
+    }
+
     public void clearSubscribers() {
         subscribers.clear();
     }

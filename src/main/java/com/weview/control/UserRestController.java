@@ -4,6 +4,7 @@ import com.weview.control.exceptions.*;
 import com.weview.model.UserDataForClient;
 import com.weview.model.UserFriendData;
 import com.weview.model.loggedinUserHandling.RedisLoggedinUserRepository;
+import com.weview.persistence.entities.FriendRequestNotification;
 import com.weview.persistence.entities.User;
 import com.weview.persistence.UserRepository;
 import com.weview.utils.ExceptionInspector;
@@ -13,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.text.MessageFormat;
+import java.util.Date;
 
 @RestController
 public class UserRestController {
@@ -136,7 +139,26 @@ public class UserRestController {
     @RequestMapping(value = "/user/{username}/friend-request", method = RequestMethod.POST)
     public String makeFriendRequest(@PathVariable("username") String usernameRequesting,
                                     @RequestParam String searchParam) {
-        return null;
+
+        User friend = null;
+        if ((friend = userRepository.findByUsername(searchParam)) == null &&
+                (friend = userRepository.findByUsername(searchParam)) == null) {
+            throw new UserNotFoundException();
+        }
+
+        notifyUserOfFriendRequest(friend, usernameRequesting);
+
+        //Returns JSON that indicates that the user is logged in
+        //so that the requesting client can send him the request via websocket
+        Boolean isFriendLoggedIn = loggedInUserRepository.isLoggedin(friend.getUsername());
+        String friendLoggedInStatus = "{\"isFriendLoggedIn\" : \"" + isFriendLoggedIn.toString() + "\"}";
+        return friendLoggedInStatus;
+    }
+
+    private void notifyUserOfFriendRequest(User user, String usernameRequesting) {
+        String message = MessageFormat.format("{0} has invited you to be his friend", usernameRequesting);
+        Date date = new Date();
+        user.addFriendRequest(new FriendRequestNotification(message, date, usernameRequesting));
     }
 
     private UserDataForClient getUserDataForClient(User friend) {

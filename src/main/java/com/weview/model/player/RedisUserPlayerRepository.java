@@ -27,58 +27,66 @@ public class RedisUserPlayerRepository implements PlayerRepository {
     }
 
     @Override
-    public void addPlayer(String playerId, PlayerSynchronizationData playerData) {
+    public synchronized void addPlayer(String playerId, PlayerSynchronizationData playerData) {
         hashOperations.put(keyForUserPlayers, playerId, playerData);
     }
 
     @Override
-    public void removePlayer(String playerId) {
+    public synchronized void removePlayer(String playerId) {
         hashOperations.delete(keyForUserPlayers, playerId);
     }
 
     @Override
-    public PlayerSynchronizationData getPlayerData(String playerId) {
+    public synchronized PlayerSynchronizationData getPlayerData(String playerId) {
         return hashOperations.get(keyForUserPlayers, playerId);
     }
 
     @Override
-    public void addSubscriber(String playerID, PlayerSubscriberData subscriber) {
-        hashOperations.get(keyForUserPlayers, playerID).addSubscriber(subscriber);
+    public synchronized void addSubscriber(String playerID, PlayerSubscriberData subscriber) {
+        PlayerSynchronizationData psd = getPlayerData(playerID);
+        removePlayer(playerID);
+        psd.addSubscriber(subscriber);
+        addPlayer(playerID, psd);
     }
 
     @Override
-    public void removeSubscriber(String playerID, String subscriberID) {
-        hashOperations.get(keyForUserPlayers, playerID).removeSubscriber(subscriberID);
+    public synchronized void removeSubscriber(String playerID, String subscriberID) {
+        PlayerSynchronizationData psd = getPlayerData(playerID);
+        removePlayer(playerID);
+        psd.removeSubscriber(subscriberID);
+        addPlayer(playerID, psd);
     }
 
     @Override
-    public Collection<PlayerSubscriberData> getSubscribers(String playerID) {
+    public synchronized Collection<PlayerSubscriberData> getSubscribers(String playerID) {
         return hashOperations.get(keyForUserPlayers, playerID).getSubscribers();
     }
 
     @Override
-    public PlayerSubscriberData getSubscriber(String playerID, String subscriberID) {
+    public synchronized PlayerSubscriberData getSubscriber(String playerID, String subscriberID) {
         return hashOperations.get(keyForUserPlayers, playerID).getSubscriber(subscriberID);
     }
 
     @Override
-    public Boolean allSubscribersCanPlay(String playerID) {
+    public synchronized Boolean allSubscribersCanPlay(String playerID) {
         return hashOperations.get(keyForUserPlayers, playerID).isCanPlay();
     }
 
     @Override
-    public Boolean doesPlayerExist(String playerID) {
+    public synchronized Boolean doesPlayerExist(String playerID) {
         return hashOperations.hasKey(keyForUserPlayers, playerID);
     }
 
     @Override
-    public Boolean isSubscriber(String playerID, String subscriberID) {
+    public synchronized Boolean isSubscriber(String playerID, String subscriberID) {
         return hashOperations.get(keyForUserPlayers, playerID).isSubscriber(subscriberID);
     }
 
     @Override
     public synchronized void updateSubscriber(String playerID, PlayerSubscriberData subscriber) {
-        hashOperations.get(keyForUserPlayers, playerID).removeSubscriber(subscriber.getUsername());
-        hashOperations.get(keyForUserPlayers, playerID).addSubscriber(subscriber);
+        PlayerSynchronizationData psd = getPlayerData(playerID);
+        removePlayer(playerID);
+        psd.updateSubscriber(subscriber);
+        addPlayer(playerID, psd);
     }
 }

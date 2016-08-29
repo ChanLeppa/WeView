@@ -25,17 +25,17 @@ public class RedisLoggedinUserRepository implements LoggedinUserRepository {
     }
 
     @Override
-    public void login(String username) {
+    public synchronized void login(String username) {
         setOperations.add(keyForLoggedInUsers, username);
     }
 
     @Override
-    public void logout(String username) {
+    public synchronized void logout(String username) {
         setOperations.remove(keyForLoggedInUsers, username);
     }
 
     @Override
-    public Boolean isLoggedin(String username) {
+    public synchronized Boolean isLoggedin(String username) {
         return setOperations.isMember(keyForLoggedInUsers, username);
     }
 }
