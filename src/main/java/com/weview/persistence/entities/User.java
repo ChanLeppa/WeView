@@ -145,7 +145,8 @@ public class User {
     }
 
     public void addFriendRequest(FriendRequestNotification request) {
-        if (!isAlreadyRequested(request.getRequestingUsername())) {
+        if (!isAlreadyRequested(request.getRequestingUsername()) &&
+                !isAlreadyFriend(request.getRequestingUsername())) {
             friendRequests.put(request.getRequestingUsername(), request);
         }
         else {
@@ -153,8 +154,21 @@ public class User {
         }
     }
 
+
     private Boolean isAlreadyRequested(String username) {
         return friendRequests.containsKey(username);
+    }
+
+    private Boolean isAlreadyFriend(String username) {
+        Boolean isAlreadyFriend = false;
+        for (User friend :getAllFriends()) {
+            if (friend.getUsername().equals(username)) {
+                isAlreadyFriend = true;
+                break;
+            }
+        }
+
+        return isAlreadyFriend;
     }
 
     private void updateRequest(FriendRequestNotification request) {
