@@ -27,8 +27,8 @@ public class PlayerController {
     @Autowired
     private RedisUserPlayerRepository playerRepository;
 
-    @RequestMapping(value = "/{playerID}/player", method = RequestMethod.GET)
-    public String player(@PathVariable("playerID") String playerID, HttpServletRequest request, HttpServletResponse response) {
+    @RequestMapping(value = "/user/{username}/player", method = RequestMethod.GET)
+    public String getPlayerPage() {
         return "/player.html";
     }
 
@@ -41,6 +41,56 @@ public class PlayerController {
         return "Subscribed to player";
     }
 
+
+
+    @MessageMapping("/{playerID}/canplay")
+    @SendTo("/topic/{playerID}/videoplayer")
+    public String canPlay(@DestinationVariable String playerID, Principal principal) throws Exception {
+
+        String subscriberID = principal.getName();
+        updateSubscriberSetCanPlay(playerID, subscriberID);
+
+        return "CanPlay updated";
+    }
+
+    private void updateSubscriberSetCanPlay(String playerID, String subscriberID) {
+        synchronized (this) {
+            PlayerSubscriberData psd = playerRepository.getSubscriber(playerID, subscriberID);
+            playerRepository.removeSubscriber(playerID, subscriberID);
+            psd.setCanPlay();
+            playerRepository.addSubscriber(playerID, psd);
+        }
+    }
+
+    @MessageMapping("/{playerID}/play")
+    @SendTo("/topic/{playerID}/videoplayer")
+    public String play(@DestinationVariable String playerID) throws Exception {
+
+        while (!playerRepository.allSubscribersCanPlay(playerID)) {}
+
+        return "Play";
+    }
+
+    @MessageMapping("/{playerID}/pause")
+    @SendTo("/topic/{playerID}/videoplayer")
+    public String pause() throws Exception {
+        return "Pause";
+    }
+
+    @MessageMapping("/{playerID}/stop")
+    @SendTo("/topic/{playerID}/videoplayer")
+    public String stop() throws Exception {
+        return "Stop";
+    }
+
+    @MessageMapping("/{playerID}/sync")
+    @SendTo("/topic/{playerID}/videoplayer")
+    public PlayerSynchronizationData sync(PlayerSynchronizationData playerSynchronizationData) throws Exception{
+        return playerSynchronizationData;
+    }
+
+
+    //Region DROPBOX===================================================================================================
     @RequestMapping(value = "/{playerID}/filenames", method = RequestMethod.GET)
     public @ResponseBody List<String> getFilePathsDropbox(@PathVariable("playerID") String playerID) {
         List<String> pathFiles = new ArrayList<>();
@@ -90,50 +140,5 @@ public class PlayerController {
         // show and there will be a list of users movies
         return "redirect:" + playerID + "/player";
     }
-
-    @MessageMapping("/{playerID}/canplay")
-    @SendTo("/topic/{playerID}/videoplayer")
-    public String canPlay(@DestinationVariable String playerID, Principal principal) throws Exception {
-
-        String subscriberID = principal.getName();
-        updateSubscriberSetCanPlay(playerID, subscriberID);
-
-        return "CanPlay updated";
-    }
-
-    private void updateSubscriberSetCanPlay(String playerID, String subscriberID) {
-        synchronized (this) {
-            PlayerSubscriberData psd = playerRepository.getSubscriber(playerID, subscriberID);
-            playerRepository.removeSubscriber(playerID, subscriberID);
-            psd.setCanPlay();
-            playerRepository.addSubscriber(playerID, psd);
-        }
-    }
-
-    @MessageMapping("/{playerID}/play")
-    @SendTo("/topic/{playerID}/videoplayer")
-    public String play(@DestinationVariable String playerID) throws Exception {
-
-        while (!playerRepository.allSubscribersCanPlay(playerID)) {}
-
-        return "Play";
-    }
-
-    @MessageMapping("/{playerID}/pause")
-    @SendTo("/topic/{playerID}/videoplayer")
-    public String pause() throws Exception {
-        return "Pause";
-    }
-
-    @MessageMapping("/{playerID}/stop")
-    @SendTo("/topic/{playerID}/videoplayer")
-    public String stop() throws Exception {
-        return "Stop";
-    }
-
-    @MessageMapping("/{playerID}/sync")
-    @SendTo("/topic/{playerID}/videoplayer")
-    public PlayerSynchronizationData sync(PlayerSynchronizationData playerSynchronizationData) throws Exception{
-        return playerSynchronizationData;
-    }
+    //endregion
 }

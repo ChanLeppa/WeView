@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 @RestController
-public class UserController {
+public class UserRestController {
 
     @Autowired
     private UserRepository userRepository;
@@ -35,17 +35,13 @@ public class UserController {
             throw new UserNotFoundException();
         }
 
-        if (!isCorrectPassword(user, password)) {
+        if (!user.getPassword().equals(password)) {
             throw new InvalidPasswordException();
         }
 
         loggedInUserRepository.login(username);
 
         return "redirect: /user/" + username;
-    }
-
-    private boolean isCorrectPassword(User user, String password) {
-        return user.getPassword().equals(password);
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
@@ -56,6 +52,8 @@ public class UserController {
         }
 
         loggedInUserRepository.logout(username);
+
+        //TODO: Should we destroy the user's player? What if others continue to watch? Unsubscribe with ref count?
 
         return "redirect: /";
     }

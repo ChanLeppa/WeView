@@ -5,7 +5,8 @@ public class UserDataForClient {
     private final String username;
     private final String firstName;
     private final String lastName;
-    //private photo;
+//    private Boolean isLoggedIn;
+//    private photo;
 
     public UserDataForClient(String username, String firstName, String lastName) {
         this.username = username;

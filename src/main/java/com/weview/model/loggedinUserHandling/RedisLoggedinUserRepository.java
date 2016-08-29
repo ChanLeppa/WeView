@@ -1,5 +1,6 @@
 package com.weview.model.loggedinUserHandling;
 
+import org.omg.CORBA.Object;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
@@ -11,14 +12,27 @@ import javax.annotation.Resource;
 public class RedisLoggedinUserRepository implements LoggedinUserRepository {
 
     private final String keyForLoggedInUsers = "LOGGEDIN_USERS";
+    private static RedisLoggedinUserRepository instance;
+
+    @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
     @Resource(name = "redisTemplate")
     private SetOperations<String, String> setOperations;
 
-    @Autowired
-    public RedisLoggedinUserRepository(RedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
+    private RedisLoggedinUserRepository() {
+    }
+
+    public static RedisLoggedinUserRepository getInstance() {
+        if (instance == null) {
+            synchronized (RedisLoggedinUserRepository.class) {
+                if (instance == null) {
+                    instance = new RedisLoggedinUserRepository();
+                }
+            }
+        }
+
+        return instance;
     }
 
     @Override
