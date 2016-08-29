@@ -1,5 +1,6 @@
 package com.weview.control;
 
+import com.weview.control.exceptions.InvalidPasswordException;
 import com.weview.control.exceptions.UserNotFoundException;
 import com.weview.control.exceptions.UserFieldConstraintException;
 import com.weview.control.exceptions.UserFieldViolationErrorInfo;
@@ -24,6 +25,28 @@ public class UserController {
 
     @Autowired
     private RedisLoggedinUserRepository loggedInUserRepository;
+
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public String login(@RequestParam String username, @RequestParam String password) {
+
+        User user = userRepository.findByUsername(username);
+
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+
+        if (!isCorrectPassword(user, password)) {
+            throw new InvalidPasswordException();
+        }
+
+        loggedInUserRepository.login(username);
+
+        return "redirect: /user/" + username;
+    }
+
+    private boolean isCorrectPassword(User user, String password) {
+        return user.getPassword().equals(password);
+    }
 
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public String signup(@RequestBody User newUser) {
