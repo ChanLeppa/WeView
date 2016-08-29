@@ -4,12 +4,12 @@ import com.weview.persistence.User;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 
-public class UserUniqueFieldConstraintException extends RuntimeException{
+public class UserFieldConstraintException extends RuntimeException{
 
     private SQLIntegrityConstraintViolationException exception;
     private User violatingUser;
 
-    public UserUniqueFieldConstraintException(User violatingUser, SQLIntegrityConstraintViolationException exception) {
+    public UserFieldConstraintException(User violatingUser, SQLIntegrityConstraintViolationException exception) {
         this.violatingUser = violatingUser;
         this.exception = exception;
     }

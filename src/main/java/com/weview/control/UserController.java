@@ -1,9 +1,10 @@
 package com.weview.control;
 
 import com.weview.control.exceptions.UserNotFoundException;
-import com.weview.control.exceptions.UserUniqueFieldConstraintException;
+import com.weview.control.exceptions.UserFieldConstraintException;
 import com.weview.control.exceptions.UserFieldViolationErrorInfo;
 import com.weview.model.UserDataForClient;
+import com.weview.model.UserFriendData;
 import com.weview.model.loggedinUserHandling.RedisLoggedinUserRepository;
 import com.weview.persistence.User;
 import com.weview.persistence.UserRepository;
@@ -36,7 +37,7 @@ public class UserController {
             if (cause instanceof SQLIntegrityConstraintViolationException) {
                 SQLIntegrityConstraintViolationException sqlConstraint =
                         (SQLIntegrityConstraintViolationException)cause;
-                throw new UserUniqueFieldConstraintException(newUser, sqlConstraint);
+                throw new UserFieldConstraintException(newUser, sqlConstraint);
             }
             else {
                 throw e;
@@ -61,12 +62,57 @@ public class UserController {
             throw new UserNotFoundException();
         }
 
-        return new UserDataForClient(theUser.getUsername(), theUser.getFirstName(), theUser.getLastName());
+        return getUserDataForClient(theUser);
+    }
+
+    @RequestMapping(value = "/user/{username}/friends", method = RequestMethod.GET)
+    public UserFriendData getUserFriends(@PathVariable("username") String username) {
+
+        UserFriendData userFriends = new UserFriendData();
+        User user = userRepository.findByUsername(username);
+
+        //TODO:
+        // 1. Check if logged in
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+
+        for (User friend :user.getAllFriends()) {
+            UserDataForClient friendData = getUserDataForClient(friend);
+            userFriends.getFriends().put(
+                    loggedInUserRepository.isLoggedin(friendData.getUsername()),
+                    friendData);
+        }
+
+        return userFriends;
+    }
+
+    @RequestMapping(value = "/user/{username}/make-friend", method = RequestMethod.POST)
+    public String makeFriend(@PathVariable("username") String usernameToBefriend,
+                             @RequestParam String username) {
+
+        User userRequesting = userRepository.findByUsername(username);
+        User userToBefriend = userRepository.findByUsername(usernameToBefriend);
+
+        if (userRequesting == null || userToBefriend == null) {
+            throw new UserNotFoundException();
+        }
+
+        userRequesting.addFriend(userToBefriend);
+
+        userRepository.save(userRequesting);
+
+        //TODO: Return better argument
+        return "Bazinga!!!";
+    }
+
+    private UserDataForClient getUserDataForClient(User friend) {
+        return new UserDataForClient(friend.getUsername(), friend.getFirstName(), friend.getLastName());
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(UserUniqueFieldConstraintException.class)
-    public UserFieldViolationErrorInfo handleUserFieldException(UserUniqueFieldConstraintException ex) {
+    @ExceptionHandler(UserFieldConstraintException.class)
+    public UserFieldViolationErrorInfo handleUserFieldException(UserFieldConstraintException ex) {
         return new UserFieldViolationErrorInfo(ex.getException(), ex.getViolatingUser());
     }
 

@@ -130,6 +130,10 @@ public class User {
         return allFriends;
     }
 
+    public void addFriend(User user) {
+        friends.add(user);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
