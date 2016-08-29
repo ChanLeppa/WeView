@@ -1,13 +1,10 @@
 package com.weview.control;
 
-import com.weview.control.exceptions.InvalidPasswordException;
-import com.weview.control.exceptions.UserNotFoundException;
-import com.weview.control.exceptions.UserFieldConstraintException;
-import com.weview.control.exceptions.UserFieldViolationErrorInfo;
+import com.weview.control.exceptions.*;
 import com.weview.model.UserDataForClient;
 import com.weview.model.UserFriendData;
 import com.weview.model.loggedinUserHandling.RedisLoggedinUserRepository;
-import com.weview.persistence.User;
+import com.weview.persistence.entities.User;
 import com.weview.persistence.UserRepository;
 import com.weview.utils.ExceptionInspector;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +45,7 @@ public class UserRestController {
     public String logout(@RequestParam String username) {
 
         if (!loggedInUserRepository.isLoggedin(username)) {
-            throw new UserNotFoundException();
+            throw new UserNotLoggedInException();
         }
 
         loggedInUserRepository.logout(username);
@@ -86,15 +83,8 @@ public class UserRestController {
     @RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
     public UserDataForClient getUserClientData(@PathVariable("username") String username) {
 
-        User theUser = userRepository.findByUsername(username);
-
-        //TODO:
-        // 1. Check if logged in
-        // 2. Handle friends
-        if (theUser == null) {
-            throw new UserNotFoundException();
-        }
-
+        //TODO: Handle friends
+        User theUser = getLoggedInUser(username);
         return getUserDataForClient(theUser);
     }
 
@@ -102,32 +92,36 @@ public class UserRestController {
     public UserFriendData getUserFriends(@PathVariable("username") String username) {
 
         UserFriendData userFriends = new UserFriendData();
-        User user = userRepository.findByUsername(username);
-
-        //TODO:
-        // 1. Check if logged in
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
+        User user = getLoggedInUser(username);
 
         for (User friend :user.getAllFriends()) {
             UserDataForClient friendData = getUserDataForClient(friend);
-            userFriends.getFriends().put(
-                    loggedInUserRepository.isLoggedin(friendData.getUsername()),
-                    friendData);
+            userFriends.getFriends().add(friendData);
         }
 
         return userFriends;
     }
 
+    private User getLoggedInUser(String username) throws UserNotFoundException, UserNotLoggedInException{
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        if (!loggedInUserRepository.isLoggedin(user.getUsername())) {
+            throw new UserNotLoggedInException();
+        }
+
+        return user;
+    }
+
     @RequestMapping(value = "/user/{username}/make-friend", method = RequestMethod.POST)
     public String makeFriend(@PathVariable("username") String usernameToBefriend,
                              @RequestParam String username) {
-
+        //TODO: Friend request
         User userRequesting = userRepository.findByUsername(username);
         User userToBefriend = userRepository.findByUsername(usernameToBefriend);
 
-        if (userRequesting == null || userToBefriend == null) {
+        if (userToBefriend == null || userRequesting == null) {
             throw new UserNotFoundException();
         }
 
@@ -139,8 +133,16 @@ public class UserRestController {
         return "Bazinga!!!";
     }
 
+    @RequestMapping(value = "/user/{username}/friend-request", method = RequestMethod.POST)
+    public String makeFriendRequest(@PathVariable("username") String usernameRequesting,
+                                    @RequestParam String searchParam) {
+        return null;
+    }
+
     private UserDataForClient getUserDataForClient(User friend) {
-        return new UserDataForClient(friend.getUsername(), friend.getFirstName(), friend.getLastName());
+        String username = friend.getUsername();
+        Boolean isLoggedin = loggedInUserRepository.isLoggedin(username);
+        return new UserDataForClient(username, friend.getFirstName(), friend.getLastName(), isLoggedin);
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)

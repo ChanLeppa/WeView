@@ -1,4 +1,4 @@
-package com.weview.persistence;
+package com.weview.persistence.entities;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -39,6 +39,10 @@ public class User {
 
     @ManyToMany(mappedBy = "friends", cascade = CascadeType.ALL)
     private Set<User> friendedBy = new HashSet<>();
+
+    @OneToMany
+    @JoinColumn(name = "notification_id")
+    private Set<FriendRequestNotification> friendRequests = new HashSet<>();
 
     protected User(){}
 
@@ -132,6 +136,28 @@ public class User {
 
     public void addFriend(User user) {
         friends.add(user);
+    }
+
+    public Set<FriendRequestNotification> getFriendRequests() {
+        return friendRequests;
+    }
+
+    public void addFriendRequest(FriendRequestNotification request) {
+        friendRequests.add(request);
+    }
+
+    public void removeFriendRequest(String username) {
+        FriendRequestNotification requestToRemove = null;
+        for (FriendRequestNotification request :friendRequests) {
+            if (username.equals(request.getRequestingUsername())) {
+                requestToRemove = request;
+                break;
+            }
+        }
+
+        if (requestToRemove != null) {
+            friendRequests.remove(requestToRemove);
+        }
     }
 
     @Override

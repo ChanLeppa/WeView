@@ -14,25 +14,14 @@ public class RedisLoggedinUserRepository implements LoggedinUserRepository {
     private final String keyForLoggedInUsers = "LOGGEDIN_USERS";
     private static RedisLoggedinUserRepository instance;
 
-    @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
     @Resource(name = "redisTemplate")
     private SetOperations<String, String> setOperations;
 
-    private RedisLoggedinUserRepository() {
-    }
-
-    public static RedisLoggedinUserRepository getInstance() {
-        if (instance == null) {
-            synchronized (RedisLoggedinUserRepository.class) {
-                if (instance == null) {
-                    instance = new RedisLoggedinUserRepository();
-                }
-            }
-        }
-
-        return instance;
+    @Autowired
+    private RedisLoggedinUserRepository(RedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
     }
 
     @Override

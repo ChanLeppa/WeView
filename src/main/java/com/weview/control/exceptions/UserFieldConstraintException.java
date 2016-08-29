@@ -1,6 +1,6 @@
 package com.weview.control.exceptions;
 
-import com.weview.persistence.User;
+import com.weview.persistence.entities.User;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 

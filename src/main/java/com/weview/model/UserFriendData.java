@@ -1,13 +1,15 @@
 package com.weview.model;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class UserFriendData {
 
-    private Map<Boolean, UserDataForClient> friends = new HashMap<>();
+    private Set<UserDataForClient> friends = new HashSet<>();
 
-    public Map<Boolean, UserDataForClient> getFriends() {
+    public Set<UserDataForClient> getFriends() {
         return friends;
     }
 }
