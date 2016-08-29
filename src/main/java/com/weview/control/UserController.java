@@ -48,6 +48,18 @@ public class UserController {
         return user.getPassword().equals(password);
     }
 
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    public String logout(@RequestParam String username) {
+
+        if (!loggedInUserRepository.isLoggedin(username)) {
+            throw new UserNotFoundException();
+        }
+
+        loggedInUserRepository.logout(username);
+
+        return "redirect: /";
+    }
+
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public String signup(@RequestBody User newUser) {
 
