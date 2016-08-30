@@ -1,10 +1,18 @@
 window.WeviewSocketMessaging = (function(WeviewSocketMessaging, $, undefined)
 {
-    var SocketMessenger = function (i_Dest) {
+    var SocketMessenger = function (i_Username) {
 
-        this.m_Socket = new SockJS(i_Dest);
+        this.m_DestUrlPrefix = '/app/';
+        this.m_CanPlayUrl = '/canplay';
+        this.m_PlayUrl = '/play';
+        this.m_PauseUrl = '/pause';
+        this.m_StopUrl = '/stop';
+        this.m_SyncUrl = '/sync';
+        this.m_PlayerUrl = '/player';
+        this.m_Username = i_Username;
+        this.m_PlayerID = null;
+        this.m_Socket = new SockJS('/connect');
         this.m_StompClient = Stomp.over(this.m_Socket);
-        this.m_Subscription = null;
 
         this.connect = function () {
             this.m_StompClient.connect({}, function (frame) {
@@ -13,7 +21,7 @@ window.WeviewSocketMessaging = (function(WeviewSocketMessaging, $, undefined)
         };
 
         this.subscribe = function (i_Dest, i_Callback) {
-            this.m_Subscription = this.m_StompClient.subscribe(i_Dest, i_Callback);
+            return this.m_StompClient.subscribe(i_Dest, i_Callback);
         };
 
         this.disconnect = function () {
@@ -36,7 +44,10 @@ window.WeviewSocketMessaging = (function(WeviewSocketMessaging, $, undefined)
 
     SocketMessenger.prototype = {
         get StompClient() { return this.m_StompClient; },
-        get Subscription() { return this.m_Subscription; }
+        get Username() { return this.m_Username; },
+        set Username(i_Username) { this.m_Username = i_Username; },
+        set PlayerID(i_PlayerID) { this.m_PlayerID = i_PlayerID; },
+        get PlayerID() { return this.m_PlayerID; }
     };
 
     return {
