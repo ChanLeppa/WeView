@@ -1,6 +1,7 @@
 package com.weview.model.player.playerdb;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
+import com.weview.model.player.PlayerState;
 
 import java.io.Serializable;
 import java.util.*;
@@ -8,6 +9,7 @@ import java.util.*;
 public class PlayerSynchronizationData implements Serializable {
 
     private String src;
+    private PlayerState state;
     private String callBackName;
     private Double time;
     private Boolean playing;
@@ -15,6 +17,14 @@ public class PlayerSynchronizationData implements Serializable {
 
     public String getSrc() {
         return src;
+    }
+
+    public PlayerState getState() {
+        return state;
+    }
+
+    public void setState(PlayerState state) {
+        this.state = state;
     }
 
     public String getCallBackName() {

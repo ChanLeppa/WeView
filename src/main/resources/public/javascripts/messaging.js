@@ -24,6 +24,14 @@ window.WeviewSocketMessaging = (function(WeviewSocketMessaging, $, undefined)
             console.log("Disconnected");
         };
 
+        this.send = function(i_Dest, i_Data) {
+            if ($.type(i_Data) === "undefined") {
+                this.m_StompClient.send(i_Dest, i_Data);
+            }
+            else {
+                this.m_StompClient.send(i_Dest, i_Data);
+            }
+        };
     };
 
     SocketMessenger.prototype = {
@@ -36,7 +44,6 @@ window.WeviewSocketMessaging = (function(WeviewSocketMessaging, $, undefined)
     }
 
 })(window.WeviewSocketMessaging || {}, jQuery);
-
 
 
 
