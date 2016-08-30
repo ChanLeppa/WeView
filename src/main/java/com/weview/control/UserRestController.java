@@ -166,6 +166,19 @@ public class UserRestController {
         return new UserDataForClient(username, friend.getFirstName(), friend.getLastName(), isLoggedin);
     }
 
+    @RequestMapping(value = "/user/{username}/photo", method = RequestMethod.GET)
+    public byte[] getUserPhoto(@PathVariable("username") String username) {
+        User user = getLoggedInUser(username);
+        return user.getPhoto();
+    }
+
+    @RequestMapping(value = "/user/{username}/photo", method = RequestMethod.POST)
+    public void uploadUserPhoto(@PathVariable("username") String username, byte[] photo) {
+        User user = getLoggedInUser(username);
+        user.setPhoto(photo);
+        userRepository.save(user);
+    }
+
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(UserFieldConstraintException.class)
     public UserFieldViolationErrorInfo handleUserFieldException(UserFieldConstraintException ex) {
