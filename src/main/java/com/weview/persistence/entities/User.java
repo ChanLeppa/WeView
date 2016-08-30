@@ -30,7 +30,8 @@ public class User {
 
     private String dbxToken;
 
-    private String photo;
+    @Lob
+    private byte[] photo;
 
     @ManyToMany
     @JoinTable(
@@ -108,11 +109,11 @@ public class User {
         this.dbxToken = dbxToken;
     }
 
-    public String getPhoto() {
+    public byte[] getPhoto() {
         return photo;
     }
 
-    public void setPhoto(String userPhoto) {
+    public void setPhoto(byte[] userPhoto) {
         this.photo = userPhoto;
     }
 

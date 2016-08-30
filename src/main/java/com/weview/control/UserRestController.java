@@ -151,8 +151,7 @@ public class UserRestController {
         //Returns JSON that indicates that the user is logged in
         //so that the requesting client can send him the request via websocket
         Boolean isFriendLoggedIn = loggedInUserRepository.isLoggedin(friend.getUsername());
-        String friendLoggedInStatus = "{\"isFriendLoggedIn\" : \"" + isFriendLoggedIn.toString() + "\"}";
-        return friendLoggedInStatus;
+        return "{\"isFriendLoggedIn\" : \"" + isFriendLoggedIn.toString() + "\"}";
     }
 
     private void notifyUserOfFriendRequest(User user, String usernameRequesting) {

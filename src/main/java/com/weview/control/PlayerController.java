@@ -32,23 +32,21 @@ public class PlayerController {
         return "/player.html";
     }
 
-    @MessageMapping("/{playerID}/subscribe")
-    @SendTo("/topic/{playerID}/videoplayer")
-    public String subscribeToPlayer(@DestinationVariable String playerID, Principal principal) throws Exception {
+    @MessageMapping("/user/{username}/player")
+    @SendTo("/topic/{username}/player")
+    public String subscribeToPlayer(@DestinationVariable String username, Principal principal) throws Exception {
 
-        playerRepository.addSubscriber(playerID, new PlayerSubscriberData(principal.getName()));
+        playerRepository.addSubscriber(username, new PlayerSubscriberData(principal.getName()));
 
         return "Subscribed to player";
     }
 
-
-
-    @MessageMapping("/{playerID}/canplay")
-    @SendTo("/topic/{playerID}/videoplayer")
-    public String canPlay(@DestinationVariable String playerID, Principal principal) throws Exception {
+    @MessageMapping("/user/{username}/canplay")
+    @SendTo("/topic/{username}/player")
+    public String canPlay(@DestinationVariable String username, Principal principal) throws Exception {
 
         String subscriberID = principal.getName();
-        updateSubscriberSetCanPlay(playerID, subscriberID);
+        updateSubscriberSetCanPlay(username, subscriberID);
 
         return "CanPlay updated";
     }
@@ -62,30 +60,31 @@ public class PlayerController {
         }
     }
 
-    @MessageMapping("/{playerID}/play")
-    @SendTo("/topic/{playerID}/videoplayer")
-    public String play(@DestinationVariable String playerID) throws Exception {
+    @MessageMapping("/user/{username}/play")
+    @SendTo("/topic/{username}/player")
+    public String play(@DestinationVariable String username) throws Exception {
 
-        while (!playerRepository.allSubscribersCanPlay(playerID)) {}
+        while (!playerRepository.allSubscribersCanPlay(username)) {}
 
         return "Play";
     }
 
-    @MessageMapping("/{playerID}/pause")
-    @SendTo("/topic/{playerID}/videoplayer")
+    @MessageMapping("/user/{username}/pause")
+    @SendTo("/topic/{username}/player")
     public String pause() throws Exception {
         return "Pause";
     }
 
-    @MessageMapping("/{playerID}/stop")
-    @SendTo("/topic/{playerID}/videoplayer")
+    @MessageMapping("/user/{username}/stop")
+    @SendTo("/topic/{username}/player")
     public String stop() throws Exception {
         return "Stop";
     }
 
-    @MessageMapping("/{playerID}/sync")
-    @SendTo("/topic/{playerID}/videoplayer")
+    @MessageMapping("/user/{username}/sync")
+    @SendTo("/topic/{username}/player")
     public PlayerSynchronizationData sync(PlayerSynchronizationData playerSynchronizationData) throws Exception{
+        //TODO: Update player in repository
         return playerSynchronizationData;
     }
 

@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-public class Notification {
+public abstract class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,7 +28,6 @@ public class Notification {
     public User getUser() {
         return user;
     }
-
 
     public Long getId() {
         return id;
