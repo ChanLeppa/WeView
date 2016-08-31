@@ -27,7 +27,7 @@ public class PlayerController {
     @Autowired
     private RedisUserPlayerRepository playerRepository;
 
-    @RequestMapping(value = "/user/{username}/player", method = RequestMethod.GET)
+    @RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
     public String getPlayerPage() {
         return "/player.html";
     }

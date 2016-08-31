@@ -11,11 +11,14 @@ public abstract class Notification {
     @Column(name = "notification_id")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "id", nullable = false)
-    private User user;
+//    @ManyToOne
+//    @JoinColumn(name = "id", nullable = false)
+//    private User user;
 
     private String message;
+
+    @Column(columnDefinition="DATETIME")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
     protected Notification(){}
@@ -25,9 +28,13 @@ public abstract class Notification {
         this.date = date;
     }
 
-    public User getUser() {
-        return user;
-    }
+//    public User getUser() {
+//        return user;
+//    }
+//
+//    public void setUser(User user) {
+//        this.user = user;
+//    }
 
     public Long getId() {
         return id;
@@ -48,4 +55,5 @@ public abstract class Notification {
     public void setDate(Date date) {
         this.date = date;
     }
+
 }

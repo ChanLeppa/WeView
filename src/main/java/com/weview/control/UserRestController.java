@@ -4,6 +4,7 @@ import com.weview.control.exceptions.*;
 import com.weview.model.UserDataForClient;
 import com.weview.model.UserFriendData;
 import com.weview.model.loggedinUserHandling.RedisLoggedinUserRepository;
+import com.weview.persistence.UserLoginData;
 import com.weview.persistence.entities.FriendRequestNotification;
 import com.weview.persistence.entities.User;
 import com.weview.persistence.UserRepository;
@@ -16,7 +17,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
+import java.util.Set;
 
 @RestController
 public class UserRestController {
@@ -28,8 +32,10 @@ public class UserRestController {
     private RedisLoggedinUserRepository loggedInUserRepository;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String login(@RequestParam String username, @RequestParam String password) {
+    public String login(@RequestBody UserLoginData userLoggingIn) {
 
+        String username = userLoggingIn.getUsername();
+        String password = userLoggingIn.getPassword();
         User user = userRepository.findByUsername(username);
 
         if (user == null) {
@@ -64,6 +70,7 @@ public class UserRestController {
         User user = newUser;
         try {
             userRepository.save(newUser);
+            userRepository.flush();
             loggedInUserRepository.login(newUser.getUsername());
         }
         catch (DataAccessException e) {
@@ -84,7 +91,7 @@ public class UserRestController {
         return "/user/" + newUser.getUsername();
     }
 
-    @RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
+    @RequestMapping(value = "/user/{username}/user-data", method = RequestMethod.GET)
     public UserDataForClient getUserClientData(@PathVariable("username") String username) {
 
         //TODO: Handle friends
@@ -132,6 +139,7 @@ public class UserRestController {
         userRequesting.addFriend(userToBefriend);
 
         userRepository.save(userRequesting);
+        userRepository.flush();
 
         //TODO: Return better argument
         return "Bazinga!!!";
@@ -143,7 +151,7 @@ public class UserRestController {
 
         User friend = null;
         if ((friend = userRepository.findByUsername(searchParam)) == null &&
-                (friend = userRepository.findByUsername(searchParam)) == null) {
+                (friend = userRepository.findByEmail(searchParam)) == null) {
             throw new UserNotFoundException();
         }
 
@@ -159,12 +167,20 @@ public class UserRestController {
         String message = MessageFormat.format("{0} has invited you to be his friend", usernameRequesting);
         Date date = new Date();
         user.addFriendRequest(new FriendRequestNotification(message, date, usernameRequesting));
+        userRepository.save(user);
+        userRepository.flush();
     }
 
     private UserDataForClient getUserDataForClient(User friend) {
         String username = friend.getUsername();
         Boolean isLoggedin = loggedInUserRepository.isLoggedin(username);
         return new UserDataForClient(username, friend.getFirstName(), friend.getLastName(), isLoggedin);
+    }
+
+    @RequestMapping(value = "/user/{username}/friend-requests-notifications", method = RequestMethod.GET)
+    public Collection<FriendRequestNotification> getFriendRequests(@PathVariable("username") String username) {
+        User user = getLoggedInUser(username);
+        return user.getFriendRequests().values();
     }
 
     @RequestMapping(value = "/user/{username}/photo", method = RequestMethod.GET)
@@ -178,6 +194,7 @@ public class UserRestController {
         User user = getLoggedInUser(username);
         user.setPhoto(photo);
         userRepository.save(user);
+        userRepository.flush();
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)

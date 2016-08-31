@@ -43,8 +43,8 @@ public class User {
     @ManyToMany(mappedBy = "friends", cascade = CascadeType.ALL)
     private Set<User> friendedBy = new HashSet<>();
 
-    @OneToMany
-    @JoinColumn(name = "notification_id")
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
     private Map<String, FriendRequestNotification> friendRequests = new HashMap();
 
     protected User(){}

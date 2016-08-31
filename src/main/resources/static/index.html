@@ -92,7 +92,7 @@
 
     <div class="modal" id="login-modal">
         <div class="modal-content" id="login-container">
-            <form id="login-form" action="/login" method="post">
+            <form id="login-form" method="post">
                 <div class="row">
                     <div class="input-field col s12">
                         <input id="username_login" name="username" type="text" class="validate">
@@ -107,7 +107,7 @@
                 </div>
                 <div class="row right">
                     <a id="cancel-login" class="modal-action modal-close waves-effect waves-teal btn-flat">Cancel</a>
-                    <button id="submit-login" class="modal-action modal-close btn waves-effect waves-light blue accent-3" type="submit">Login <span class="fa fa-sign-in"></span></button>
+                    <button id="submit-login" class="submit modal-action modal-close btn waves-effect waves-light blue accent-3" type="submit" name="action">Login <span class="fa fa-sign-in"></span></button>
                 </div>
             </form>
         </div>

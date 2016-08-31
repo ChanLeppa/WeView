@@ -8,36 +8,19 @@ function onLoad() {
     signupForm = $('#signup-form');
     loginForm = $('#login-form');
     validateSignupFileds();
-    initLoginButtons();
-    // userSignup({
-    //     firstName: "Kelly",
-    //     lastName: "Cute",
-    //     username: "KellyC",
-    //     email: "KellyDog@geemail.com",
-    //     password: "123456"
-    // });
+    validateLoginFileds();
+    initButtons();
 }
 
-// $(document).ready(function(){
-//     $('.parallax').parallax();
-//     $('.modal-trigger').leanModal();
-//     signupForm = $('#signup-form');
-//     validateSignupFileds();
-//     initLoginButtons();
-//     // userSignup({
-//     //     firstName: "Kelly",
-//     //     lastName: "Cute",
-//     //     username: "KellyC",
-//     //     email: "KellyDog@geemail.com",
-//     //     password: "123456"
-//     // });
-// });
-
-function initLoginButtons() {
+function initButtons() {
     $('#lname, #fname, #username_signup, #password_signup, #email').change(validateSignupFileds);
     // $('#btnGuest').click(guestLogin);
     $('#submit-signup').click(submitSignup);
+    $('#submit-login').click(submitLogin);
     signupForm.submit(function(event) {
+        event.preventDefault();
+    });
+    loginForm.submit(function (event) {
         event.preventDefault();
     });
 }
@@ -58,10 +41,24 @@ function validateSignupFileds(){
     }
 }
 
+function validateLoginFileds(){
+    loginForm.validate();
+    if ($('#username_login').val().length > 0 &&
+        $('#password_login').val().length > 0 &&
+        loginForm.valid()) {
+
+        $('#submit-login').removeClass('disabled');
+    }
+    else {
+        $('#submit-login').addClass('disabled');
+    }
+}
+
 // function guestLogin() {
 //     console.log("gusetLogin");
 //     $.get("/guest", userRedirect);
 // }
+
 function submitSignup() {
     var userSignupData = {
         firstName: $('#fname').val(),
@@ -75,8 +72,21 @@ function submitSignup() {
     userSignup(userSignupData);
 }
 
+function submitLogin() {
+    var userLoginData = {
+        username: $('#username_login').val(),
+        password: $('#password_login').val()
+    };
+
+    userLogin(userLoginData);
+}
+
 function userSignup(userSignupData) {
     $.postJSON("/signup", userSignupData, userRedirect);
+}
+
+function userLogin(userLoginData) {
+    $.postJSON("/login", userLoginData, userRedirect);
 }
 
 function userRedirect(response) {
