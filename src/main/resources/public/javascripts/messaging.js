@@ -73,16 +73,28 @@ window.WeviewSocketMessaging = (function(WeviewSocketMessaging, $, undefined)
         };
 
         this.sendUserLogin = function(i_Friends) {
+            var destUrlPrefix = this.k_DestUrlPrefix;
+            var userPrefix = this.k_UserPrefix;
+            var friendLoginUrl = this.k_FriendLoginUrl;
+            var username = this.m_Username;
+            var stompClient = this.m_StompClient;
             $.each(i_Friends, function (i_Index, i_Friend) {
-                var dest = this.k_DestUrlPrefix + this.k_UserPrefix + '/' + i_Friend + this.k_FriendLoginUrl;
-                this.send(dest, this.m_Username);
-            })
+                if (i_Friend.loggedIn === true) {
+                    var dest = destUrlPrefix + userPrefix + '/' + i_Friend.username + friendLoginUrl;
+                    stompClient.send(dest, {}, username);
+                }
+            });
         };
 
         this.sendUserLogout = function (i_Friends) {
+            var destUrlPrefix = this.k_DestUrlPrefix;
+            var userPrefix = this.k_UserPrefix;
+            var friendLogoutUrl = this.k_FriendLogoutUrl;
+            var username = this.m_Username;
+            var send = this.send;
             $.each(i_Friends, function (i_Index, i_Friend) {
-                var dest = this.k_DestUrlPrefix + this.k_UserPrefix + '/' + i_Friend + this.k_FriendLogoutUrl;
-                this.send(dest, this.m_Username);
+                var dest = destUrlPrefix + userPrefix + '/' + i_Friend + friendLogoutUrl;
+                send(dest, {}, username);
             })
         };
 
@@ -143,69 +155,3 @@ window.WeviewSocketMessaging = (function(WeviewSocketMessaging, $, undefined)
     }
 
 })(window.WeviewSocketMessaging || {}, jQuery);
-
-
-
-// window.SocketMessaging = (function(SocketMessaging, $, undefined)
-// {
-//     var subscribeToPlayer = function() {
-//         var dest = '/app/' + playerID + '/subscribe';
-//         stompClient.send(dest);
-//     };
-//
-//     var connect = function(subscribtionCallBack) {
-//         var socket = new SockJS('/connect');
-//         stompClient = Stomp.over(socket);
-//         stompClient.connect({}, function (frame) {
-//             console.log("Connected: " + frame);
-//             var dest = '/topic/' + playerID + '/videoplayer';
-//             subscibtion = stompClient.subscribe(dest, subscribtionCallBack);
-//             subscribeToPlayer();
-//         });
-//     };
-//
-//     var disconnect = function(){
-//         if(stompClient != null){
-//             stompClient.disconnect();
-//         }
-//         //do something after disconnecting
-//         console.log("Disconnected");
-//     };
-//
-//     var oncanPlay = function() {
-//         var dest = '/app/' + playerID + '/canplay';
-//         stompClient.send(dest);
-//     };
-//
-//     var onPlayPressed = function(){
-//         var dest = '/app/' + playerID + '/play';
-//         stompClient.send(dest);
-//     };
-//
-//     var onPausePressed = function(){
-//         var dest = '/app/' + playerID + '/pause';
-//         stompClient.send(dest);
-//     };
-//
-//     var onStopPressed = function(){
-//         var dest = '/app/' + playerID + '/stop';
-//         stompClient.send(dest);
-//     };
-//
-//     var onSyncPressed = function(playerData) {
-//         var dest = '/app/' + playerID + '/sync';
-//         var data = JSON.stringify(playerData);
-//         stompClient.send(dest, {}, data);
-//     };
-//
-//     return {
-//         connect: connect,
-//         disconnect: disconnect,
-//         onCanPlay: oncanPlay,
-//         onPlayPressed: onPlayPressed,
-//         onPausePressed: onPausePressed,
-//         onStopPressed: onStopPressed,
-//         onSyncPressed: onSyncPressed
-//     }
-//
-// })(window.SocketMessaging || {}, jQuery);

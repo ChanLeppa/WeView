@@ -15,7 +15,7 @@ function initUser() {
     $.get(dest, function (response) {
         userData = response;
         messenger = new window.WeviewSocketMessaging.SocketMessenger(userData.username);
-        messenger.connect(subscribeToUser);
+        messenger.connect(onWebSocketConnection);
         // messenger.subscribeToUser(userSubscriptionCallBack);
         getUserFriends();
         getUserPhoto();
@@ -23,8 +23,17 @@ function initUser() {
     });
 }
 
+function onWebSocketConnection() {
+    subscribeToUser();
+    sendUserLogin();
+}
+
 function subscribeToUser() {
     messenger.subscribeToUser(userSubscriptionCallBack);
+}
+
+function sendUserLogin() {
+    messenger.sendUserLogin(userData.friends);
 }
 
 function getUserFriends() {

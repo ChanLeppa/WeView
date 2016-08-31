@@ -11,25 +11,25 @@ import java.text.MessageFormat;
 public class UserWebSocketController {
 
     @MessageMapping("/user/{username}/friend-login")
-    @SendTo("/topic/{username}")
+    @SendTo("/topic/user/{username}")
     public String informOfLoggedInUser(String loggingInFriendUsername) {
         return "{\"loginEvent\" : {\"friendLoggedin\" : \"" + loggingInFriendUsername + "\"}}";
     }
 
     @MessageMapping("/user/{username}/friend-logout")
-    @SendTo("/topic/{username}")
+    @SendTo("/topic/user/{username}")
     public String informOfLoggedOutUser(String loggingOutFriendUsername) {
         return "{\"logoutEvent\" : {\"friendLoggedOut\" : \"" + loggingOutFriendUsername + "\"}}";
     }
 
     @MessageMapping("/user/{username}/invite")
-    @SendTo("/topic/{username}")
+    @SendTo("/topic/user/{username}")
     public String inviteToWatch(String invitingUsername) {
         return "{\"inviteEvent\" : {\"invitingFriend\" : \"" + invitingUsername + "\"}}";
     }
 
     @MessageMapping("/user/{username}/accept")
-    @SendTo("/topic/{username}")
+    @SendTo("/topic/user/{username}")
     public String acceptInviteToWatch(String acceptingUsername) {
         return "{\"acceptInviteEvent\" : {\"acceptingFriend\" : \"" + acceptingUsername + "\"}}";
     }
