@@ -1,14 +1,12 @@
 var signupForm;
+var loginForm;
+$(onLoad);
 
-// $(onLoad);
-//
-// function onLoad() {
-// }
-
-$(document).ready(function(){
+function onLoad() {
     $('.parallax').parallax();
     $('.modal-trigger').leanModal();
     signupForm = $('#signup-form');
+    loginForm = $('#login-form');
     validateSignupFileds();
     initLoginButtons();
     // userSignup({
@@ -18,15 +16,30 @@ $(document).ready(function(){
     //     email: "KellyDog@geemail.com",
     //     password: "123456"
     // });
-});
+}
+
+// $(document).ready(function(){
+//     $('.parallax').parallax();
+//     $('.modal-trigger').leanModal();
+//     signupForm = $('#signup-form');
+//     validateSignupFileds();
+//     initLoginButtons();
+//     // userSignup({
+//     //     firstName: "Kelly",
+//     //     lastName: "Cute",
+//     //     username: "KellyC",
+//     //     email: "KellyDog@geemail.com",
+//     //     password: "123456"
+//     // });
+// });
 
 function initLoginButtons() {
     $('#lname, #fname, #username_signup, #password_signup, #email').change(validateSignupFileds);
     // $('#btnGuest').click(guestLogin);
-    // $('#submit-signup').click(submitSignup);
-    // signupForm.submit(function(event) {
-    //     event.preventDefault();
-    // });
+    $('#submit-signup').click(submitSignup);
+    signupForm.submit(function(event) {
+        event.preventDefault();
+    });
 }
 
 function validateSignupFileds(){
@@ -62,17 +75,27 @@ function submitSignup() {
     userSignup(userSignupData);
 }
 
-function userSignup(userLoginData) {
-    // var data = {
-    //     firstName: "Kelly",
-    //     lastName: "Cute",
-    //     username: "KellyC",
-    //     email: "KellyDog@geemail.com",
-    //     password: "123456"
-    // };
-    // $.post("/signup", JSON.stringify(userLoginData));
+function userSignup(userSignupData) {
+    $.postJSON("/signup", userSignupData, userRedirect);
 }
 
 function userRedirect(response) {
     window.location.href = response;
 }
+
+$.postJSON = function(url, data, callback) {
+    return jQuery.ajax({
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        'type': 'POST',
+        'url': url,
+        'data': JSON.stringify(data),
+        'dataType': 'text',
+        'success': callback,
+        'error' : function(jqXHR, textStatus, errorThrown) {
+            alert("Error, status = " + textStatus + ", " +
+                "error thrown: " + errorThrown
+            );
+    }});
+};

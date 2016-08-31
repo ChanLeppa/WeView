@@ -43,7 +43,7 @@
 
     <div class="modal" id="signup-modal">
         <div class="modal-content" id="signup-container">
-            <form id="signup-form" method="post" action="/signup">
+            <form id="signup-form" method="post" >
                 <div class="row">
                     <div class="input-field col s6">
                         <label for="fname" class="light-blue-text text-accent-3">First Name</label>
@@ -77,14 +77,14 @@
                             <input type="file">
                         </div>
                         <div class="file-path-wrapper">
-                            <input id="photo" class="file-path" type="text" class="validate">
+                            <input id="photo" class="file-path" type="text" class="validate" name="photo">
                         </div>
                     </div>
                     <!--</form>-->
                 </div>
                 <div class="row right">
                     <a id="cancel-signup" class="modal-action modal-close waves-effect waves-teal btn-flat">Cancel</a>
-                    <button id="submit-signup" class="submit btn waves-effect waves-light blue accent-3" type="submit" name="action">Signup <span class="fa fa-sign-in"></span></button>
+                    <button id="submit-signup" class="submit btn waves-effect waves-light blue accent-3" name="action">Signup <span class="fa fa-sign-in"></span></button>
                 </div>
             </form>
         </div>
@@ -92,16 +92,16 @@
 
     <div class="modal" id="login-modal">
         <div class="modal-content" id="login-container">
-            <form id="login-form">
+            <form id="login-form" action="/login" method="post">
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="username_login" type="text" class="validate">
+                        <input id="username_login" name="username" type="text" class="validate">
                         <label for="username_login" class="light-blue-text text-accent-3">Username</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="password_login" type="password" class="validate">
+                        <input id="password_login" name="password" type="password" class="validate">
                         <label for="password_login" class="light-blue-text text-accent-3">Password</label>
                     </div>
                 </div>
