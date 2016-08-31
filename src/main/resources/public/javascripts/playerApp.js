@@ -15,10 +15,16 @@ function initUser() {
     $.get(dest, function (response) {
         userData = response;
         messenger = new window.WeviewSocketMessaging.SocketMessenger(userData.username);
+        messenger.connect(subscribeToUser);
+        // messenger.subscribeToUser(userSubscriptionCallBack);
         getUserFriends();
         getUserPhoto();
         getUserFriendRequests();
     });
+}
+
+function subscribeToUser() {
+    messenger.subscribeToUser(userSubscriptionCallBack);
 }
 
 function getUserFriends() {
@@ -46,4 +52,8 @@ function getUsername() {
     var url = $(location).attr('href');
     var splitURL = url.split("/");
     return splitURL[splitURL.length - 1];
+}
+
+function userSubscriptionCallBack(message, headers) {
+    console.log("Server sent:" + message.body);
 }

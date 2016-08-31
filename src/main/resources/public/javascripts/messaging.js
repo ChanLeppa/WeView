@@ -3,6 +3,7 @@ window.WeviewSocketMessaging = (function(WeviewSocketMessaging, $, undefined)
     var SocketMessenger = function (i_Username) {
 
         this.k_DestUrlPrefix = '/app';
+        this.k_SubscriptionUrlPrefix = '/topic';
         this.k_UserPrefix = '/user';
         this.k_CanPlayUrl = '/canplay';
         this.k_PlayUrl = '/play';
@@ -21,9 +22,10 @@ window.WeviewSocketMessaging = (function(WeviewSocketMessaging, $, undefined)
         this.m_UserSubscription = null;
         this.m_PlayerSubscription = null;
 
-        this.connect = function () {
+        this.connect = function (i_Callback) {
             this.m_StompClient.connect({}, function (frame) {
                 console.log("Connected: " + frame);
+                i_Callback();
             });
         };
 
@@ -50,18 +52,18 @@ window.WeviewSocketMessaging = (function(WeviewSocketMessaging, $, undefined)
         };
         
         this.subscribeToUser = function (i_Callback) {
-            var dest = this.k_DestUrlPrefix + this.k_UserPrefix + '/' + this.m_Username;
+            var dest = this.k_SubscriptionUrlPrefix + this.k_UserPrefix + '/' + this.m_Username;
             this.m_UserSubscription = this.subscribe(dest, i_Callback);
             return this.m_UserSubscription;
         };
 
         this.unsubscribeFromUser = function () {
-          this.unsubscribe(this.m_UserSubscription);
+            this.unsubscribe(this.m_UserSubscription);
         };
 
         this.subscribeToPlayer = function (i_PlayerID, i_Callback) {
             this.m_PlayerID = i_PlayerID;
-            var dest = this.k_DestUrlPrefix + this.k_UserPrefix + '/' + i_PlayerID + this.k_PlayerUrl;
+            var dest = this.k_SubscriptionUrlPrefix + this.k_UserPrefix + '/' + i_PlayerID + this.k_PlayerUrl;
             this.m_PlayerSubscription = this.subscribe(dset, i_Callback);
             return this.m_PlayerSubscription;
         };
