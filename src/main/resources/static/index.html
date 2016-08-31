@@ -43,31 +43,31 @@
 
     <div class="modal" id="signup-modal">
         <div class="modal-content" id="signup-container">
-            <form>
+            <form id="signup-form" method="post" action="/signup">
                 <div class="row">
                     <div class="input-field col s6">
-                        <input id="firstName" type="text" class="validate">
-                        <label for="firstName" class="light-blue-text text-accent-3">First Name</label>
+                        <label for="fname" class="light-blue-text text-accent-3">First Name</label>
+                        <input id="fname" type="text" class="validate">
                     </div>
                     <div class="input-field col s6">
-                        <input id="lname" type="text" class="validate">
                         <label for="lname" class="light-blue-text text-accent-3">Last Name</label>
+                        <input id="lname" type="text" class="validate">
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s6">
-                        <input id="username-signup" type="text" class="validate">
-                        <label for="username-signup" class="light-blue-text text-accent-3">Username</label>
+                        <label for="username_signup" class="light-blue-text text-accent-3">Username</label>
+                        <input id="username_signup" type="text" class="validate">
                     </div>
                     <div class="input-field col s6">
-                        <input id="password-signup" type="password" class="validate">
-                        <label for="password-signup" class="light-blue-text text-accent-3">Password</label>
+                        <label for="password_signup" class="light-blue-text text-accent-3">Password</label>
+                        <input id="password_signup" type="password" class="validate">
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s6">
+                        <label for="email" class="light-blue-text text-accent-3">Email</label>
                         <input id="email" type="email" class="validate">
-                        <label for="email" class="light-blue-text text-accent-3" data-error="not a valid email">Email</label>
                     </div>
                     <!--<form>-->
                     <!--<form action="#">-->
@@ -77,14 +77,14 @@
                             <input type="file">
                         </div>
                         <div class="file-path-wrapper">
-                            <input class="file-path validate" type="text">
+                            <input id="photo" class="file-path" type="text" class="validate">
                         </div>
                     </div>
                     <!--</form>-->
                 </div>
                 <div class="row right">
                     <a id="cancel-signup" class="modal-action modal-close waves-effect waves-teal btn-flat">Cancel</a>
-                    <button id="submit-signup" class="modal-action modal-close btn waves-effect waves-light blue accent-3" type="submit">Signup <span class="fa fa-sign-in"></span></button>
+                    <button id="submit-signup" class="submit btn waves-effect waves-light blue accent-3" type="submit" name="action">Signup <span class="fa fa-sign-in"></span></button>
                 </div>
             </form>
         </div>
@@ -92,17 +92,17 @@
 
     <div class="modal" id="login-modal">
         <div class="modal-content" id="login-container">
-            <form>
+            <form id="login-form">
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="username-login" type="text" class="validate">
-                        <label for="username-login" class="light-blue-text text-accent-3">Username</label>
+                        <input id="username_login" type="text" class="validate">
+                        <label for="username_login" class="light-blue-text text-accent-3">Username</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="password-login" type="password" class="validate">
-                        <label for="password-login" class="light-blue-text text-accent-3">Password</label>
+                        <input id="password_login" type="password" class="validate">
+                        <label for="password_login" class="light-blue-text text-accent-3">Password</label>
                     </div>
                 </div>
                 <div class="row right">
@@ -117,6 +117,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/jquery.validate.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/additional-methods.min.js"></script>
     <script src="/javascripts/login.js"></script>
 </body>
 </html>

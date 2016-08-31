@@ -27,4 +27,10 @@ public class UserWebSocketController {
     public String inviteToWatch(String invitingUsername) {
         return "{\"inviteEvent\" : {\"invitingFriend\" : \""+ invitingUsername +"\"}}";
     }
+
+    @MessageMapping("/user/{username}/accept")
+    @SendTo("/topic/{username}")
+    public String acceptInviteToWatch(String acceptingUsername) {
+        return "{\"acceptInviteEvent\" : {\"acceptingFriend\" : \""+ acceptingUsername +"\"}}";
+    }
 }

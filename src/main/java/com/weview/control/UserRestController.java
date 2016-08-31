@@ -11,6 +11,7 @@ import com.weview.utils.ExceptionInspector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -59,8 +60,13 @@ public class UserRestController {
     }
 
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
-    public String signup(@RequestBody User newUser) {
-
+    public String signup(@RequestParam String username,
+                         @RequestParam String firstName,
+                         @RequestParam String lastName,
+                         @RequestParam String email,
+                         @RequestParam String password) {
+        User newUser = new User(firstName, lastName, username, email, password);
+//        newUser.setPhoto(photo);
         try {
             userRepository.save(newUser);
             loggedInUserRepository.login(newUser.getUsername());
@@ -82,6 +88,31 @@ public class UserRestController {
 
         return "redirect: /user/" + newUser.getUsername();
     }
+
+//    @RequestMapping(value = "/signup", method = RequestMethod.POST)
+//    public String signup(@RequestBody User newUser) {
+//        User user = newUser;
+//        try {
+//            userRepository.save(newUser);
+//            loggedInUserRepository.login(newUser.getUsername());
+//        }
+//        catch (DataAccessException e) {
+//            Throwable cause = ExceptionInspector.getRootCause(e);
+//            if (cause instanceof SQLIntegrityConstraintViolationException) {
+//                SQLIntegrityConstraintViolationException sqlConstraint =
+//                        (SQLIntegrityConstraintViolationException)cause;
+//                throw new UserFieldConstraintException(newUser, sqlConstraint);
+//            }
+//            else {
+//                throw e;
+//            }
+//        }
+//        catch (Exception e) {
+//            throw e;
+//        }
+//
+//        return "redirect: /user/" + newUser.getUsername();
+//    }
 
     @RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
     public UserDataForClient getUserClientData(@PathVariable("username") String username) {

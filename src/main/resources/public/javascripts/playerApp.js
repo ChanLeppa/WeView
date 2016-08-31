@@ -19,6 +19,7 @@ var videoContainer;
 var playerID;
 var username;
 var playerControls;
+var SM = new WeviewSocketMessaging.SocketMessenger(getUsername());
 //video.src = "https://dl.dropboxusercontent.com/u/5534803/Rick%20and%20Morty%20S01E01%20Pilot%20(1280x720)%20%5BPhr0stY%5D.mkv";
 
 $(onLoad);
