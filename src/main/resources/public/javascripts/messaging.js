@@ -22,10 +22,16 @@ window.WeviewSocketMessaging = (function(WeviewSocketMessaging, $, undefined)
         this.m_UserSubscription = null;
         this.m_PlayerSubscription = null;
 
-        this.connect = function (i_Callback) {
-            this.m_StompClient.connect({}, function (frame) {
-                console.log("Connected: " + frame);
-                i_Callback();
+        this.connect = function () {
+            var stompClient = this.m_StompClient;
+            return new Promise(function (resolve, reject) {
+                stompClient.connect({}, function (frame) {
+                    console.log("Connected: " + frame);
+                    resolve(frame);
+                },
+                function (error) {
+                    reject(error);
+                });
             });
         };
 

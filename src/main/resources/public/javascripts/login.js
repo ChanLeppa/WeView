@@ -65,7 +65,7 @@ function submitSignup() {
         lastName: $('#lname').val(),
         username: $('#username_signup').val(),
         email: $('#email').val(),
-        password: $('#password_signup').val()
+        password: $('#password_signup').val(),
         // photo: $('#photo').val()
     };
 

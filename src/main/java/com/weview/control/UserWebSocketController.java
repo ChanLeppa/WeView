@@ -13,24 +13,24 @@ public class UserWebSocketController {
     @MessageMapping("/user/{username}/friend-login")
     @SendTo("/topic/user/{username}")
     public String informOfLoggedInUser(String loggingInFriendUsername) {
-        return "{\"loginEvent\" : {\"friendLoggedin\" : \"" + loggingInFriendUsername + "\"}}";
+        return "{\"event\" : \"login\", \"username\" : \"" + loggingInFriendUsername + "\"}";
     }
 
     @MessageMapping("/user/{username}/friend-logout")
     @SendTo("/topic/user/{username}")
     public String informOfLoggedOutUser(String loggingOutFriendUsername) {
-        return "{\"logoutEvent\" : {\"friendLoggedOut\" : \"" + loggingOutFriendUsername + "\"}}";
+        return "{\"event\" : \"logout\", \"username\" : \"" + loggingOutFriendUsername + "\"}";
     }
 
     @MessageMapping("/user/{username}/invite")
     @SendTo("/topic/user/{username}")
     public String inviteToWatch(String invitingUsername) {
-        return "{\"inviteEvent\" : {\"invitingFriend\" : \"" + invitingUsername + "\"}}";
+        return "{\"event\" : \"invite\", \"username\" : \"" + invitingUsername + "\"}";
     }
 
     @MessageMapping("/user/{username}/accept")
     @SendTo("/topic/user/{username}")
     public String acceptInviteToWatch(String acceptingUsername) {
-        return "{\"acceptInviteEvent\" : {\"acceptingFriend\" : \"" + acceptingUsername + "\"}}";
+        return "{\"event\" : \"acceptInvite\", \"username\" : \"" + acceptingUsername + "\"}";
     }
 }
