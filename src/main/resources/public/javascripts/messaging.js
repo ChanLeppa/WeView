@@ -11,6 +11,8 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
         this.k_StopUrl = '/stop';
         this.k_SyncUrl = '/syncVideo';
         this.k_PlayerUrl = '/player';
+        this.k_SubscribeUrl = '/subscribe';
+        this.k_UnsubscribeUrl = '/unsubscribe';
         this.k_FriendLoginUrl = '/friend-login';
         this.k_FriendLogoutUrl = '/friend-logout';
         this.k_InviteUrl = '/invite';
@@ -21,6 +23,7 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
         this.m_StompClient = Stomp.over(this.m_Socket);
         this.m_UserSubscription = null;
         this.m_PlayerSubscription = null;
+        this.m_PlayerCallBack = null;
 
         this.connect = function () {
             var stompClient = this.m_StompClient;
@@ -37,6 +40,10 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
 
         this.subscribe = function (i_Dest, i_Callback) {
             return this.m_StompClient.subscribe(i_Dest, i_Callback);
+        };
+
+        this.subscriptionCallback = function(message, headers) {
+            this.m_PlayerCallBack(message, headers);
         };
 
         this.unsubscribe = function (i_Subscription) {
@@ -69,12 +76,21 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
 
         this.subscribeToPlayer = function (i_PlayerID, i_Callback) {
             this.m_PlayerID = i_PlayerID;
+            this.m_PlayerCallBack = i_Callback;
             var dest = this.k_SubscriptionUrlPrefix + this.k_UserPrefix + '/' + i_PlayerID + this.k_PlayerUrl;
-            this.m_PlayerSubscription = this.subscribe(dest, i_Callback);
+            this.m_PlayerSubscription = this.subscribe(dest, this.subscriptionCallback);
+            this.subscribeToPlayerInDatabase();
             return this.m_PlayerSubscription;
         };
 
+        this.subscribeToPlayerInDatabase = function () {
+            var dest = this.getPlayerUrl() + this.k_SubscribeUrl;
+            this.send(dest, this.m_Username);
+        };
+
         this.unsubscribeFromPlayer = function () {
+            var dest = this.getPlayerUrl() + this.k_UnsubscribeUrl;
+            this.send(dest, this.m_Username);
             this.unsubscribe(this.m_PlayerSubscription);
         };
 
@@ -116,7 +132,7 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
 
         this.onCanPlay = function () {
             var dest = this.getPlayerUrl() + this.k_CanPlayUrl;
-            this.send(dest);
+            this.send(dest, this.m_Username);
         };
 
         this.onPlayPressed = function (i_SyncData) {

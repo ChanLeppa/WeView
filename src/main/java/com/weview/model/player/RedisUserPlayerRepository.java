@@ -37,6 +37,14 @@ public class RedisUserPlayerRepository implements PlayerRepository {
     }
 
     @Override
+    public synchronized void updatePlayerTime(String playerID, Double time) {
+        PlayerSynchronizationData psd = getPlayerData(playerID);
+        removePlayer(playerID);
+        psd.setTime(time);
+        addPlayer(playerID, psd);
+    }
+
+    @Override
     public synchronized PlayerSynchronizationData getPlayerData(String playerId) {
         return hashOperations.get(keyForUserPlayers, playerId);
     }
@@ -65,6 +73,22 @@ public class RedisUserPlayerRepository implements PlayerRepository {
     @Override
     public synchronized PlayerSubscriberData getSubscriber(String playerID, String subscriberID) {
         return hashOperations.get(keyForUserPlayers, playerID).getSubscriber(subscriberID);
+    }
+
+    @Override
+    public synchronized void updateSubscriberToCanPlay(String playerID, String subscriberID) {
+        PlayerSubscriberData psd = getSubscriber(playerID, subscriberID);
+        removeSubscriber(playerID, subscriberID);
+        psd.setCanPlay();
+        addSubscriber(playerID, psd);
+    }
+
+    @Override
+    public synchronized void updateSubscriberToCannotPlay(String playerID, String subscriberID) {
+        PlayerSubscriberData psd = getSubscriber(playerID, subscriberID);
+        removeSubscriber(playerID, subscriberID);
+        psd.setCannotPlay();
+        addSubscriber(playerID, psd);
     }
 
     @Override

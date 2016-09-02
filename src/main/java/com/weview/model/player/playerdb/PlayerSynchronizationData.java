@@ -10,7 +10,7 @@ public class PlayerSynchronizationData implements Serializable {
 
     private String src;
     private PlayerCallback callback;
-    private Double time;
+    private Double time = 0d;
     private Boolean playing;
     private Map<String, PlayerSubscriberData> subscribers = new HashMap<>();
 

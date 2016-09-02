@@ -2,6 +2,7 @@ package com.weview.control;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxWebAuth;
+import com.weview.model.player.PlayerCallback;
 import com.weview.model.player.RedisUserPlayerRepository;
 import com.weview.model.player.playerdb.PlayerSubscriberData;
 import com.weview.model.player.playerdb.PlayerSynchronizationData;
@@ -30,59 +31,79 @@ public class PlayerController {
         return "/player.html";
     }
 
-    @MessageMapping("/user/{username}/player")
+    @MessageMapping("/user/{username}/player/subscribe")
     @SendTo("/topic/{username}/player")
-    public String subscribeToPlayer(@DestinationVariable String username, Principal principal) throws Exception {
+    public String subscribeToPlayer(@DestinationVariable String username, String subscriberUsername) throws Exception {
 
-        playerRepository.addSubscriber(username, new PlayerSubscriberData(principal.getName()));
+        playerRepository.addSubscriber(username, new PlayerSubscriberData(subscriberUsername));
 
-        return "Subscribed to player";
+        return "Subscribed to player " + username;
     }
 
-    @MessageMapping("/user/{username}/canplay")
+    @MessageMapping("/user/{username}/player/unsubscribe")
     @SendTo("/topic/{username}/player")
-    public String canPlay(@DestinationVariable String username, Principal principal) throws Exception {
+    public String unsubscribeFromPlayer(@DestinationVariable String username, String subscriberUsername) throws Exception {
 
-        String subscriberID = principal.getName();
-        updateSubscriberSetCanPlay(username, subscriberID);
+        playerRepository.removeSubscriber(username, subscriberUsername);
+
+        return "Unsubscribed from player " + username;
+    }
+
+    @MessageMapping("/user/{username}/player/canplay")
+    @SendTo("/topic/{username}/player")
+    public String canPlay(@DestinationVariable String username, String subscriberUsername) throws Exception {
+
+        playerRepository.updateSubscriberToCanPlay(username, subscriberUsername);
 
         return "CanPlay updated";
     }
 
-    private void updateSubscriberSetCanPlay(String playerID, String subscriberID) {
-        synchronized (this) {
-            PlayerSubscriberData psd = playerRepository.getSubscriber(playerID, subscriberID);
-            playerRepository.removeSubscriber(playerID, subscriberID);
-            psd.setCanPlay();
-            playerRepository.addSubscriber(playerID, psd);
-        }
-    }
-
-    @MessageMapping("/user/{username}/play")
+    @MessageMapping("/user/{username}/player/play")
     @SendTo("/topic/{username}/player")
-    public String play(@DestinationVariable String username) throws Exception {
+    public PlayerSynchronizationData play(@DestinationVariable String username) throws Exception {
 
         while (!playerRepository.allSubscribersCanPlay(username)) {}
 
-        return "Play";
+        PlayerSynchronizationData updatedPsd = playerRepository.getPlayerData(username);
+        updatedPsd.setState(PlayerCallback.PLAY);
+
+        return updatedPsd;
     }
 
-    @MessageMapping("/user/{username}/pause")
+    @MessageMapping("/user/{username}/player/pause")
     @SendTo("/topic/{username}/player")
-    public String pause() throws Exception {
-        return "Pause";
+    public PlayerSynchronizationData pause(@DestinationVariable String username, PlayerSynchronizationData psd)
+            throws Exception {
+
+        playerRepository.updatePlayerTime(username, psd.getTime());
+        PlayerSynchronizationData updatedPsd = playerRepository.getPlayerData(username);
+        updatedPsd.setState(PlayerCallback.PAUSE);
+
+        return updatedPsd;
     }
 
-    @MessageMapping("/user/{username}/stop")
+    @MessageMapping("/user/{username}/player/stop")
     @SendTo("/topic/{username}/player")
-    public String stop() throws Exception {
-        return "Stop";
+    public PlayerSynchronizationData stop(@DestinationVariable String username, PlayerSynchronizationData psd)
+            throws Exception {
+
+        playerRepository.updatePlayerTime(username, psd.getTime());
+        PlayerSynchronizationData updatedPsd = playerRepository.getPlayerData(username);
+        updatedPsd.setState(PlayerCallback.STOP);
+
+        return updatedPsd;
     }
 
-    @MessageMapping("/user/{username}/syncVideo")
+    @MessageMapping("/user/{username}/player/syncVideo")
     @SendTo("/topic/{username}/player")
-    public PlayerSynchronizationData sync(PlayerSynchronizationData playerSynchronizationData) throws Exception{
-        //TODO: Update player in repository
-        return playerSynchronizationData;
+    public PlayerSynchronizationData sync(@DestinationVariable String username, PlayerSynchronizationData psd)
+            throws Exception{
+
+        playerRepository.updatePlayerTime(username, psd.getTime());
+
+        PlayerSynchronizationData updatedPsd = playerRepository.getPlayerData(username);
+        updatedPsd.setState(PlayerCallback.SYNC);
+
+        return updatedPsd;
     }
 }

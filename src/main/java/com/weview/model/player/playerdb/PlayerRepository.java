@@ -10,6 +10,8 @@ public interface PlayerRepository {
 
     void removePlayer(String playerID);
 
+    void updatePlayerTime(String playerID, Double time);
+
     PlayerSynchronizationData getPlayerData(String playerID);
 
     void addSubscriber(String playerID, PlayerSubscriberData subscriber);
@@ -19,6 +21,10 @@ public interface PlayerRepository {
     Collection<PlayerSubscriberData> getSubscribers(String playerID);
 
     PlayerSubscriberData getSubscriber(String playerID, String subscriberID);
+
+    void updateSubscriberToCanPlay(String playerID, String subscriberID);
+
+    void updateSubscriberToCannotPlay(String playerID, String subscriberID);
 
     Boolean allSubscribersCanPlay(String playerID);
 
