@@ -16,7 +16,7 @@ public class PlayerRestController {
 
     @RequestMapping(value = "/user/{username}/create-player", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public String createPlayer(@PathVariable("username") String username, String src) {
+    public String createPlayer(@PathVariable("username") String username, @RequestBody String src) {
 
         if (userPlayerRepository.doesPlayerExist(username)) {
             throw new PlayerDuplicateException();

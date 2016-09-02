@@ -1,4 +1,4 @@
-window.WeviewSocketMessaging = (function(WeviewSocketMessaging, $, undefined)
+window.WeviewSocketMessenger = (function(Weview, $, undefined)
 {
     var SocketMessenger = function (i_Username) {
 
@@ -9,7 +9,7 @@ window.WeviewSocketMessaging = (function(WeviewSocketMessaging, $, undefined)
         this.k_PlayUrl = '/play';
         this.k_PauseUrl = '/pause';
         this.k_StopUrl = '/stop';
-        this.k_SyncUrl = '/sync';
+        this.k_SyncUrl = '/syncVideo';
         this.k_PlayerUrl = '/player';
         this.k_FriendLoginUrl = '/friend-login';
         this.k_FriendLogoutUrl = '/friend-logout';
@@ -70,7 +70,7 @@ window.WeviewSocketMessaging = (function(WeviewSocketMessaging, $, undefined)
         this.subscribeToPlayer = function (i_PlayerID, i_Callback) {
             this.m_PlayerID = i_PlayerID;
             var dest = this.k_SubscriptionUrlPrefix + this.k_UserPrefix + '/' + i_PlayerID + this.k_PlayerUrl;
-            this.m_PlayerSubscription = this.subscribe(dset, i_Callback);
+            this.m_PlayerSubscription = this.subscribe(dest, i_Callback);
             return this.m_PlayerSubscription;
         };
 
@@ -115,35 +115,35 @@ window.WeviewSocketMessaging = (function(WeviewSocketMessaging, $, undefined)
         };
 
         this.onCanPlay = function () {
-            var dest = getPlayerUrl() + this.k_CanPlayUrl;
+            var dest = this.getPlayerUrl() + this.k_CanPlayUrl;
             this.send(dest);
         };
 
         this.onPlayPressed = function (i_SyncData) {
-            var dest = getPlayerUrl() + this.k_PlayUrl;
+            var dest = this.getPlayerUrl() + this.k_PlayUrl;
             var data = JSON.stringify(i_SyncData);
             this.send(dest, data);
         };
 
         this.onPausePressed = function (i_SyncData) {
-            var dest = getPlayerUrl() + this.k_PauseUrl;
+            var dest = this.getPlayerUrl() + this.k_PauseUrl;
             var data = JSON.stringify(i_SyncData);
             this.send(dest, data);
         };
 
         this.onStopPressed = function (i_SyncData) {
-            var dest = getPlayerUrl() + this.k_StopUrl;
+            var dest = this.getPlayerUrl() + this.k_StopUrl;
             var data = JSON.stringify(i_SyncData);
             this.send(dest, data);
         };
 
         this.onSync = function (i_SyncData) {
-            var dest = getPlayerUrl() + this.k_SyncUrl;
+            var dest = this.getPlayerUrl() + this.k_SyncUrl;
             var data = JSON.stringify(i_SyncData);
             this.send(dest, data);
         };
 
-        function getPlayerUrl() {
+        this.getPlayerUrl = function() {
             return this.k_DestUrlPrefix + this.k_UserPrefix + '/' + this.m_PlayerID + this.k_PlayerUrl;
         }
     };
@@ -160,4 +160,4 @@ window.WeviewSocketMessaging = (function(WeviewSocketMessaging, $, undefined)
         SocketMessenger: SocketMessenger
     }
 
-})(window.WeviewSocketMessaging || {}, jQuery);
+})(window.WeviewSocketMessenger || {}, jQuery);

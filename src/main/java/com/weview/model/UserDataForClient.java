@@ -6,13 +6,15 @@ public class UserDataForClient {
     private final String firstName;
     private final String lastName;
     private Boolean isLoggedIn;
-//    private photo;
+    private Boolean dbxTokenExists;
+    //    private photo;
 
-    public UserDataForClient(String username, String firstName, String lastName, Boolean isLoggedIn) {
+    public UserDataForClient(String username, String firstName, String lastName, Boolean isLoggedIn, Boolean dbxTokenExists) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.isLoggedIn = isLoggedIn;
+        this.dbxTokenExists = dbxTokenExists;
     }
 
     public String getUsername() {
@@ -27,7 +29,7 @@ public class UserDataForClient {
         return lastName;
     }
 
-    public Boolean getLoggedIn() {
+    public Boolean isLoggedIn() {
         return isLoggedIn;
     }
 
@@ -37,5 +39,16 @@ public class UserDataForClient {
 
     public void setLoggedOut() {
         isLoggedIn = false;
+    }
+
+    public Boolean isDbxTokenExists() {
+        return dbxTokenExists;
+    }
+
+    public void setDbxTokenExists() {
+        this.dbxTokenExists = true;
+    }
+    public void setDbxTokenNotExists() {
+        this.dbxTokenExists = false;
     }
 }

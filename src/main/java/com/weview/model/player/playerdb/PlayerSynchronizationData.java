@@ -1,7 +1,7 @@
 package com.weview.model.player.playerdb;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
-import com.weview.model.player.PlayerState;
+import com.weview.model.player.PlayerCallback;
 
 import java.io.Serializable;
 import java.util.*;
@@ -9,8 +9,7 @@ import java.util.*;
 public class PlayerSynchronizationData implements Serializable {
 
     private String src;
-    private PlayerState state;
-    private String callBackName;
+    private PlayerCallback callback;
     private Double time;
     private Boolean playing;
     private Map<String, PlayerSubscriberData> subscribers = new HashMap<>();
@@ -19,24 +18,16 @@ public class PlayerSynchronizationData implements Serializable {
         return src;
     }
 
-    public PlayerState getState() {
-        return state;
+    public PlayerCallback getState() {
+        return callback;
     }
 
-    public void setState(PlayerState state) {
-        this.state = state;
-    }
-
-    public String getCallBackName() {
-        return callBackName;
+    public void setState(PlayerCallback state) {
+        this.callback = state;
     }
 
     public void setSrc(String src) {
         this.src = src;
-    }
-
-    public void setCallBackName(String callBackName) {
-        this.callBackName = callBackName;
     }
 
     public Double getTime() {

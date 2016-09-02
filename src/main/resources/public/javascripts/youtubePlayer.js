@@ -22,7 +22,7 @@ function getPlayerID() {
 function onYouTubeIframeAPIReady() {
 
     //to recieve the link to a youtube movie
-    player = new YT.Player('youtube-placeholder', {
+    player = new YT.Player('video-placeholder', {
         width: 990.16,
         height: 556.95,
         videoId: 'RG0wzAPYO7c',
@@ -82,7 +82,7 @@ function initializePlayerControls() {
     stopButton.click(doStop);
     muteButton.click(toggleMute);
     fullscreenButton.click(function() {
-        var iframe = $('#youtube-placeholder');
+        var iframe = $('#video-placeholder');
         iframe.webkitEnterFullscreen();
         // var requestFullScreen = iframe.requestFullScreen || iframe.mozRequestFullScreen || iframe.webkitRequestFullScreen;
         // if (requestFullScreen) {
@@ -174,7 +174,7 @@ function sync(pageX){
 }
 
 // function onSyncPressed(syncBean) {
-//     var dest = '/app/' + playerID + '/sync';
+//     var dest = '/app/' + playerID + '/syncVideo';
 //     var data = JSON.stringify(syncBean);
 //     stompClient.send(dest, {}, data);
 // }

@@ -22,9 +22,9 @@
                 <li>
                     <a class="dropdown-button" href="#" data-beloworigin="true" data-activates="dbx-menu"><span class="fa fa-dropbox"></span> Dropbox<i class="material-icons right">arrow_drop_down</i></a>
                 </li>
-                <li>
-                    <a href="/youtube.html" id="youtube-btn"><i class="fa fa-youtube-play" aria-hidden="true"></i> YouTube</a>
-                </li>
+                <!--<li>-->
+                    <!--<a href="/youtube.html" id="youtube-btn"><i class="fa fa-youtube-play" aria-hidden="true"></i> YouTube</a>-->
+                <!--</li>-->
                 <li>
                     <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Login</a>
                 </li>
@@ -50,7 +50,7 @@
                 <div class="col s2 m2 l2 black">
                 </div>
                 <div id="center-page" class="col s8 m8 l8">
-                    <div class="video-container">
+                    <div class="video-placeholder">
                     </div>
                     <div id="video-controls" class="controls row black">
                         <div class="col s4 m2 l2" id="play-controls">
@@ -73,10 +73,10 @@
                             <button id="mute-button" type="button" class="mute waves-effect waves-light btn blue accent-3" title="mute">
                                 <i class="tiny material-icons">volume_off</i>
                             </button>
-                            <button id="vol-inc-button" type="button" class="volume-plus waves-effect waves-light btn blue accent-3" title="increase volume" onclick="onVolumeChanged('+');">
+                            <button id="vol-inc-button" type="button" class="volume-plus waves-effect waves-light btn blue accent-3" title="increase volume">
                                 <i class="tiny material-icons">volume_up</i>
                             </button>
-                            <button id="vol-dec-button" type="button" class="volume-minus waves-effect waves-light btn blue accent-3" title="deccrease volume" onclick="onVolumeChanged('-');">
+                            <button id="vol-dec-button" type="button" class="volume-minus waves-effect waves-light btn blue accent-3" title="deccrease volume">
                                 <i class="tiny material-icons">volume_down</i>
                             </button>
                             <!--<button id="light-btn" type="button" class="waves-effect waves-light btn blue accent-3" title="light">-->
@@ -135,6 +135,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
 <script src="/javascripts/messaging.js"></script>
+<script src="/javascripts/videoplayer.js"></script>
 <script src="/javascripts/playerApp.js"></script>
 </body>
 </html>

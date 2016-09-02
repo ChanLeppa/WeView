@@ -17,15 +17,7 @@ public class HomeController {
     private RedisUserPlayerRepository playerRepository;
     private Integer guestUserNum = 0;
     private RandomIDGenerator randomIDGenerator = new RandomIDGenerator();
-    private DropboxManager dropbox = DropboxManager.getInstance();
 
-    @CrossOrigin
-    @RequestMapping(value = "/{playerID}/dropbox", method = RequestMethod.GET)
-    public String redirectToDropbox(@PathVariable("playerID") String playerID,
-                                    HttpServletRequest request){
-        String uri = dropbox.getToDropboxRedirectUri(request.getSession(true),"dropbox-auth-csrf-token", playerID);
-        return uri;
-    }
 
     @RequestMapping(value = "/guest", method = RequestMethod.GET)
     public String guest() {

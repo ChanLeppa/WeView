@@ -171,10 +171,11 @@ public class UserRestController {
         userRepository.flush();
     }
 
-    private UserDataForClient getUserDataForClient(User friend) {
-        String username = friend.getUsername();
+    private UserDataForClient getUserDataForClient(User user) {
+        String username = user.getUsername();
         Boolean isLoggedin = loggedInUserRepository.isLoggedin(username);
-        return new UserDataForClient(username, friend.getFirstName(), friend.getLastName(), isLoggedin);
+        Boolean isDbxToken = (user.getDbxToken() != null);
+        return new UserDataForClient(username, user.getFirstName(), user.getLastName(), isLoggedin, isDbxToken);
     }
 
     @RequestMapping(value = "/user/{username}/friend-requests-notifications", method = RequestMethod.GET)
