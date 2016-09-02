@@ -4,6 +4,7 @@ var userData;
 var videoControls;
 var onSrcChosenEvent = $.Deferred();
 var playerSyncData;
+var player;
 var timeDrag = false;
 
 $(onLoad());
@@ -89,7 +90,6 @@ function createPlayer(src) {
     return new Promise(function (resolve, reject) {
         $.post(dest, src, function (response) {
             console.log(response);
-            //TODO: initialize player
             initializePlayer(userData.username, decodeURIComponent(src));
             resolve(response);
         });
@@ -109,17 +109,18 @@ function initializePlayer(playerID, src) {
 }
 
 function initializeVideoPlayer(playerID, src) {
-    var player = new window.WeviewVideoPlayer.VideoPlayer(src);
+    player = new window.WeviewVideoPlayer.VideoPlayer(src);
     player.initializeVideoEvents(onCanPlay);
     messenger.subscribeToPlayer(playerID, player.subscriptionCallback);
+    initializeVideoPlayerControls();
 }
 
 function initializeVideoPlayerControls() {
     $('#play-pause-button').click(toggleVideoPlay);
     $('#stop-button').click(onStopPressed);
     $('#mute-button').click(toggleVideoMute);
-    $('#vol-inc-button').click();
-    $('#vol-dec-button').click();
+    $('#vol-inc-button').click(onVideoVolumeUp);
+    $('#vol-dec-button').click(onVideoVolumeDown);
     $('#fullscreen').on('click', function() {
         player.video.webkitEnterFullscreen();
         return false;
@@ -144,14 +145,6 @@ function initializeVideoPlayerControls() {
     });
 }
 
-function onCanPlay() {
-    messenger.onCanPlay();
-}
-
-function onStopPressed() {
-    messenger.onStopPressed("");
-}
-
 function toggleVideoPlay(){
     if (player.video.paused){
         messenger.onPlayPressed("");
@@ -170,20 +163,36 @@ function toggleVideoMute(){
     }
 }
 
-function onVideoVolumeChanged(direction){
+function onVideoVolumeUp(){
     var volume = player.video.volume;
+    player.video.volume += (volume === 1 ? 0 : 0.1);
+}
 
-    if(direction === '+'){
-        player.video.volume += (volume === 1 ? 0 : 0.1);
-    }
-    else{
-        player.video.volume -= (volume === 0 ? 0 : 0.1);
-    }
+function onVideoVolumeDown() {
+    var volume = player.video.volume;
+    player.video.volume -= (volume === 0 ? 0 : 0.1);
+}
+
+//Player Controls Utils, same in youtube and video
+//////////////////////////////////////////////////////////////////////////////////
+function onCanPlay() {
+    messenger.onCanPlay();
+}
+
+function onStopPressed() {
+    messenger.onStopPressed("");
+}
+
+function changeButtonType(button, valueToSet, valueToChange, innerHtml){
+    button.html(innerHtml);
+    button.attr("type", valueToSet);
+    button.addClass(valueToSet).removeClass(valueToChange);
 }
 
 function syncVideo(pageX){
     var currentTime = getUpdatedTime(pageX, player.video.duration);
     playerSyncData = {
+        //TODO: prepare sync data object to send to server
         // callBackName: "Sync",
         // time : parseFloat(currentTime).toFixed(1),
         // canPlay: true,
@@ -192,10 +201,9 @@ function syncVideo(pageX){
     messenger.onSync(playerSyncData);
 }
 
-//same in youtube and video
 function getUpdatedTime(x, duration) {
     var progress = $('.progress-bar');
-    var maxduration = duration; //Video duraiton
+    var maxduration = duration; //video duraiton
     var position = x - progress.offset().left; //Click pos
     var percentage = 100 * position / progress.width();
 
@@ -209,6 +217,8 @@ function getUpdatedTime(x, duration) {
 
     return maxduration * percentage / 100;
 }
+//End of player Controls utils
+/////////////////////////////////////////////////////////////////////////////////////
 
 //Dropbox
 /////////////////////////////////////////////////////////////////////////////////////
@@ -256,16 +266,9 @@ function addDropboxFileNameToHtml(index, fileName){
         });
     });
 }
-
-// function getDropboxLinkToFile(fileName) {
-//     var dest = "/user/" + userData.username + "/dbxfilelink";
-//     $.get(dest, { fileName : fileName }, function(src) {
-//         $('#dropbox-modal').closeModal();
-//         onSrcChosenEvent.resolve(src);
-//     });
-// }
 //end dropbox
 ///////////////////////////////////////////////////////////////////////////////
+
 function getUsername() {
     var url = $(location).attr('href');
     var splitURL = url.split("/");
@@ -276,14 +279,3 @@ function onWebSocketConnectionError(error) {
     console.log(error);
     alert("Error: Unable to connect to websocket.");
 }
-
-//Player Controls Utils
-//////////////////////////////////////////////////////////////////////////////////
-function changeButtonType(button, valueToSet, valueToChange, innerHtml){
-    button.html(innerHtml);
-    button.attr("type", valueToSet);
-    button.addClass(valueToSet).removeClass(valueToChange);
-}
-
-//end player controls
-///////////////////////////////////////////////////////////////////////////////////
