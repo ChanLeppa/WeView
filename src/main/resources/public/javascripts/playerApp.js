@@ -14,6 +14,23 @@ function onLoad() {
     videoControls = $("#video-controls").html();
     initUser()
         .then(updateDropboxControls);
+    initVideoLinkButton();
+}
+
+function initVideoLinkButton() {
+    $('#link-url-form').submit(function (event) {
+        event.preventDefault();
+    });
+
+    $('#btnVideoLink').click(function() {
+        var linkTag = $('#link-URL');
+        var videoSrc = linkTag[0].value;
+        linkTag.trigger('autoresize');
+        linkTag.val('');
+        linkTag.trigger('autoresize');
+
+        onNewSrcChosen(videoSrc);
+    });
 }
 
 function initUser() {
@@ -122,12 +139,35 @@ function initializePlayer(playerID, src) {
     //TODO: depends on the src (youtube or other)
     $('#video-controls').empty().append(videoControls);
 
-    // if (isYoutubeSrc(src)) {
-    //     initilizeYoutubePlayer(src);
-    // }
-    // else {
+    if (WeviewYoutubePlayer.isYoutubeSrc(src)) {
+        initilizeYoutubePlayer(src);
+    }
+    else {
         initializeVideoPlayer(playerID, src);
-    // }
+    }
+}
+
+function initilizeYoutubePlayer(src) {
+    player = new WeviewYoutubePlayer.YoutubePlayer(src);
+}
+
+function onYouTubeIframeAPIReady() {
+    // var videoId = player.YoutubeVideoUrl;
+    // var onPlayerReady = player.onPlayerReady;
+    // player.Player = new YT.Player('video-placeholder', {
+    //     width: 990.16,
+    //     height: 556.95,
+    //     videoId: videoId,
+    //     playerVars: {
+    //         'controls': 0,
+    //         'showinfo': 0,
+    //         'autohide': 1
+    //     },
+    //     events: {
+    //         'onReady': onPlayerReady
+    //     }
+    // });
+    player.onYouTubeIframeAPIReady();
 }
 
 function initializeVideoPlayer(playerID, src) {

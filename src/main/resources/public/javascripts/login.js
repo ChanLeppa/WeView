@@ -17,9 +17,11 @@ function initButtons() {
     // $('#btnGuest').click(guestLogin);
     $('#submit-signup').click(submitSignup);
     $('#submit-login').click(submitLogin);
+
     signupForm.submit(function(event) {
         event.preventDefault();
     });
+
     loginForm.submit(function (event) {
         event.preventDefault();
     });
