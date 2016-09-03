@@ -6,5 +6,7 @@ public enum PlayerCallback {
     STOP,
     PAUSE,
     SYNC,
-    ENDED
+    ENDED,
+    SRC,
+    ERROR
 }

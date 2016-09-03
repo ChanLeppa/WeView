@@ -163,7 +163,7 @@ function initVideoLinkButton() {
 //     progressBar = $('#progress-bar');
 //
 //     playPauseButton.click(togglePlay);
-//     stopButton.click(onStopPressed);
+//     stopButton.click(onVideoStopPressed);
 //     muteButton.click(toggleMute);
 //     $('#fullscreen').on('click', function() {
 //         video.webkitEnterFullscreen();
@@ -218,7 +218,7 @@ function initVideoLinkButton() {
 //     stompClient.send(dest);
 // }
 //
-// function onStopPressed(){
+// function onVideoStopPressed(){
 //     var dest = '/app/' + playerID + '/stop';
 //     stompClient.send(dest);
 // }

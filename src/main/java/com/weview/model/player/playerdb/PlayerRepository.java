@@ -33,4 +33,6 @@ public interface PlayerRepository {
     Boolean isSubscriber(String playerID, String subscriberID);
 
     void updateSubscriber(String playerID, PlayerSubscriberData subscriber);
+
+    void updatePlayerSrc(String playerID, String src);
 }

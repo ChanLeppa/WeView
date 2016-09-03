@@ -11,24 +11,33 @@ public class PlayerSynchronizationData implements Serializable {
     private String src;
     private PlayerCallback callback;
     private Double time = 0d;
-    private Boolean playing;
+    private String message;
     private Map<String, PlayerSubscriberData> subscribers = new HashMap<>();
 
     public String getSrc() {
         return src;
     }
 
-    public PlayerCallback getState() {
-        return callback;
-    }
-
-    public void setState(PlayerCallback state) {
-        this.callback = state;
-    }
-
     public void setSrc(String src) {
         this.src = src;
     }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public PlayerCallback getCallback() {
+        return callback;
+    }
+
+    public void setCallback(PlayerCallback callback) {
+        this.callback = callback;
+    }
+
 
     public Double getTime() {
         return time;
@@ -51,13 +60,13 @@ public class PlayerSynchronizationData implements Serializable {
         return canPlay;
     }
 
-    public Boolean getPlaying() {
-        return playing;
-    }
-
-    public void setPlaying(Boolean playing) {
-        this.playing = playing;
-    }
+//    public Boolean getPlaying() {
+//        return playing;
+//    }
+//
+//    public void setPlaying(Boolean playing) {
+//        this.playing = playing;
+//    }
 
     public void addSubscriber(PlayerSubscriberData subscriber) {
         subscribers.put(subscriber.getUsername(), subscriber);

@@ -113,4 +113,13 @@ public class RedisUserPlayerRepository implements PlayerRepository {
         psd.updateSubscriber(subscriber);
         addPlayer(playerID, psd);
     }
+
+    @Override
+    public synchronized void updatePlayerSrc(String playerID, String src) {
+        PlayerSynchronizationData psd = getPlayerData(playerID);
+        removePlayer(playerID);
+        psd.setTime(0d);
+        psd.setSrc(src);
+        addPlayer(playerID, psd);
+    }
 }

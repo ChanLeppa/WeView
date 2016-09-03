@@ -1,10 +1,9 @@
-var messenger;
+var messenger = null;
 var friends;
-var userData;
+var userData = null;
 var videoControls;
-var onSrcChosenEvent = $.Deferred();
 var playerSyncData;
-var player;
+var player = null;
 var timeDrag = false;
 
 $(onLoad());
@@ -15,7 +14,6 @@ function onLoad() {
     videoControls = $("#video-controls").html();
     initUser()
         .then(updateDropboxControls);
-    onSrcChosenEvent.done(createPlayer);
 }
 
 function initUser() {
@@ -85,6 +83,25 @@ function userSubscriptionCallBack(message, headers) {
     }
 }
 
+function onNewSrcChosen(src) {
+    if (!playerExists()) {
+        createPlayer(src);
+    }
+    else {
+        updatePlayerSrc(src);
+    }
+}
+
+function playerExists() {
+    var isExists = false;
+
+    if (player != null && player.video.src !== undefined) {
+        isExists = true;
+    }
+
+    return isExists;
+}
+
 function createPlayer(src) {
     var dest = "/user/" + userData.username + "/create-player";
     return new Promise(function (resolve, reject) {
@@ -94,6 +111,11 @@ function createPlayer(src) {
             resolve(response);
         });
     });
+}
+
+function updatePlayerSrc(src) {
+    //TODO: update progress bar
+    messenger.updatePlayerSrc(src);
 }
 
 function initializePlayer(playerID, src) {
@@ -111,13 +133,17 @@ function initializePlayer(playerID, src) {
 function initializeVideoPlayer(playerID, src) {
     player = new window.WeviewVideoPlayer.VideoPlayer(src);
     player.initializeVideoEvents(onCanPlay);
-    messenger.subscribeToPlayer(playerID, player.subscriptionCallback);
+    messenger.subscribeToPlayer(playerID, videoSubscriptionCallback);
     initializeVideoPlayerControls();
+}
+
+function videoSubscriptionCallback(message, headers){
+    player.subscriptionCallback(message, headers);
 }
 
 function initializeVideoPlayerControls() {
     $('#play-pause-button').click(toggleVideoPlay);
-    $('#stop-button').click(onStopPressed);
+    $('#stop-button').click(onVideoStopPressed);
     $('#mute-button').click(toggleVideoMute);
     $('#vol-inc-button').click(onVideoVolumeUp);
     $('#vol-dec-button').click(onVideoVolumeDown);
@@ -128,28 +154,29 @@ function initializeVideoPlayerControls() {
 
     $('.progress-bar').mousedown(function(e) {
         timeDrag = true;
-        syncVideo(e.pageX);
+        syncVideo(e.pageX, player.video.duration);
     });
 
     $(document).mouseup(function(e) {
         if(timeDrag) {
             timeDrag = false;
-            syncVideo(e.pageX);
+            syncVideo(e.pageX, player.video.duration);
         }
     });
 
     $(document).mousemove(function(e) {
         if(timeDrag) {
-            syncVideo(e.pageX);
+            syncVideo(e.pageX, player.video.duration);
         }
     });
 }
 
 function toggleVideoPlay(){
+    playerSyncData = preparePlayerSyncData(player.video.currentTime);
     if (player.video.paused){
-        messenger.onPlayPressed("");
+        messenger.onPlayPressed(playerSyncData);
     } else{
-        messenger.onPausePressed("");
+        messenger.onPausePressed(playerSyncData);
     }
 }
 
@@ -179,8 +206,9 @@ function onCanPlay() {
     messenger.onCanPlay();
 }
 
-function onStopPressed() {
-    messenger.onStopPressed("");
+function onVideoStopPressed() {
+    playerSyncData = preparePlayerSyncData(player.video.currentTime);
+    messenger.onStopPressed(playerSyncData);
 }
 
 function changeButtonType(button, valueToSet, valueToChange, innerHtml){
@@ -189,16 +217,14 @@ function changeButtonType(button, valueToSet, valueToChange, innerHtml){
     button.addClass(valueToSet).removeClass(valueToChange);
 }
 
-function syncVideo(pageX){
-    var currentTime = getUpdatedTime(pageX, player.video.duration);
-    playerSyncData = {
-        //TODO: prepare sync data object to send to server
-        // callBackName: "Sync",
-        // time : parseFloat(currentTime).toFixed(1),
-        // canPlay: true,
-        // playing: !video.paused
-    };
+function syncVideo(pageX, duration){
+    var currentTime = getUpdatedTime(pageX, duration);
+    playerSyncData = preparePlayerSyncData(currentTime);
     messenger.onSync(playerSyncData);
+}
+
+function preparePlayerSyncData(currentTime){
+    return  {time : parseFloat(currentTime).toFixed(1)};
 }
 
 function getUpdatedTime(x, duration) {
@@ -262,7 +288,7 @@ function addDropboxFileNameToHtml(index, fileName){
         var dest = "/user/" + userData.username + "/dbxfilelink";
         $.get(dest, { fileName : fileName }, function(src) {
             $('#dropbox-modal').closeModal();
-            onSrcChosenEvent.resolve(src);
+            onNewSrcChosen(src);
         });
     });
 }

@@ -17,13 +17,13 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
         this.k_FriendLogoutUrl = '/friend-logout';
         this.k_InviteUrl = '/invite';
         this.k_AcceptInvite = '/accept';
+        this.k_UpdateSrcUrl = '/update-src';
         this.m_Username = i_Username;
         this.m_PlayerID = null;
         this.m_Socket = new SockJS('/connect');
         this.m_StompClient = Stomp.over(this.m_Socket);
         this.m_UserSubscription = null;
         this.m_PlayerSubscription = null;
-        this.m_PlayerCallBack = null;
 
         this.connect = function () {
             var stompClient = this.m_StompClient;
@@ -40,10 +40,6 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
 
         this.subscribe = function (i_Dest, i_Callback) {
             return this.m_StompClient.subscribe(i_Dest, i_Callback);
-        };
-
-        this.subscriptionCallback = function(message, headers) {
-            this.m_PlayerCallBack(message, headers);
         };
 
         this.unsubscribe = function (i_Subscription) {
@@ -76,9 +72,8 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
 
         this.subscribeToPlayer = function (i_PlayerID, i_Callback) {
             this.m_PlayerID = i_PlayerID;
-            this.m_PlayerCallBack = i_Callback;
             var dest = this.k_SubscriptionUrlPrefix + this.k_UserPrefix + '/' + i_PlayerID + this.k_PlayerUrl;
-            this.m_PlayerSubscription = this.subscribe(dest, this.subscriptionCallback);
+            this.m_PlayerSubscription = this.subscribe(dest, i_Callback);
             this.subscribeToPlayerInDatabase();
             return this.m_PlayerSubscription;
         };
@@ -159,9 +154,14 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
             this.send(dest, data);
         };
 
+        this.updatePlayerSrc = function(i_Src) {
+            var dest = this.getPlayerUrl() + this.k_UpdateSrcUrl;
+            this.send(dest, i_Src);
+        };
+
         this.getPlayerUrl = function() {
             return this.k_DestUrlPrefix + this.k_UserPrefix + '/' + this.m_PlayerID + this.k_PlayerUrl;
-        }
+        };
     };
 
     SocketMessenger.prototype = {
