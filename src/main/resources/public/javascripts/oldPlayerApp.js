@@ -185,19 +185,19 @@ function initVideoLinkButton() {
 
 //     $('.progress-bar').mousedown(function(e) {
 //         timeDrag = true;
-//         syncVideo(e.pageX);
+//         sync(e.pageX);
 //     });
 //
 //     $(document).mouseup(function(e) {
 //         if(timeDrag) {
 //             timeDrag = false;
-//             syncVideo(e.pageX);
+//             sync(e.pageX);
 //         }
 //     });
 //
 //     $(document).mousemove(function(e) {
 //         if(timeDrag) {
-//             syncVideo(e.pageX);
+//             sync(e.pageX);
 //         }
 //     });
 // }
@@ -224,13 +224,13 @@ function initVideoLinkButton() {
 // }
 //
 // function onSyncPressed(syncBean) {
-//     var dest = '/app/' + playerID + '/syncVideo';
+//     var dest = '/app/' + playerID + '/sync';
 //     var data = JSON.stringify(syncBean);
 //     stompClient.send(dest, {}, data);
 // }
 
 
-// function syncVideo(pageX){
+// function sync(pageX){
 //     var currentTime = getUpdatedTime(pageX, video.duration);
 //     syncBean = {
 //         callBackName: "Sync",
@@ -343,7 +343,7 @@ function initVideoLinkButton() {
 
 // function getUpdatedTime(x, duration) {
 //         var progress = $('.progress-bar');
-//         var maxduration = duration; //Video duraiton
+//         var maxduration = duration; //video duraiton
 //         var position = x - progress.offset().left; //Click pos
 //         var percentage = 100 * position / progress.width();
 //

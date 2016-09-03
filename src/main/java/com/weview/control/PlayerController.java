@@ -87,7 +87,7 @@ public class PlayerController {
         return updatedPsd;
     }
 
-    @MessageMapping("/user/{username}/player/syncVideo")
+    @MessageMapping("/user/{username}/player/sync")
     @SendTo("/topic/user/{username}/player")
     public PlayerSynchronizationData sync(@DestinationVariable String username, PlayerSynchronizationData psd)
             throws Exception{

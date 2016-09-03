@@ -75,14 +75,6 @@ window.WeviewVideoPlayer = (function(WeviewVideoPlayer, $, undefined)
                 changeButtonType($('#mute-button'), 'mute', 'unmute', "<i class='tiny material-icons'>volume_off</i>");
         };
 
-        function setValuesToProgressBar(duration, currentTime){
-            $('#current').text(formatTime(currentTime));
-            $('#duration').text(formatTime(duration));
-            var percentage = Math.floor((100 / duration) * currentTime);
-            $('#percentage').text(percentage);
-            $('.time-bar').css('width', percentage+'%');
-        }
-
         this.doPause = function(){
             changeButtonType($('#play-pause-button'), 'play', 'pause', "<i class='tiny material-icons'>play_arrow</i>");
             this.m_Video.pause();
@@ -98,24 +90,10 @@ window.WeviewVideoPlayer = (function(WeviewVideoPlayer, $, undefined)
         }
     };
 
-    //same as youtube player
-    ////////////////////////////////////////////
-    function formatTime(time){
-        time = Math.round(time);
-
-        var minutes = Math.floor(time / 60);
-        var seconds = time - minutes * 60;
-
-        seconds = seconds < 10 ? '0' + seconds : seconds;
-
-        return minutes + ":" + seconds;
-    }
-    /////////////////////////////////////////////////
-
     VideoPlayer.prototype = {
         get Src(){ return this.m_Src; },
         set Src(i_Src){ this.m_Src = i_Src; },
-        get video(){ return this.m_Video }
+        get Video(){ return this.m_Video }
     };
 
     return {

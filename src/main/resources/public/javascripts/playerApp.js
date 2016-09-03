@@ -112,7 +112,7 @@ function onNewSrcChosen(src) {
 function playerExists() {
     var isExists = false;
 
-    if (player != null && player.video.src !== undefined) {
+    if (player != null && player.Video.src !== undefined) {
         isExists = true;
     }
 
@@ -139,46 +139,111 @@ function initializePlayer(playerID, src) {
     //TODO: depends on the src (youtube or other)
     $('#video-controls').empty().append(videoControls);
 
-    if (WeviewYoutubePlayer.isYoutubeSrc(src)) {
-        initilizeYoutubePlayer(src);
+    if (WeviewYoutubePlayer.isYoutubeSrc(src) === true) {
+        initializeYoutubePlayer(playerID, src);
     }
     else {
         initializeVideoPlayer(playerID, src);
     }
 }
 
-function initilizeYoutubePlayer(src) {
+//Youtube
+///////////////////////////////////////////////////////////////////////////
+function initializeYoutubePlayer(playerID, src) {
     player = new WeviewYoutubePlayer.YoutubePlayer(src);
+    messenger.subscribeToPlayer(playerID, videoSubscriptionCallback);
+    initializeYouTubePlayerControls();
 }
 
 function onYouTubeIframeAPIReady() {
-    // var videoId = player.YoutubeVideoUrl;
-    // var onPlayerReady = player.onPlayerReady;
-    // player.Player = new YT.Player('video-placeholder', {
-    //     width: 990.16,
-    //     height: 556.95,
-    //     videoId: videoId,
-    //     playerVars: {
-    //         'controls': 0,
-    //         'showinfo': 0,
-    //         'autohide': 1
-    //     },
-    //     events: {
-    //         'onReady': onPlayerReady
-    //     }
-    // });
-    player.onYouTubeIframeAPIReady();
+    player.onYouTubeIframeAPIReady(onYouTubePlayerReady);
 }
 
+function onYouTubePlayerReady() {
+    player.onPlayerReady();
+}
+
+function updateYouTubeProgressBar() {
+    var duration = player.Player.getDuration();
+    var currentTime = player.Player.getCurrentTime();
+    setValuesToProgressBar(duration, currentTime);
+};
+
+function initializeYouTubePlayerControls() {
+    // progressBar = $('#progress-bar');
+
+    $('#play-pause-button').click(toggleYoutubePlay);
+    $('#stop-button').click(onYoutubeStopPressed);
+    $('#mute-button').click(toggleYoutubeMute);
+    $('#vol-inc-button').click(onYoutubeVolumeUp);
+    $('#vol-dec-button').click(onYoutubeVolumeDown);
+    $('#fullscreen').click(function() {
+        //TODO:not working
+        $('#video-placeholder').webkitEnterFullscreen();
+    });
+
+    $('.progress-bar').mousedown(function(e) {
+        timeDrag = true;
+        sync(e.pageX, player.Player.getDuration());
+    });
+
+    $(document).mouseup(function(e) {
+        if(timeDrag) {
+            timeDrag = false;
+            sync(e.pageX, player.Player.getDuration());
+        }
+    });
+
+    $(document).mousemove(function(e) {
+        if(timeDrag) {
+            sync(e.pageX, player.Player.getCurrentTime());
+        }
+    });
+}
+
+function onYoutubeVolumeUp(){
+    var volume = player.Player.getVolume();
+    player.Player.setVolume(volume === 100 ? 100 : (volume + 5));
+}
+
+function onYoutubeVolumeDown(){
+    var volume = player.Player.getVolume();
+    player.Player.setVolume(volume === 0 ? 0 : (volume - 5));
+}
+
+function toggleYoutubeMute(){
+    if (player.Player.isMuted()){
+        player.Player.unMute();
+        changeButtonType($('#mute-button'), 'unmute', 'mute', "<i class='tiny material-icons'>volume_off</i>");
+    } else{
+        player.Player.mute();
+        changeButtonType($('#mute-button'), 'mute', 'unmute', "<i class='tiny material-icons'>volume_mute</i>");
+    }
+}
+
+function toggleYoutubePlay(){
+    playerSyncData = preparePlayerSyncData(player.Player.getCurrentTime());
+    if (player.Player.getPlayerState() !== window.YT.PlayerState.PLAYING){
+        messenger.onPlayPressed(playerSyncData);
+    } else{
+        messenger.onPausePressed(playerSyncData);
+    }
+}
+
+function onYoutubeStopPressed() {
+    playerSyncData = preparePlayerSyncData(player.Player.getCurrentTime());
+    messenger.onStopPressed(playerSyncData);
+}
+//end of youtube
+///////////////////////////////////////////////////////////////////////////
+
+//video
+//////////////////////////////////////////////////////////////////////////
 function initializeVideoPlayer(playerID, src) {
     player = new window.WeviewVideoPlayer.VideoPlayer(src);
     player.initializeVideoEvents(onCanPlay);
     messenger.subscribeToPlayer(playerID, videoSubscriptionCallback);
     initializeVideoPlayerControls();
-}
-
-function videoSubscriptionCallback(message, headers){
-    player.subscriptionCallback(message, headers);
 }
 
 function initializeVideoPlayerControls() {
@@ -188,32 +253,32 @@ function initializeVideoPlayerControls() {
     $('#vol-inc-button').click(onVideoVolumeUp);
     $('#vol-dec-button').click(onVideoVolumeDown);
     $('#fullscreen').on('click', function() {
-        player.video.webkitEnterFullscreen();
+        player.Video.webkitEnterFullscreen();
         return false;
     });
 
     $('.progress-bar').mousedown(function(e) {
         timeDrag = true;
-        syncVideo(e.pageX, player.video.duration);
+        sync(e.pageX, player.Video.duration);
     });
 
     $(document).mouseup(function(e) {
         if(timeDrag) {
             timeDrag = false;
-            syncVideo(e.pageX, player.video.duration);
+            sync(e.pageX, player.Video.duration);
         }
     });
 
     $(document).mousemove(function(e) {
         if(timeDrag) {
-            syncVideo(e.pageX, player.video.duration);
+            sync(e.pageX, player.Video.duration);
         }
     });
 }
 
 function toggleVideoPlay(){
-    playerSyncData = preparePlayerSyncData(player.video.currentTime);
-    if (player.video.paused){
+    playerSyncData = preparePlayerSyncData(player.Video.currentTime);
+    if (player.Video.paused){
         messenger.onPlayPressed(playerSyncData);
     } else{
         messenger.onPausePressed(playerSyncData);
@@ -221,34 +286,38 @@ function toggleVideoPlay(){
 }
 
 function toggleVideoMute(){
-    if (player.video.muted){
+    if (player.Video.muted){
         changeButtonType($('#mute-button'), 'mute', 'unmute', "<i class='tiny material-icons'>volume_mute</i>");
-        player.video.muted = false;
+        player.Video.muted = false;
     } else{
         changeButtonType($('#mute-button'), 'unmute', 'mute', "<i class='tiny material-icons'>volume_off</i>");
-        player.video.muted = true;
+        player.Video.muted = true;
     }
 }
 
 function onVideoVolumeUp(){
-    var volume = player.video.volume;
-    player.video.volume += (volume === 1 ? 0 : 0.1);
+    var volume = player.Video.volume;
+    player.Video.volume += (volume === 1 ? 0 : 0.1);
 }
 
 function onVideoVolumeDown() {
-    var volume = player.video.volume;
-    player.video.volume -= (volume === 0 ? 0 : 0.1);
+    var volume = player.Video.volume;
+    player.Video.volume -= (volume === 0 ? 0 : 0.1);
+}
+
+function onVideoStopPressed() {
+    playerSyncData = preparePlayerSyncData(player.Video.currentTime);
+    messenger.onStopPressed(playerSyncData);
 }
 
 //Player Controls Utils, same in youtube and video
 //////////////////////////////////////////////////////////////////////////////////
-function onCanPlay() {
-    messenger.onCanPlay();
+function videoSubscriptionCallback(message, headers){
+    player.subscriptionCallback(message, headers);
 }
 
-function onVideoStopPressed() {
-    playerSyncData = preparePlayerSyncData(player.video.currentTime);
-    messenger.onStopPressed(playerSyncData);
+function onCanPlay() {
+    messenger.onCanPlay();
 }
 
 function changeButtonType(button, valueToSet, valueToChange, innerHtml){
@@ -257,10 +326,21 @@ function changeButtonType(button, valueToSet, valueToChange, innerHtml){
     button.addClass(valueToSet).removeClass(valueToChange);
 }
 
-function syncVideo(pageX, duration){
+function sync(pageX, duration){
     var currentTime = getUpdatedTime(pageX, duration);
     playerSyncData = preparePlayerSyncData(currentTime);
     messenger.onSync(playerSyncData);
+}
+
+function formatTime(time){
+    time = Math.round(time);
+
+    var minutes = Math.floor(time / 60);
+    var seconds = time - minutes * 60;
+
+    seconds = seconds < 10 ? '0' + seconds : seconds;
+
+    return minutes + ":" + seconds;
 }
 
 function preparePlayerSyncData(currentTime){
@@ -282,6 +362,14 @@ function getUpdatedTime(x, duration) {
     }
 
     return maxduration * percentage / 100;
+}
+
+function setValuesToProgressBar(duration, currentTime){
+    $('#current').text(formatTime(currentTime));
+    $('#duration').text(formatTime(duration));
+    var percentage = Math.floor((100 / duration) * currentTime);
+    $('#percentage').text(percentage);
+    $('.time-bar').css('width', percentage+'%');
 }
 //End of player Controls utils
 /////////////////////////////////////////////////////////////////////////////////////
