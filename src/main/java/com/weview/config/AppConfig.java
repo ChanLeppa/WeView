@@ -14,7 +14,7 @@ public class AppConfig {
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         JedisConnectionFactory factory = new JedisConnectionFactory();
-        factory.setHostName("redis://h:pbes6ltvi1464584if23s18u4qt@ec2-54-247-91-92.eu-west-1.compute.amazonaws.com:13389");
+        factory.setHostName("ec2-54-247-91-92.eu-west-1.compute.amazonaws.com");
         factory.setPassword("pbes6ltvi1464584if23s18u4qt");
         factory.setPort(13389);
         factory.setUsePool(true);
