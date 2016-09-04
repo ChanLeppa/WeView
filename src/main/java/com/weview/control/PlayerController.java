@@ -50,6 +50,15 @@ public class PlayerController {
         return "CanPlay updated";
     }
 
+    @MessageMapping("/user/{username}/player/cannotplay")
+    @SendTo("/topic/user/{username}/player")
+    public String cannotPlay(@DestinationVariable String username, String subscriberUsername) throws Exception {
+
+        playerRepository.updateSubscriberToCannotPlay(username, subscriberUsername);
+
+        return "CannotPlay updated";
+    }
+
     @MessageMapping("/user/{username}/player/play")
     @SendTo("/topic/user/{username}/player")
     public PlayerSynchronizationData play(@DestinationVariable String username, PlayerSynchronizationData psd) throws Exception {

@@ -100,7 +100,7 @@ window.WeviewYoutubePlayer = (function(Weview, $, undefined)
                         console.log(playerSyncData.message);
                         //TODO: notify of changed src
                         var newSrc = this.getYoutubeVideoId(playerSyncData.src);
-                        this.m_Video.loadVideoById(newSrc);
+                        this.m_Player.loadVideoById(newSrc);
                         break;
                     case "ERROR":
                         console.log(playerSyncData.message);

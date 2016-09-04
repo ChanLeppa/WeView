@@ -28,7 +28,7 @@ function initVideoLinkButton() {
         linkTag.trigger('autoresize');
         linkTag.val('');
         linkTag.trigger('autoresize');
-
+        $("#link-menu").closeModal();
         onNewSrcChosen(videoSrc);
     });
 }
@@ -112,8 +112,17 @@ function onNewSrcChosen(src) {
 function playerExists() {
     var isExists = false;
 
-    if (player != null && player.Video.src !== undefined) {
-        isExists = true;
+    if (player !== null) {
+        if(player.Video !== undefined){
+            if(player.Video.src !== undefined){
+                isExists = true;
+            }
+        }
+        else if(player.Player !== undefined){
+            if(player.Player.getVideoUrl() !== undefined){
+                isExists = true;
+            }
+        }
     }
 
     return isExists;
@@ -196,7 +205,7 @@ function initializeYouTubePlayerControls() {
 
     $(document).mousemove(function(e) {
         if(timeDrag) {
-            sync(e.pageX, player.Player.getCurrentTime());
+            sync(e.pageX, player.Player.getDuration());
         }
     });
 }
