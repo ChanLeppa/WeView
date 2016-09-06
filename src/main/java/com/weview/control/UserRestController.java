@@ -145,12 +145,12 @@ public class UserRestController {
         return "Bazinga!!!";
     }
 
-    @RequestMapping(value = "/user/{username}/friend-request", method = RequestMethod.POST)
+    @RequestMapping(value = "/user/{username}/friend-request/{friend}", method = RequestMethod.POST)
     public String makeFriendRequest(@PathVariable("username") String usernameRequesting,
-                                    @RequestParam String username) {
+                                    @PathVariable("friend") String friendUsername) {
 
         User friend = null;
-        if ((friend = userRepository.findByUsername(username)) == null) {
+        if ((friend = userRepository.findByUsername(friendUsername)) == null) {
             throw new UserNotFoundException();
         }
 
@@ -163,15 +163,15 @@ public class UserRestController {
     }
 
     @RequestMapping(value = "/user/{username}/search-friend", method = RequestMethod.GET)
-    public User searchFriend(@PathVariable("username") String usernameRequesting,
+    public UserDataForClient searchFriend(@PathVariable("username") String usernameRequesting,
                                     @RequestParam String searchParam) {
         User friend = null;
         if ((friend = userRepository.findByUsername(searchParam)) == null &&
                 (friend = userRepository.findByEmail(searchParam)) == null) {
             throw new UserNotFoundException();
         }
-
-        return friend;
+        UserDataForClient friendData = new UserDataForClient(friend.getUsername(), friend.getFirstName(), friend.getLastName(), null, null);
+        return friendData;
     }
 
     private void notifyUserOfFriendRequest(User user, String usernameRequesting) {

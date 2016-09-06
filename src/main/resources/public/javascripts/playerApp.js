@@ -38,9 +38,40 @@ function initPageButtons() {
 }
 
 function searchFriend() {
-    $.get();
-    //TODO: take the search value and send request to server with the value
-    //TODO: on callback from the server show the friends found with a send friend request button
+    $("#search-result").empty();
+    var friendResult;
+    var searchParam = $('#search-input').val();
+
+    if(searchParam === userData.username){
+        friendResult = "<div class='card-panel blue accent-3'><span class='white-text'>It's you :)</span></div>";
+        $("#search-result").append(friendResult);
+    }//TODO: check if the user i'm searching is me or one of my frinds...don't need to show
+    else{
+        sendSearchRequest(searchParam);
+    }
+}
+
+function sendSearchRequest(searchParam) {
+    var dest = "/user/" + userData.username + "/search-friend";
+    $.get(dest, {searchParam : searchParam}, function (response) {
+        console.log(response);
+        var friendResult = "<div class='card blue accent-3'>"
+            + "<div class='card-content white-text'>"
+            + "<span class='card-title'>" + response.username + "</span>"
+            + "<p>First name: " + response.firstName + "</p>"
+            + "<p>Last name: " + response.lastName + "</p></div>"
+            + "<div class='card-action'><a id='send-friend-reqBtn'>Send friend request</a></div></div>";
+        $("#search-result").off('click', "#send-friend-reqBtn");
+        $("#search-result").append(friendResult).on("click", "#send-friend-reqBtn", response.username, sendFriendRequest);
+    });
+}
+function sendFriendRequest(event) {
+    alert("sent friend request to: " + event.data);
+    $("#search-result").empty();
+    $('#search-input').val("");
+    //TODO: disable the search button
+    $("#friends-search").closeModal();
+    //TODO: send friend request from userData.username to friendUsername
 }
 
 function initVideoLinkButton() {
