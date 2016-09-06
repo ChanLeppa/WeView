@@ -70,7 +70,7 @@ window.WeviewYoutubePlayer = (function(Weview, $, undefined)
             var playerSyncData = message.body;
             console.log("Server sent:" + message.body);
             if(playerSyncData.includes("subscribed to player")){
-                onUserSubscribedToPlayer();
+                onUserSubscribedToPlayer(playerSyncData);
             }
             if(playerSyncData !== "CanPlay updated")
             {

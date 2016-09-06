@@ -38,7 +38,7 @@ function initPageButtons() {
 }
 
 function searchFriend() {
-    //TODO: check witch radio button is selected
+    $.get();
     //TODO: take the search value and send request to server with the value
     //TODO: on callback from the server show the friends found with a send friend request button
 }
@@ -106,7 +106,8 @@ function showFriend(index, friend) {
         + "<img src='/images/useravatar.png' alt='user avatar' class='circle'>"
         + "<span class='title'>" + friend.username + "</span>"
         + "<p>" + friend.firstName + " " + friend.lastName + "</p>"
-        + "<a id='add-" + friend.username + "' class='btn-floating waves-effect waves-light red disabled'><i class='material-icons'>" + "add" + "</i></a>";
+        + "<a id='add-" + friend.username + "' class='btn-floating waves-effect waves-light green disabled'><i class='material-icons'>" + "add" + "</i></a>"
+        + " <a id='chatBtn-" + friend.username + "' class='btn-floating waves-effect waves-light blue'><i class='material-icons'>" + "voice_chat" + "</i></a>" ;
 
     if(friend.loggedIn === true){
         li = li + "<img class='online-sign secondary-content' src='/images/online.png' alt='online' class='circle'></li>";
@@ -116,8 +117,12 @@ function showFriend(index, friend) {
     }
 
     $("#user-friends").append(li).on("click", "#add-" + friend.username, function () {
-        alert("add button pressed: " + friend.username);
         messenger.sendInvite(friend.username);
+    });
+
+    $("#user-friends").on("click", "#chatBtn-" + friend.username, function () {
+        alert("video chat button pressed: " + friend.username);
+        //TODO: insert create RTC call
     });
 }
 
@@ -210,7 +215,7 @@ function userSubscriptionCallBack(message, headers) {
             break;
         case "acceptInvite":
             console.log(msg.username + " accepted your invitation to watch.");
-            // $("#add-" + msg.username).addClass("disabled");
+            $("#add-" + msg.username).addClass("disabled");
             break;
     }
 }

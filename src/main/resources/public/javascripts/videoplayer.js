@@ -20,7 +20,7 @@ window.WeviewVideoPlayer = (function(WeviewVideoPlayer, $, undefined)
             var playerSyncData = message.body;
             console.log("Server sent:" + message.body);
             if(playerSyncData.includes("subscribed to player")){
-                onUserSubscribedToPlayer();
+                onUserSubscribedToPlayer(playerSyncData);
             }
             else if(playerSyncData !== "CanPlay updated")
             {
