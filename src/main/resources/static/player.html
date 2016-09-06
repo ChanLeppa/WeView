@@ -171,10 +171,23 @@
             <a id="joinplayer-accept-btn" class="modal-action modal-close waves-effect waves-light blue accent-3 btn">Accept</a>
         </div>
     </div>
+    <div id="chat-container">
+        <button id="chat">Open New Room</button>
+        <div id="local-chat-container"></div>
+        <!--<video id="local-chat-window" autoplay></video>-->
+        <div id="remote-chat-container"></div>
+        <!--<video id="remote-chat-window"></video>-->
+    </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/adapterjs/0.13.3/adapter.min.js"></script>-->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/adapterjs/0.13.3/adapter.screenshare.min.js"></script>-->
+
+<script src="https://cdn.webrtc-experiment.com:443/rmc3.min.js"></script>
+<script src="https://cdn.webrtc-experiment.com:443/socket.io.js"></script>
+
 <script src="/javascripts/messaging.js"></script>
 <script src="/javascripts/videoplayer.js"></script>
 <script src="/javascripts/youtubePlayer.js"></script>

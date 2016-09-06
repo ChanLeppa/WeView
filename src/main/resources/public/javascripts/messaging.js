@@ -18,12 +18,17 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
         this.k_InviteUrl = '/invite';
         this.k_AcceptInvite = '/accept';
         this.k_UpdateSrcUrl = '/update-src';
+        this.k_RTCPrefixUrl = '/rtc';
+        this.k_RTCCandidateUrl = '/rtc-candidate';
+        this.k_RTCOfferUrl = '/rtc-offer';
+        this.k_RTCAnswerUrl = '/rts-answer';
         this.m_Username = i_Username;
         this.m_PlayerID = null;
         this.m_Socket = new SockJS('/connect');
         this.m_StompClient = Stomp.over(this.m_Socket);
         this.m_UserSubscription = null;
         this.m_PlayerSubscription = null;
+        this.m_RTCRoomSubscription = null;
 
         this.connect = function () {
             var stompClient = this.m_StompClient;
@@ -87,6 +92,11 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
             var dest = this.getPlayerUrl() + this.k_UnsubscribeUrl;
             this.send(dest, this.m_Username);
             this.unsubscribe(this.m_PlayerSubscription);
+        };
+
+        this.subscribeToRTCRoom = function (i_RoomID, i_Callback) {
+            var dest = this.k_SubscriptionUrlPrefix + this.k_RTCPrefixUrl + '/' + i_RoomID;
+            this.m_RTCRoomSubscription = this.subscribe(dest, i_Callback);
         };
 
         this.sendUserLogin = function(i_Friends) {
@@ -161,6 +171,26 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
 
         this.getPlayerUrl = function() {
             return this.k_DestUrlPrefix + this.k_UserPrefix + '/' + this.m_PlayerID + this.k_PlayerUrl;
+        };
+
+        this.sendRTCCandidate = function (i_RoomID, i_Candidate) {
+            var dest = this.k_DestUrlPrefix + this.k_RTCPrefixUrl + '/' + i_RoomID + '/' +this.k_RTCCandidateUrl;
+            this.m_StompClient.send(dest, {}, i_Candidate);
+        };
+
+        this.sendRTCOffer = function(i_RoomID, i_Offer) {
+            var dest = this.k_DestUrlPrefix + this.k_RTCPrefixUrl + '/' + i_RoomID + '/' + this.k_RTCOfferUrl;
+            this.m_StompClient.send(dest, {}, i_Offer);
+        };
+
+        this.sendRTCAnswer = function (i_RoomID, i_Answer) {
+            var dest = this.k_DestUrlPrefix + this.k_RTCPrefixUrl + '/' + i_RoomID + '/' + this.k_RTCAnswerUrl;
+            this.m_StompClient.send(dest, {}, i_Answer);
+        };
+
+        this.sendRoomID = function (i_Username, i_RoomID) {
+            var dest = this.k_DestUrlPrefix + this.k_UserPrefix + '/' + i_Username + this.k_RTCPrefixUrl;
+            this.send(dest, i_RoomID);
         };
     };
 

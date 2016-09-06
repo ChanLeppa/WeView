@@ -33,4 +33,30 @@ public class UserWebSocketController {
     public String acceptInviteToWatch(String acceptingUsername) {
         return "{\"event\" : \"acceptInvite\", \"username\" : \"" + acceptingUsername + "\"}";
     }
+
+    @MessageMapping("/rtc/{roomID}/rtc-candidate")
+    @SendTo("/topic/rtc/{roomID}")
+    public String signalRTCCandidate(String candidate) {
+        return "{\"event\" : \"RTCCandidate\", \"candidate\" : " + candidate + "}";
+    }
+
+    @MessageMapping("/rtc/{roomID}/rtc-offer")
+    @SendTo("/topic/rtc/{roomID}")
+    public String signalRTCOffer(String offer) {
+        return "{\"event\" : \"RTCOffer\", \"offer\" : " + offer + "}";
+    }
+
+    @MessageMapping("/rtc/{roomID}/rtc-answer")
+    @SendTo("/topic/rtc/{roomID}")
+    public String signalRTCAnswer(String answer) {
+        return "{\"event\" : \"RTCAnswer\", \"answer\" : " + answer + "}";
+    }
+
+    @MessageMapping("/user/{username}/rtc")
+    @SendTo("/topic/user/{username}")
+    public String sendRoomID(String roomID) {
+        return "{\"event\" : \"RTCRoomID\", \"roomID\" : " + roomID + "}";
+    }
+
+
 }

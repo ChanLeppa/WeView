@@ -190,3 +190,26 @@ window.WV = (function(WV, $, undefined) {
         getYoutubeVideoId: getYoutubeVideoId
     }
 })(window.WV || {}, jQuery);
+
+
+var Event = function() {
+    this.m_Listners = [];
+
+    this.addListener = function (i_Listener) {
+        this.m_Listners.push(i_Listener);
+    };
+
+    this.removeListener = function (i_Listener) {
+        var index = this.m_Listners.indexOf(i_Listener);
+        if (index > -1) {
+            this.m_Listners.splice(index, 1);
+        }
+    };
+
+    this.invoke = function () {
+        this.m_Listners.forEach(function(listener) {
+            listener();
+        });
+    };
+
+};
