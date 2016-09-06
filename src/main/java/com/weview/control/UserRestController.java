@@ -147,11 +147,10 @@ public class UserRestController {
 
     @RequestMapping(value = "/user/{username}/friend-request", method = RequestMethod.POST)
     public String makeFriendRequest(@PathVariable("username") String usernameRequesting,
-                                    @RequestParam String searchParam) {
+                                    @RequestParam String username) {
 
         User friend = null;
-        if ((friend = userRepository.findByUsername(searchParam)) == null &&
-                (friend = userRepository.findByEmail(searchParam)) == null) {
+        if ((friend = userRepository.findByUsername(username)) == null) {
             throw new UserNotFoundException();
         }
 
@@ -161,6 +160,18 @@ public class UserRestController {
         //so that the requesting client can send him the request via websocket
         Boolean isFriendLoggedIn = loggedInUserRepository.isLoggedin(friend.getUsername());
         return "{\"isFriendLoggedIn\" : \"" + isFriendLoggedIn.toString() + "\"}";
+    }
+
+    @RequestMapping(value = "/user/{username}/search-friend", method = RequestMethod.GET)
+    public User searchFriend(@PathVariable("username") String usernameRequesting,
+                                    @RequestParam String searchParam) {
+        User friend = null;
+        if ((friend = userRepository.findByUsername(searchParam)) == null &&
+                (friend = userRepository.findByEmail(searchParam)) == null) {
+            throw new UserNotFoundException();
+        }
+
+        return friend;
     }
 
     private void notifyUserOfFriendRequest(User user, String usernameRequesting) {

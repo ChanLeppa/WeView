@@ -21,11 +21,11 @@ function initPageButtons() {
     $(".dropdown-button").dropdown();
     $(".modal-trigger").leanModal();
     $("#logoutBtn").click(logout);
-    $("input[type='radio']").change(function (event) {
-        if($(this).is(':checked')){
-            $("#search-input").removeAttr("disabled");
-        }
-    });
+    // $("input[type='radio']").change(function (event) {
+    //     if($(this).is(':checked')){
+    //         $("#search-input").removeAttr("disabled");
+    //     }
+    // });
     $("#search-input").change(function () {
         if ($('#search-input').val().length > 0) {
             $('#searchBtn').removeClass('disabled');
@@ -38,9 +38,6 @@ function initPageButtons() {
 }
 
 function searchFriend() {
-    if($(this).is(':checked')){
-
-    }
     //TODO: check witch radio button is selected
     //TODO: take the search value and send request to server with the value
     //TODO: on callback from the server show the friends found with a send friend request button
