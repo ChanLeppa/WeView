@@ -29,7 +29,7 @@ public class PlayerController {
 
         playerRepository.addSubscriber(username, new PlayerSubscriberData(subscriberUsername));
 
-        return "Subscribed to player " + username;
+        return subscriberUsername + " subscribed to player";
     }
 
     @MessageMapping("/user/{username}/player/unsubscribe")
@@ -38,7 +38,7 @@ public class PlayerController {
 
         playerRepository.removeSubscriber(username, subscriberUsername);
 
-        return "Unsubscribed from player " + username;
+        return username + " unsubscribed from player";
     }
 
     @MessageMapping("/user/{username}/player/canplay")

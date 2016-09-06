@@ -11,7 +11,19 @@
 </head>
 <body>
     <header class="blue accent-3 bz-depth-3">
-        <img class="brand-logo" src="../images/weview_logo_small.png" />
+        <nav class="top-nav">
+            <div class="nav-wrapper blue accent-3 bz-depth-3">
+                <img class="brand-logo" src="../images/weview_logo_small.png" />
+                <ul id="top-nav" class="right hide-on-small-only">
+                    <li>
+                        <a id="nav-loginBtn" class="modal-trigger" data-target="login-modal"><i class="fa fa-user" aria-hidden="true"></i> Login</a>
+                    </li>
+                    <li>
+                        <a id="nav-signupBtn" class="modal-trigger" data-target="signup-modal"><i class="fa fa-user-plus" aria-hidden="true"></i> Sign up</span></a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
     </header>
     <main>
         <div class="parallax-container">
@@ -69,18 +81,15 @@
                         <label for="email" class="light-blue-text text-accent-3">Email</label>
                         <input id="email" type="email" class="validate">
                     </div>
-                    <!--<form>-->
-                    <!--<form action="#">-->
                     <div class="file-field input-field col s6">
                         <div class="blue accent-3 btn">
                             <span>Photo</span>
                             <input type="file">
                         </div>
                         <div class="file-path-wrapper">
-                            <input id="photo" class="file-path" type="text" class="validate" name="photo">
+                            <input id="photo" class="file-path validate" type="text" name="photo">
                         </div>
                     </div>
-                    <!--</form>-->
                 </div>
                 <div class="row right">
                     <a id="cancel-signup" class="modal-action modal-close waves-effect waves-teal btn-flat">Cancel</a>
@@ -95,19 +104,19 @@
             <form id="login-form" method="post">
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="username_login" name="username" type="text" class="validate">
                         <label for="username_login" class="light-blue-text text-accent-3">Username</label>
+                        <input id="username_login" type="text" class="validate">
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="password_login" name="password" type="password" class="validate">
                         <label for="password_login" class="light-blue-text text-accent-3">Password</label>
+                        <input id="password_login" type="password" class="validate">
                     </div>
                 </div>
                 <div class="row right">
                     <a id="cancel-login" class="modal-action modal-close waves-effect waves-teal btn-flat">Cancel</a>
-                    <button id="submit-login" class="submit modal-action modal-close btn waves-effect waves-light blue accent-3" type="submit" name="action">Login <span class="fa fa-sign-in"></span></button>
+                    <button id="submit-login" class="submit btn waves-effect waves-light blue accent-3" name="action">Login <span class="fa fa-sign-in"></span></button>
                 </div>
             </form>
         </div>

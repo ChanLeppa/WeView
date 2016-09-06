@@ -7,6 +7,7 @@ function onLoad() {
     $('.modal-trigger').leanModal();
     signupForm = $('#signup-form');
     loginForm = $('#login-form');
+
     validateSignupFileds();
     validateLoginFileds();
     initButtons();
@@ -14,7 +15,7 @@ function onLoad() {
 
 function initButtons() {
     $('#lname, #fname, #username_signup, #password_signup, #email').change(validateSignupFileds);
-    // $('#btnGuest').click(guestLogin);
+    $('#username_login, #password_login').change(validateLoginFileds);
     $('#submit-signup').click(submitSignup);
     $('#submit-login').click(submitLogin);
 
@@ -67,7 +68,7 @@ function submitSignup() {
         lastName: $('#lname').val(),
         username: $('#username_signup').val(),
         email: $('#email').val(),
-        password: $('#password_signup').val(),
+        password: $('#password_signup').val()
         // photo: $('#photo').val()
     };
 

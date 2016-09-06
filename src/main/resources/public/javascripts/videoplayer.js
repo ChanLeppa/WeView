@@ -19,7 +19,10 @@ window.WeviewVideoPlayer = (function(WeviewVideoPlayer, $, undefined)
         this.subscriptionCallback = function (message, headers) {
             var playerSyncData = message.body;
             console.log("Server sent:" + message.body);
-            if(playerSyncData !== "CanPlay updated" && !playerSyncData.includes("Subscribed to player"))
+            if(playerSyncData.includes("subscribed to player")){
+                onUserSubscribedToPlayer();
+            }
+            else if(playerSyncData !== "CanPlay updated")
             {
                 playerSyncData = $.parseJSON(playerSyncData);
 

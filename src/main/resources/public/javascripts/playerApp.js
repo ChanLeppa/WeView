@@ -9,12 +9,41 @@ var timeDrag = false;
 $(onLoad());
 
 function onLoad() {
-    $(".dropdown-button").dropdown();
-    $(".modal-trigger").leanModal();
+    initPageButtons();
     videoControls = $("#video-controls").html();
+    $("#video-controls").empty();
     initUser()
         .then(updateDropboxControls);
     initVideoLinkButton();
+}
+
+function initPageButtons() {
+    $(".dropdown-button").dropdown();
+    $(".modal-trigger").leanModal();
+    $("#logoutBtn").click(logout);
+    $("input[type='radio']").change(function (event) {
+        if($(this).is(':checked')){
+            $("#search-input").removeAttr("disabled");
+        }
+    });
+    $("#search-input").change(function () {
+        if ($('#search-input').val().length > 0) {
+            $('#searchBtn').removeClass('disabled');
+        }
+        else {
+            $('#searchBtn').addClass('disabled');
+        }
+    });
+    $("#searchBtn").click(searchFriend);
+}
+
+function searchFriend() {
+    if($(this).is(':checked')){
+
+    }
+    //TODO: check witch radio button is selected
+    //TODO: take the search value and send request to server with the value
+    //TODO: on callback from the server show the friends found with a send friend request button
 }
 
 function initVideoLinkButton() {
@@ -53,9 +82,92 @@ function initUser() {
 
 function getUserFriends() {
     var dest = "/user/" + userData.username + "/friends";
-    $.get(dest, function (response) {
-        userData.friends = response.friends;
+    return new Promise(function(resovle, reject) {
+        $.get(dest, function (response) {
+            userData.friends = response.friends;
+            showUserFriends();
+            resovle();
+        });
     });
+}
+
+function logout() {
+    //TODO: add logout of the user and ridirect to the home page
+    //TODO: if the user is subscribed to video we need to unsubscribe him
+    //TODO: notify all friends the the user logged out
+}
+
+function showUserFriends() {
+    var friends = userData.friends;
+    $("#user-friends").html("");
+    $.each(friends, showFriend);
+    
+}
+
+function showFriend(index, friend) {
+    var li = "<li class='collection-item avatar z-depth-3' id='" + friend.username + "'>"
+        + "<img src='/images/useravatar.png' alt='user avatar' class='circle'>"
+        + "<span class='title'>" + friend.username + "</span>"
+        + "<p>" + friend.firstName + " " + friend.lastName + "</p>"
+        + "<a id='add-" + friend.username + "' class='btn-floating waves-effect waves-light red disabled'><i class='material-icons'>" + "add" + "</i></a>";
+
+    if(friend.loggedIn === true){
+        li = li + "<img class='online-sign secondary-content' src='/images/online.png' alt='online' class='circle'></li>";
+    }
+    else{
+        li = li + "<img class='online-sign secondary-content' src='/images/offline.png' alt='online' class='circle'></li>";
+    }
+
+    $("#user-friends").append(li).on("click", "#add-" + friend.username, function () {
+        alert("add button pressed: " + friend.username);
+        messenger.sendInvite(friend.username);
+    });
+}
+
+function enableAddFriendToWatchButton(){
+    $.each(userData.friends, function(index, friend){
+        if(friend.loggedIn === true){
+            $("#add-" + friend.username).removeClass("disabled");
+        }
+    });
+}
+
+function onUserSubscribedToPlayer(playerSyncData) {
+    var username = playerSyncData.split(" ")[0];
+    if (username !== userData.username) {
+        Materialize.toast(playerSyncData, 3000);
+        $("#add-" + username).addClass("disabled");
+    }
+}
+
+function updateUserLoginStatus(username, isLoggedIn) {
+    //TODO: check if the user subscribed to player??? and delete him?
+    $.each(userData.friends, function (index, friend) {
+        if(friend.username === username){
+            friend.loggedIn = isLoggedIn;
+        }
+        if(isLoggedIn === true){
+            $("#" + friend.username).find(".online-sign").attr("src","/images/online.png");
+            if(player !== null){
+                $("#add-" + friend.username).removeClass("disabled");
+            }
+        }
+        else{
+            $("#" + friend.username).find(".online-sign").attr("src","/images/offline.png");
+            $("#add-" + friend.username).addClass("disabled");
+        }
+    })
+}
+
+function acceptJoinPlayerRequest(event) {
+    // $("#joinplayer-notification").closeModal();
+    var requestingUsername = event.data;
+    var dest = "/user/" + requestingUsername + "/join";
+    $.get(dest, function (src) {
+        initializePlayer(requestingUsername, decodeURIComponent(src));
+    });
+    // messenger.subscribeToPlayer(requestingUsername, player.subscriptionCallback);
+
 }
 
 function getUserPhoto() {
@@ -87,17 +199,29 @@ function userSubscriptionCallBack(message, headers) {
     switch (msg.event) {
         case "login":
             console.log(msg.username + " logged in.");
+            Materialize.toast(msg.username + " logged in", 2000);
+            updateUserLoginStatus(msg.username, true);
             break;
         case "logout":
             console.log(msg.username + " logged out.");
+            Materialize.toast(msg.username + " logged out", 2000);
+            updateUserLoginStatus(msg.username, false);
             break;
         case "invite":
             console.log(msg.username + " invited you to watch.");
+            showJoinToPlayerModal(msg.username);
             break;
         case "acceptInvite":
             console.log(msg.username + " accepted your invitation to watch.");
+            // $("#add-" + msg.username).addClass("disabled");
             break;
     }
+}
+
+function showJoinToPlayerModal(username) {
+    $("#joinplayer-accept-btn").click(username ,acceptJoinPlayerRequest);
+    $("#joinplayer-text").html("").html(username + " invited you to watch a video together");
+    $("#joinplayer-notification").openModal();
 }
 
 function onNewSrcChosen(src) {
@@ -134,6 +258,7 @@ function createPlayer(src) {
         $.post(dest, src, function (response) {
             console.log(response);
             initializePlayer(userData.username, decodeURIComponent(src));
+            enableAddFriendToWatchButton();
             resolve(response);
         });
     });
@@ -420,8 +545,7 @@ function addDropboxFileNameToHtml(index, fileName){
     //first chaeck the video format...if it is video only then add to the page
     var b = "<li class='collection-item'><div>" + fileName + "<a href='#' id='dbx-button" + index + "' class='secondary-content'><i class='material-icons blue-text text-accent-2'>send</i></a></div></li>";
 
-    $('div#filenames').append(b);
-    $('div#filenames').on("click", "#dbx-button" + index, function () {
+    $('div#filenames').append(b).on("click", "#dbx-button" + index, function () {
         var dest = "/user/" + userData.username + "/dbxfilelink";
         $.get(dest, { fileName : fileName }, function(src) {
             $('#dropbox-modal').closeModal();
