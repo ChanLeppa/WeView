@@ -24,13 +24,13 @@ function onLoad() {
 
 function initPageButtons() {
     $(".dropdown-button").dropdown();
-    $(".modal-trigger").leanModal();
+    $(".modal-trigger#linkBtn").leanModal({
+        complete: restartLinkModal
+    });
+    $(".modal-trigger#searchFriendsBtn").leanModal({
+        complete: restartSearchModal
+    });
     $("#logoutBtn").click(logout);
-    // $("input[type='radio']").change(function (event) {
-    //     if($(this).is(':checked')){
-    //         $("#search-input").removeAttr("disabled");
-    //     }
-    // });
     $("#search-input").change(function () {
         if ($('#search-input').val().length > 0) {
             $('#searchBtn').removeClass('disabled');
@@ -39,60 +39,20 @@ function initPageButtons() {
             $('#searchBtn').addClass('disabled');
         }
     });
+    $("#link-URL").change(function () {
+        if ($('#link-URL').val().length > 0) {
+            $('#btnVideoLink').removeClass('disabled');
+        }
+        else {
+            $('#btnVideoLink').addClass('disabled');
+        }
+    });
     $("#searchBtn").click(searchFriend);
 }
 
-function searchFriend() {
-    $("#search-result").empty();
-    var friendResult;
-    var searchParam = $('#search-input').val();
-
-    if(searchParam === userData.username){
-        friendResult = "<div class='card-panel blue accent-3'><span class='white-text'>It's you :)</span></div>";
-        $("#search-result").append(friendResult);
-    }//TODO: check if the user i'm searching is me or one of my frinds...don't need to show
-    else{
-        sendSearchRequest(searchParam);
-    }
-}
-
-function sendSearchRequest(searchParam) {
-    var dest = "/user/" + userData.username + "/search-friend";
-    $.get(dest, {searchParam : searchParam}, function (response) {
-        console.log(response);
-        var friendResult = "<div class='card blue accent-3'>"
-            + "<div class='card-content white-text'>"
-            + "<span class='card-title'>" + response.username + "</span>"
-            + "<p>First name: " + response.firstName + "</p>"
-            + "<p>Last name: " + response.lastName + "</p></div>"
-            + "<div class='card-action'><a id='send-friend-reqBtn'>Send friend request</a></div></div>";
-        $("#search-result").off('click', "#send-friend-reqBtn");
-        $("#search-result").append(friendResult).on("click", "#send-friend-reqBtn", response.username, sendFriendRequest);
-    });
-}
-function sendFriendRequest(event) {
-    alert("sent friend request to: " + event.data);
-    $("#search-result").empty();
-    $('#search-input').val("");
-    //TODO: disable the search button
-    $("#friends-search").closeModal();
-    //TODO: send friend request from userData.username to friendUsername
-}
-
-function initVideoLinkButton() {
-    $('#link-url-form').submit(function (event) {
-        event.preventDefault();
-    });
-
-    $('#btnVideoLink').click(function() {
-        var linkTag = $('#link-URL');
-        var videoSrc = linkTag[0].value;
-        linkTag.trigger('autoresize');
-        linkTag.val('');
-        linkTag.trigger('autoresize');
-        $("#link-menu").closeModal();
-        onNewSrcChosen(videoSrc);
-    });
+function initUserDetails() {
+    var details = "<br><div class='chip'><img src='" + findIconPathByIconName(userData.icon) + "' alt='Contact Person'>" + userData.username + "</div>";
+    $("#user-details").empty().html(details);
 }
 
 function initUser() {
@@ -106,8 +66,8 @@ function initUser() {
                 .then(getUserFriends)
                 .then(sendUserLogin)
                 .catch(onWebSocketConnectionError);
-            getUserPhoto();
             getUserFriendRequests();
+            initUserDetails();
             resolve();
         });
     });
@@ -124,6 +84,86 @@ function getUserFriends() {
     });
 }
 
+function searchFriend() {
+    $("#search-result").empty();
+    var friendResult;
+    var searchParam = $('#search-input').val();
+
+    if(searchParam === userData.username || searchParam === userData.email){
+        friendResult = "<div class='center-align card-panel blue accent-3'><span class='white-text'>It's you :)</span></div>";
+        $("#search-result").append(friendResult);
+    }
+    else if(isSearchParamMyFriend(searchParam)){
+        friendResult = "<div class='center-align card-panel blue accent-3'><span class='white-text'>" + searchParam + " is already your friend!</span></div>";
+        $("#search-result").append(friendResult);
+    }
+    else{
+        sendSearchRequest(searchParam);
+    }
+}
+
+function isSearchParamMyFriend(searchParam) {
+    var isFriend = false;
+    $.each(userData.friends, function (index, friend) {
+        if(friend.username === searchParam || friend.email === searchParam){
+            isFriend = true;
+            return false;
+        }
+    });
+
+    return isFriend;
+}
+
+
+function sendSearchRequest(searchParam) {
+    var dest = "/user/" + userData.username + "/search-friend";
+    $.get(dest, {searchParam : searchParam}, function (response) {
+        console.log(response);
+        var friendResult = "<div class='card blue accent-3'>"
+            + "<div class='card-content white-text'>"
+            + "<span class='card-title'>" + response.username + "</span>"
+            + "<p>First name: " + response.firstName + "</p>"
+            + "<p>Last name: " + response.lastName + "</p></div>"
+            + "<div class='card-action'><a id='send-friend-reqBtn'>Send friend request</a></div></div>";
+        $("#search-result").off('click', "#send-friend-reqBtn");
+        $("#search-result").append(friendResult).on("click", "#send-friend-reqBtn", response.username, sendFriendRequest);
+    });
+}
+function sendFriendRequest(event) {
+    var dest = "/user/" + userData.username + "/friend-request/" + event.data;
+    restartSearchModal();
+    $("#friends-search").closeModal();
+    $.post(dest);
+}
+
+function restartSearchModal() {
+    $("#search-result").empty();
+    $('#search-input').val("");
+    $('#searchBtn').addClass('disabled');
+}
+
+function restartLinkModal() {
+    $("#link-URL").val("");
+    $("#btnVideoLink").addClass('disabled');
+}
+
+function initVideoLinkButton() {
+    // $('#link-url-form').submit(function (event) {
+    //     event.preventDefault();
+    // });
+
+    $('#btnVideoLink').click(function() {
+        var linkTag = $('#link-URL');
+        var videoSrc = linkTag[0].value;
+        linkTag.trigger('autoresize');
+        linkTag.val('');
+        linkTag.trigger('autoresize');
+        $("#link-menu").closeModal();
+        onNewSrcChosen(videoSrc);
+    });
+}
+
+
 function logout() {
     //TODO: add logout of the user and ridirect to the home page
     //TODO: if the user is subscribed to video we need to unsubscribe him
@@ -139,7 +179,7 @@ function showUserFriends() {
 
 function showFriend(index, friend) {
     var li = "<li class='collection-item avatar z-depth-3' id='" + friend.username + "'>"
-        + "<img src='/images/useravatar.png' alt='user avatar' class='circle'>"
+        + "<img src='" + findIconPathByIconName(friend.icon) + "' alt='user avatar' class='circle'>"
         + "<span class='title'>" + friend.username + "</span>"
         + "<p>" + friend.firstName + " " + friend.lastName + "</p>"
         + "<a id='add-" + friend.username + "' class='btn-floating waves-effect waves-light green disabled'><i class='material-icons'>" + "add" + "</i></a>"
@@ -168,6 +208,46 @@ function enableAddFriendToWatchButton(){
             $("#add-" + friend.username).removeClass("disabled");
         }
     });
+}
+
+function findIconPathByIconName(iconName) {
+    var iconPath;
+    switch(iconName) {
+        case "human":
+            iconPath = "/images/icons/human-icon.png";
+            break;
+        case "bird":
+            iconPath = "/images/icons/bird-icon.png";
+            break;
+        case "black-cat":
+            iconPath = "/images/icons/black-cat-icon.png";
+            break;
+        case "cow":
+            iconPath = "/images/icons/cow-icon.png";
+            break;
+        case "crab":
+            iconPath = "/images/icons/crab-icon.png";
+            break;
+        case "dog":
+            iconPath = "/images/icons/dog-icon.png";
+            break;
+        case "pig":
+            iconPath = "/images/icons/pig-icon.png";
+            break;
+        case "sheep":
+            iconPath = "/images/icons/sheep-icon.png";
+            break;
+        case "squid":
+            iconPath = "/images/icons/squid-icon.png";
+            break;
+        case "turtle":
+            iconPath = "/images/icons/turtle-icon.png";
+            break;
+        case "whale":
+            iconPath = "/images/icons/whale-icon.png";
+            break;
+    }
+    return iconPath;
 }
 
 function onUserSubscribedToPlayer(playerSyncData) {
@@ -208,12 +288,12 @@ function acceptJoinPlayerRequest(event) {
 
 }
 
-function getUserPhoto() {
-    var dest = "/user/" + userData.username + "/photo";
-    $.get(dest, function (response) {
-        userData.photo = response;
-    });
-}
+// function getUserPhoto() {
+//     var dest = "/user/" + userData.username + "/photo";
+//     $.get(dest, function (response) {
+//         userData.photo = response;
+//     });
+// }
 
 function getUserFriendRequests() {
     var dest = "/user/" + userData.username + "/friend-requests-notifications";

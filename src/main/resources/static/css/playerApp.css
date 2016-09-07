@@ -9,12 +9,7 @@ body {
 
 #video-controls {
     margin-bottom: 10px;
-    /*z-index: 2147483647;*/
 }
-
-/*#volume-controls {*/
-    /*align-content: right;*/
-/*}*/
 
 #play-controls, #volume-controls, #time-data, #progress-controls{
     padding: 0px;
@@ -55,6 +50,13 @@ video::-webkit-media-controls-enclosure {
 
 #user-friends > .collection-item{
     font-size: 12px;
+}
+
+#toast-container {
+    top: auto !important;
+    left: auto !important;
+    bottom: 10%;
+    right:5%;
 }
 
 /*textarea input[type=text]:focus {*/

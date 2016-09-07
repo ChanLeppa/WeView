@@ -28,10 +28,10 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    private String dbxToken;
+    @Column(nullable = false)
+    private String icon;
 
-    @Lob
-    private byte[] photo;
+    private String dbxToken;
 
     @ManyToMany
     @JoinTable(
@@ -49,12 +49,13 @@ public class User {
 
     protected User(){}
 
-    public User(String firstName, String lastName, String username, String email, String password) {
+    public User(String firstName, String lastName, String username, String email, String password, String icon) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
         this.email = email;
         this.password = password;
+        this.icon = icon;
     }
 
     public Long getId() {
@@ -109,12 +110,12 @@ public class User {
         this.dbxToken = dbxToken;
     }
 
-    public byte[] getPhoto() {
-        return photo;
+    public String getIcon() {
+        return icon;
     }
 
-    public void setPhoto(byte[] userPhoto) {
-        this.photo = userPhoto;
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     public Set<User> getFriends() {
@@ -155,9 +156,9 @@ public class User {
         }
     }
 
-
     private Boolean isAlreadyRequested(String username) {
-        return friendRequests.containsKey(username);
+        Boolean isAlreadyRequested = friendRequests.containsKey(username);
+        return isAlreadyRequested;
     }
 
     private Boolean isAlreadyFriend(String username) {
@@ -173,10 +174,11 @@ public class User {
     }
 
     private void updateRequest(FriendRequestNotification request) {
-        FriendRequestNotification oldRequest = friendRequests.get(request.getRequestingUsername());
+        String username = request.getRequestingUsername();
+        FriendRequestNotification oldRequest = friendRequests.get(username);
         if (oldRequest != null) {
             removeFriendRequest(oldRequest.getRequestingUsername());
-            addFriendRequest(request);
+            friendRequests.put(username, request);
         }
     }
 

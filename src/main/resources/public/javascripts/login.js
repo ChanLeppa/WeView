@@ -5,6 +5,7 @@ $(onLoad);
 function onLoad() {
     $('.parallax').parallax();
     $('.modal-trigger').leanModal();
+    $('select').material_select();
     signupForm = $('#signup-form');
     loginForm = $('#login-form');
 
@@ -68,8 +69,8 @@ function submitSignup() {
         lastName: $('#lname').val(),
         username: $('#username_signup').val(),
         email: $('#email').val(),
-        password: $('#password_signup').val()
-        // photo: $('#photo').val()
+        password: $('#password_signup').val(),
+        icon: $('#icons').val()
     };
 
     userSignup(userSignupData);

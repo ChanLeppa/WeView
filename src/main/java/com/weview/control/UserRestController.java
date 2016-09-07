@@ -67,7 +67,6 @@ public class UserRestController {
 
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public String signup(@RequestBody User newUser) {
-        User user = newUser;
         try {
             userRepository.save(newUser);
             userRepository.flush();
@@ -146,7 +145,7 @@ public class UserRestController {
     }
 
     @RequestMapping(value = "/user/{username}/friend-request/{friend}", method = RequestMethod.POST)
-    public String makeFriendRequest(@PathVariable("username") String usernameRequesting,
+    public void makeFriendRequest(@PathVariable("username") String usernameRequesting,
                                     @PathVariable("friend") String friendUsername) {
 
         User friend = null;
@@ -158,8 +157,8 @@ public class UserRestController {
 
         //Returns JSON that indicates that the user is logged in
         //so that the requesting client can send him the request via websocket
-        Boolean isFriendLoggedIn = loggedInUserRepository.isLoggedin(friend.getUsername());
-        return "{\"isFriendLoggedIn\" : \"" + isFriendLoggedIn.toString() + "\"}";
+//        Boolean isFriendLoggedIn = loggedInUserRepository.isLoggedin(friend.getUsername());
+//        return "{\"isFriendLoggedIn\" : \"" + isFriendLoggedIn.toString() + "\"}";
     }
 
     @RequestMapping(value = "/user/{username}/search-friend", method = RequestMethod.GET)
@@ -170,8 +169,7 @@ public class UserRestController {
                 (friend = userRepository.findByEmail(searchParam)) == null) {
             throw new UserNotFoundException();
         }
-        UserDataForClient friendData = new UserDataForClient(friend.getUsername(), friend.getFirstName(), friend.getLastName(), null, null);
-        return friendData;
+        return new UserDataForClient(friend.getUsername(), friend.getEmail(), friend.getFirstName(), friend.getLastName(), null, null, friend.getIcon());
     }
 
     private void notifyUserOfFriendRequest(User user, String usernameRequesting) {
@@ -186,7 +184,7 @@ public class UserRestController {
         String username = user.getUsername();
         Boolean isLoggedin = loggedInUserRepository.isLoggedin(username);
         Boolean isDbxToken = (user.getDbxToken() != null);
-        return new UserDataForClient(username, user.getFirstName(), user.getLastName(), isLoggedin, isDbxToken);
+        return new UserDataForClient(username, user.getEmail(), user.getFirstName(), user.getLastName(), isLoggedin, isDbxToken, user.getIcon());
     }
 
     @RequestMapping(value = "/user/{username}/friend-requests-notifications", method = RequestMethod.GET)
@@ -195,19 +193,19 @@ public class UserRestController {
         return user.getFriendRequests().values();
     }
 
-    @RequestMapping(value = "/user/{username}/photo", method = RequestMethod.GET)
-    public byte[] getUserPhoto(@PathVariable("username") String username) {
-        User user = getLoggedInUser(username);
-        return user.getPhoto();
-    }
-
-    @RequestMapping(value = "/user/{username}/photo", method = RequestMethod.POST)
-    public void uploadUserPhoto(@PathVariable("username") String username, byte[] photo) {
-        User user = getLoggedInUser(username);
-        user.setPhoto(photo);
-        userRepository.save(user);
-        userRepository.flush();
-    }
+//    @RequestMapping(value = "/user/{username}/photo", method = RequestMethod.GET)
+//    public byte[] getUserPhoto(@PathVariable("username") String username) {
+//        User user = getLoggedInUser(username);
+//        return user.getPhoto();
+//    }
+//
+//    @RequestMapping(value = "/user/{username}/photo", method = RequestMethod.POST)
+//    public void uploadUserPhoto(@PathVariable("username") String username, byte[] photo) {
+//        User user = getLoggedInUser(username);
+//        user.setPhoto(photo);
+//        userRepository.save(user);
+//        userRepository.flush();
+//    }
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(UserFieldConstraintException.class)

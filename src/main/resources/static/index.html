@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>We View</title>
+    <link rel="icon" href="/images/web_logo.png">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
     <link rel="stylesheet" href="http://fonts.googleapis.com/icon?family=Material+Icons">
@@ -81,14 +82,21 @@
                         <label for="email" class="light-blue-text text-accent-3">Email</label>
                         <input id="email" type="email" class="validate">
                     </div>
-                    <div class="file-field input-field col s6">
-                        <div class="blue accent-3 btn">
-                            <span>Photo</span>
-                            <input type="file">
-                        </div>
-                        <div class="file-path-wrapper">
-                            <input id="photo" class="file-path validate" type="text" name="photo">
-                        </div>
+                    <div class="input-field col s6">
+                        <select id="icons">
+                            <option value="human" data-icon="/images/icons/human-icon.png" class="left circle" selected>Human</option>
+                            <option value="bird" data-icon="/images/icons/bird-icon.png" class="left circle">Bird</option>
+                            <option value="black-cat" data-icon="/images/icons/black-cat-icon.png" class="left circle">Black cat</option>
+                            <option value="cow" data-icon="/images/icons/cow-icon.png" class="left circle">Cow</option>
+                            <option value="crab" data-icon="/images/icons/crab-icon.png" class="left circle">Crab</option>
+                            <option value="dog" data-icon="/images/icons/dog-icon.png" class="left circle">Dog</option>
+                            <option value="pig" data-icon="/images/icons/pig-icon.png" class="left circle">Pig</option>
+                            <option value="sheep" data-icon="/images/icons/sheep-icon.png" class="left circle">Sheep</option>
+                            <option value="squid" data-icon="/images/icons/squid-icon.png" class="left circle">Squid</option>
+                            <option value="turtle" data-icon="/images/icons/turtle-icon.png" class="left circle">Turtle</option>
+                            <option value="whale" data-icon="/images/icons/whale-icon.png" class="left circle">Whale</option>
+                        </select>
+                        <label>Images in select</label>
                     </div>
                 </div>
                 <div class="row right">
