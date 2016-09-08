@@ -200,7 +200,7 @@ function showFriend(index, friend) {
     });
 
     $("#user-friends").on("click", "#chatBtn-" + friend.username, function () {
-        this.disabled = true;
+        disableConnectedFriendChatButton(friend.username);
         initRTCCall(friend.username);
     });
 }
@@ -398,7 +398,7 @@ function userSubscriptionCallBack(message, headers) {
         case "RTCRoomID":
             console.log("RTC room id: " + msg.roomID.roomID);
             disableConnectedFriendChatButton(msg.roomID.username);
-            onReceiveRTCRoomID(msg.roomID);
+            onReceiveRTCRoomID(msg.roomID.roomID);
             break;
     }
 }
@@ -760,10 +760,13 @@ function disableConnectedFriendChatButton(username) {
 }
 
 function initRTCCall(username) {
-    initRTCConnection();
-    roomID = getRoomID();
+    if (roomID === null) {
+        initRTCConnection();
+        roomID = getRoomID();
+        peerConn.openOrJoin(roomID);
+    }
+
     messenger.sendRoomID(username, JSON.stringify({"username": userData.username, "roomID" : roomID}));
-    peerConn.openOrJoin(roomID);
     // //Test
     // if (userData.username === "jasonJS") {
     //     messenger.sendRoomID(roomID, "KellyC");
