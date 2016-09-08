@@ -18,6 +18,7 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
         this.k_InviteUrl = '/invite';
         this.k_AcceptInvite = '/accept';
         this.k_UpdateSrcUrl = '/update-src';
+        this.k_FriendAccepted = '/friend-accepted';
         this.k_RTCPrefixUrl = '/rtc';
         this.k_RTCCandidateUrl = '/rtc-candidate';
         this.k_RTCOfferUrl = '/rtc-offer';
@@ -132,6 +133,11 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
 
         this.sendAcceptInvite = function(i_Friend) {
             var dest = this.k_DestUrlPrefix + this.k_UserPrefix + '/' + i_Friend + this.k_AcceptInvite;
+            this.send(dest, this.m_Username);
+        };
+
+        this.sendFriendRequestAccepted = function(i_Friend) {
+            var dest = this.k_DestUrlPrefix + this.k_UserPrefix + '/' + i_Friend + this.k_FriendAccepted;
             this.send(dest, this.m_Username);
         };
 

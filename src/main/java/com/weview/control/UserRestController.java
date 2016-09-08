@@ -124,11 +124,11 @@ public class UserRestController {
         return user;
     }
 
-    @RequestMapping(value = "/user/{username}/make-friend", method = RequestMethod.POST)
-    public String makeFriend(@PathVariable("username") String usernameToBefriend,
-                             @RequestParam String username) {
-        //TODO: Friend request
-        User userRequesting = userRepository.findByUsername(username);
+    @RequestMapping(value = "/user/{username}/make-friend/{requesting}", method = RequestMethod.POST)
+    public void makeFriend(@PathVariable("username") String usernameToBefriend,
+                           @PathVariable("requesting") String usernameRequesting) {
+
+        User userRequesting = userRepository.findByUsername(usernameRequesting);
         User userToBefriend = userRepository.findByUsername(usernameToBefriend);
 
         if (userToBefriend == null || userRequesting == null) {
@@ -136,12 +136,27 @@ public class UserRestController {
         }
 
         userRequesting.addFriend(userToBefriend);
+        userToBefriend.removeFriendRequest(usernameRequesting);
 
         userRepository.save(userRequesting);
+        userRepository.save(userToBefriend);
         userRepository.flush();
+    }
 
-        //TODO: Return better argument
-        return "Bazinga!!!";
+    @RequestMapping(value = "/user/{username}/decline-friend/{requesting}", method = RequestMethod.POST)
+    public void declineFriend(@PathVariable("username") String usernameToBefriend,
+                           @PathVariable("requesting") String usernameRequesting) {
+
+        User userRequesting = userRepository.findByUsername(usernameRequesting);
+        User userToBefriend = userRepository.findByUsername(usernameToBefriend);
+
+        if (userToBefriend == null || userRequesting == null) {
+            throw new UserNotFoundException();
+        }
+
+        userToBefriend.removeFriendRequest(usernameRequesting);
+        userRepository.save(userToBefriend);
+        userRepository.flush();
     }
 
     @RequestMapping(value = "/user/{username}/friend-request/{friend}", method = RequestMethod.POST)

@@ -30,6 +30,9 @@ function initPageButtons() {
     $(".modal-trigger#searchFriendsBtn").leanModal({
         complete: restartSearchModal
     });
+    $(".modal-trigger#friend-requestsBtn").leanModal({
+        // ready: updateFriendRequest
+    });
     $("#logoutBtn").click(logout);
     $("#search-input").change(function () {
         if ($('#search-input').val().length > 0) {
@@ -263,16 +266,17 @@ function updateUserLoginStatus(username, isLoggedIn) {
     $.each(userData.friends, function (index, friend) {
         if(friend.username === username){
             friend.loggedIn = isLoggedIn;
-        }
-        if(isLoggedIn === true){
-            $("#" + friend.username).find(".online-sign").attr("src","/images/online.png");
-            if(player !== null){
-                $("#add-" + friend.username).removeClass("disabled");
+
+            if(isLoggedIn === true){
+                $("#" + friend.username).find(".online-sign").attr("src","/images/online.png");
+                if(player !== null){
+                    $("#add-" + friend.username).removeClass("disabled");
+                }
             }
-        }
-        else{
-            $("#" + friend.username).find(".online-sign").attr("src","/images/offline.png");
-            $("#add-" + friend.username).addClass("disabled");
+            else{
+                $("#" + friend.username).find(".online-sign").attr("src","/images/offline.png");
+                $("#add-" + friend.username).addClass("disabled");
+            }
         }
     })
 }
@@ -299,8 +303,59 @@ function getUserFriendRequests() {
     var dest = "/user/" + userData.username + "/friend-requests-notifications";
     $.get(dest, function (response) {
         userData.friendRequests = response;
+        updateFriendRequestModal();
     });
 }
+
+function updateFriendRequestModal() {
+    var requests = userData.friendRequests;
+    $(".badge").text(requests.length);
+    $("#friend-requests-list").empty();
+    
+    $.each(requests, function (index, request) {
+        var date = new Date(request.date);
+        var li = "<li class='collection-item black-text row' id='request-" + request.requestingUsername + "'>"
+            + "<div class='col s6 m6 l6'><h5 class='blue-text accent-3-text'>Username: " + request.requestingUsername + "</h5>"
+            + "<p>" + request.message + "</p>"
+            + "<p>Date: " + date.toLocaleString() + "</p></div>"
+            + "<div class='col s6 m6 l6'><a id='decline-" + request.requestingUsername + "' class='btn waves-effect waves-light red right'><i class='material-icons'>" + "clear" + "</i></a>"
+            + "<a id='accept-" + request.requestingUsername + "' class='btn waves-effect waves-light green right'><i class='material-icons'>" + "done" + "</i></a></div>";
+        $("#friend-requests-list").append(li).on("click", "#decline-" + request.requestingUsername, function () {
+            declineFriend(request.requestingUsername);
+        }).on("click", "#accept-" + request.requestingUsername, function () {
+            makeFriend(request.requestingUsername);
+        });
+    });
+
+}
+
+function makeFriend(requesting) {
+    var dest = "/user/" + userData.username + "/make-friend/" + requesting;
+    $.post(dest, function (response) {
+        messenger.sendFriendRequestAccepted(requesting);
+        getUserFriendRequests();
+        addFriendToUser(requesting);
+    });
+}
+
+function addFriendToUser(username) {
+    var dest = "/user/" + username + "/user-data";
+    $.get(dest, function (response) {
+        userData.friends.push(response);
+        showFriend({}, response);
+    });
+}
+
+function declineFriend(requesting) {
+    var dest = "/user/" + userData.username + "/decline-friend/" + requesting;
+    $.post(dest, function (response) {
+        getUserFriendRequests();
+    });
+}
+
+// function removeFriendRequestFromHtml(requestingUsername) {
+//     $("#request-"+ requestingUsername).remove();
+// }
 
 function onWebSocketConnection() {
     messenger.subscribeToUser(userSubscriptionCallBack);
@@ -334,6 +389,11 @@ function userSubscriptionCallBack(message, headers) {
         case "acceptInvite":
             console.log(msg.username + " accepted your invitation to watch.");
             $("#add-" + msg.username).addClass("disabled");
+            break;
+        case "friendAccepted":
+            console.log(msg.username + " accepted your friend request");
+            Materialize.toast(msg.username + " accepted your friend request", 2000);
+            addFriendToUser(msg.username);
             break;
         case "RTCRoomID":
             console.log("RTC room id: " + msg.roomID.roomID);

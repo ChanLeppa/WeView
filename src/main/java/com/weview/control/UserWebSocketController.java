@@ -34,6 +34,12 @@ public class UserWebSocketController {
         return "{\"event\" : \"acceptInvite\", \"username\" : \"" + acceptingUsername + "\"}";
     }
 
+    @MessageMapping("user/{username}/friend-accepted")
+    @SendTo("/topic/user/{username}")
+    public String friendRequestAccepted(String acceptingUsername) {
+        return "{\"event\" : \"friendAccepted\", \"username\" : \"" + acceptingUsername + "\"}";
+    }
+
     @MessageMapping("/rtc/{roomID}/rtc-candidate")
     @SendTo("/topic/rtc/{roomID}")
     public String signalRTCCandidate(String candidate) {
