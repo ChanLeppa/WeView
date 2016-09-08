@@ -54,6 +54,7 @@ public class DropboxController {
         if (user == null) {
             throw new UserNotFoundException();
         }
+
         return (user.getDbxToken() != null);
     }
 

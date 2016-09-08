@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -66,7 +68,7 @@ public class UserRestController {
     }
 
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
-    public String signup(@RequestBody User newUser) {
+    public void signup(HttpServletResponse response, @RequestBody User newUser) throws IOException {
         try {
             userRepository.save(newUser);
             userRepository.flush();
@@ -87,7 +89,7 @@ public class UserRestController {
             throw e;
         }
 
-        return "/user/" + newUser.getUsername();
+        response.sendRedirect("/user/" + newUser.getUsername());
     }
 
     @RequestMapping(value = "/user/{username}/user-data", method = RequestMethod.GET)
@@ -169,6 +171,7 @@ public class UserRestController {
                 (friend = userRepository.findByEmail(searchParam)) == null) {
             throw new UserNotFoundException();
         }
+
         return new UserDataForClient(friend.getUsername(), friend.getEmail(), friend.getFirstName(), friend.getLastName(), null, null, friend.getIcon());
     }
 
