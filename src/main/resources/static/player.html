@@ -49,8 +49,15 @@
         <div id="player-container">
             <div class="row" id="video-controls-container">
                 <div class="col s2 m2 l2">
-                    <div id="user-details" class="row">
+                    <div id="user-details">
 
+                    </div>
+                    <div id="chat-container">
+                        <ul id="chat-collection" class="collection">
+                            <li class="collection-item blue accent-3" id="local-chat-container"></li>
+                        </ul>
+                        <!--<div id="local-chat-container"></div>-->
+                        <!--<div id="remote-chat-container"></div>-->
                     </div>
                 </div>
                 <div id="center-page" class="col s8 m8 l8">
@@ -182,13 +189,7 @@
         </div>
     </div>
 
-    <div id="chat-container">
-        <!--<button id="chat">Open New Room</button>-->
-        <div id="local-chat-container"></div>
-        <!--<video id="local-chat-window" autoplay></video>-->
-        <div id="remote-chat-container"></div>
-        <!--<video id="remote-chat-window"></video>-->
-    </div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>

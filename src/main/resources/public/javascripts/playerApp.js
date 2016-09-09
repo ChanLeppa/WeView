@@ -70,6 +70,7 @@ function initUser() {
                 .then(sendUserLogin)
                 .catch(onWebSocketConnectionError);
             getUserFriendRequests();
+            setInterval(getUserFriendRequests, 60000);
             initUserDetails();
             resolve();
         });
@@ -151,10 +152,6 @@ function restartLinkModal() {
 }
 
 function initVideoLinkButton() {
-    // $('#link-url-form').submit(function (event) {
-    //     event.preventDefault();
-    // });
-
     $('#btnVideoLink').click(function() {
         var linkTag = $('#link-URL');
         var videoSrc = linkTag[0].value;
@@ -185,14 +182,15 @@ function showFriend(index, friend) {
         + "<img src='" + findIconPathByIconName(friend.icon) + "' alt='user avatar' class='circle'>"
         + "<span class='title'>" + friend.username + "</span>"
         + "<p>" + friend.firstName + " " + friend.lastName + "</p>"
-        + "<a id='add-" + friend.username + "' class='btn-floating waves-effect waves-light green disabled'><i class='material-icons'>" + "add" + "</i></a>"
-        + " <a id='chatBtn-" + friend.username + "' class='btn-floating waves-effect waves-light blue'><i class='material-icons'>" + "voice_chat" + "</i></a>" ;
+        + "<a id='add-" + friend.username + "' class='btn-floating waves-effect waves-light green disabled'><i class='material-icons'>" + "add" + "</i></a>";
 
     if(friend.loggedIn === true){
-        li = li + "<img class='online-sign secondary-content' src='/images/online.png' alt='online' class='circle'></li>";
+        li = li + "<a id='chatBtn-" + friend.username + "' class='btn-floating waves-effect waves-light blue'><i class='material-icons'>" + "voice_chat" + "</i></a>"
+                + "<img class='online-sign secondary-content' src='/images/online.png' alt='online' class='circle'></li>";
     }
     else{
-        li = li + "<img class='online-sign secondary-content' src='/images/offline.png' alt='online' class='circle'></li>";
+        li = li + "<a id='chatBtn-" + friend.username + "' class='btn-floating waves-effect waves-light blue disabled'><i class='material-icons'>" + "voice_chat" + "</i></a>"
+                + "<img class='online-sign secondary-content' src='/images/offline.png' alt='online' class='circle'></li>";
     }
 
     $("#user-friends").append(li).on("click", "#add-" + friend.username, function () {
@@ -269,12 +267,14 @@ function updateUserLoginStatus(username, isLoggedIn) {
 
             if(isLoggedIn === true){
                 $("#" + friend.username).find(".online-sign").attr("src","/images/online.png");
+                $("#chatBtn-" + friend.username).removeClass("disabled");
                 if(player !== null){
                     $("#add-" + friend.username).removeClass("disabled");
                 }
             }
             else{
                 $("#" + friend.username).find(".online-sign").attr("src","/images/offline.png");
+                $("#chatBtn-" + friend.username).addClass("disabled");
                 $("#add-" + friend.username).addClass("disabled");
             }
         }
@@ -763,8 +763,11 @@ function initRTCCall(username) {
     if (roomID === null) {
         initRTCConnection();
         roomID = getRoomID();
-        peerConn.openOrJoin(roomID);
+        peerConn.open(roomID);
     }
+    // else{
+    //     peerConn.userid = userData.username;
+    // }
 
     messenger.sendRoomID(username, JSON.stringify({"username": userData.username, "roomID" : roomID}));
     // //Test
@@ -782,7 +785,6 @@ function getRoomID() {
     if (roomID === null) {
         id = peerConn.token();
     }
-
     return id;
 }
 
@@ -790,12 +792,19 @@ function getRoomID() {
 function onReceiveRTCRoomID(newRoomID) {
     roomID = newRoomID;
     initRTCConnection();
-    peerConn.openOrJoin(roomID);
+    peerConn.join(roomID);
+
 }
 
 
 function initRTCConnection() {
     peerConn = new RTCMultiConnection();
+
+    peerConn.userid = userData.username;
+
+    // peerConn.exrta = {
+    //     username : userData.username
+    // };
 
     peerConn.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';
 
@@ -809,28 +818,45 @@ function initRTCConnection() {
         OfferToReceiveVideo: true
     };
 
-    var chatContainer = $('#chat-container');
-    var localChatContainer = $('#local-chat-container')[0];
-    var remoteChatContainer = $('#remote-chat-container')[0];
+    // var chatContainer = $('#chat-container');
+    // var localChatContainer = $('#local-chat-container')[0];
+    // var remoteChatContainer = $('#remote-chat-container')[0];
 
     peerConn.onstream = function (event) {
-        var video = event.mediaElement;
+        // peerConn.updateExtraData();
 
-        video.width = 250;
-        video.height = 200;
+        var video = event.mediaElement;
+        video.style.width = '100%';
+        video.style.height = '100%';
         video.controls = false;
 
         if (event.type === "remote") {
-            remoteChatContainer.appendChild(video);
+            $("#chat-collection").append(prepareRemoteVideoChatCard(event.userid));
+            $('#chatcard-' + event.userid)[0].appendChild(video);
+            // remoteChatContainer.appendChild(video);
         }
         else {
-            localChatContainer.appendChild(video);
+            $("#local-chat-container")[0].innerHTML = prepareLocalVideoChatCard();
+            $('#chatcard-' + userData.username)[0].appendChild(video);
         }
     };
 }
 
 
+function prepareLocalVideoChatCard() {
+    var chat = "<p>" + userData.username + "</p>"
+        + "<div id='chatcard-" + userData.username + "'>"
+        + "</div>";
+    return chat;
+}
 
+function prepareRemoteVideoChatCard(userid) {
+    var chat = "<li class='collection-item blue accent-3'><p>" + userid + "</p>"
+        + "<div id='chatcard-" + userid + "'>"
+        + "</div></li>";
+    return chat;
+
+}
 // function onRTCRoomSubscriptionCallback(message, headers) {
 //     var data = JSON.parse(message.body);
 //     console.log("Server sent:" + message.body);
