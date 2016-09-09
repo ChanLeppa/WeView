@@ -761,29 +761,21 @@ function disableConnectedFriendChatButton(username) {
 
 function initRTCCall(username) {
     if (roomID === null) {
-        initRTCConnection();
+        initRTCConnection(username);
         roomID = getRoomID();
         peerConn.open(roomID);
     }
-    // else{
-    //     peerConn.userid = userData.username;
-    // }
-
-    messenger.sendRoomID(username, JSON.stringify({"username": userData.username, "roomID" : roomID}));
-    // //Test
-    // if (userData.username === "jasonJS") {
-    //     messenger.sendRoomID(roomID, "KellyC");
-    // }
-    // else {
-    //     messenger.sendRoomID(roomID, "jasonJS");
-    // }
+    else {
+        messenger.sendRoomID(username, JSON.stringify({"username": userData.username, "roomID" : roomID}));
+    }
 }
 
 function getRoomID() {
     var id;
 
     if (roomID === null) {
-        id = peerConn.token();
+        // id = peerConn.token();
+        id = userData.username;
     }
     return id;
 }
@@ -793,18 +785,14 @@ function onReceiveRTCRoomID(newRoomID) {
     roomID = newRoomID;
     initRTCConnection();
     peerConn.join(roomID);
-
+    //TODO:disable all video chat buttons
 }
 
 
-function initRTCConnection() {
+function initRTCConnection(username) {
     peerConn = new RTCMultiConnection();
 
     peerConn.userid = userData.username;
-
-    // peerConn.exrta = {
-    //     username : userData.username
-    // };
 
     peerConn.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';
 
@@ -818,40 +806,42 @@ function initRTCConnection() {
         OfferToReceiveVideo: true
     };
 
-    // var chatContainer = $('#chat-container');
-    // var localChatContainer = $('#local-chat-container')[0];
-    // var remoteChatContainer = $('#remote-chat-container')[0];
-
     peerConn.onstream = function (event) {
-        // peerConn.updateExtraData();
 
         var video = event.mediaElement;
         video.style.width = '100%';
         video.style.height = '100%';
         video.controls = false;
+        video.className += "video-chat";
 
         if (event.type === "remote") {
             $("#chat-collection").append(prepareRemoteVideoChatCard(event.userid));
             $('#chatcard-' + event.userid)[0].appendChild(video);
-            // remoteChatContainer.appendChild(video);
         }
         else {
-            $("#local-chat-container")[0].innerHTML = prepareLocalVideoChatCard();
-            $('#chatcard-' + userData.username)[0].appendChild(video);
+            if(roomID === userData.username){
+                messenger.sendRoomID(username, JSON.stringify({"username": userData.username, "roomID" : roomID}));
+            }
+            $("#local-chat-container")[0].innerHTML = prepareLocalVideoChatCard(event.userid);
+            $('#chatcard-' + event.userid)[0].appendChild(video);
         }
+    };
+
+    peerConn.onstreamended = function (event) {
+        e.mediaElement.parentNode.removeChild(e.mediaElement);
     };
 }
 
 
-function prepareLocalVideoChatCard() {
-    var chat = "<p>" + userData.username + "</p>"
-        + "<div id='chatcard-" + userData.username + "'>"
+function prepareLocalVideoChatCard(username) {
+    var chat = "<p class='chat-title'>" + username + "</p>"
+        + "<div id='chatcard-" + username + "'>"
         + "</div>";
     return chat;
 }
 
 function prepareRemoteVideoChatCard(userid) {
-    var chat = "<li class='collection-item blue accent-3'><p>" + userid + "</p>"
+    var chat = "<li class='collection-item blue accent-3 white-text chat-collection'><p class='chat-title'>" + userid + "</p>"
         + "<div id='chatcard-" + userid + "'>"
         + "</div></li>";
     return chat;

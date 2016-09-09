@@ -64,6 +64,22 @@ video::-webkit-media-controls-enclosure {
     box-shadow: 0 1px 0 0 #00b0ff;
 }
 
+.video-chat {
+    border-radius: 15px;
+    border: 3px solid black;
+}
+
+.chat-title{
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+.chat-collection{
+    /*padding-right: 5px !important;*/
+    /*padding-left: 5px !important;*/
+    padding: 5px !important;
+}
+
 /*textarea input[type=text]:focus {*/
     /*border-bottom: 1px solid #00b0ff;*/
     /*box-shadow: 0 1px 0 0 #00b0ff;*/
