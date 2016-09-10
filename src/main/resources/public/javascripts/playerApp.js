@@ -198,7 +198,7 @@ function showFriend(index, friend) {
     });
 
     $("#user-friends").on("click", "#chatBtn-" + friend.username, function () {
-        disableConnectedFriendChatButton(friend.username);
+        disableFriendChatButton(friend.username);
         initRTCCall(friend.username);
     });
 }
@@ -254,7 +254,7 @@ function findIconPathByIconName(iconName) {
 function onUserSubscribedToPlayer(playerSyncData) {
     var username = playerSyncData.split(" ")[0];
     if (username !== userData.username) {
-        Materialize.toast(playerSyncData, 3000);
+        toast(playerSyncData, 3000);
         $("#add-" + username).addClass("disabled");
     }
 }
@@ -268,7 +268,7 @@ function updateUserLoginStatus(username, isLoggedIn) {
             if(isLoggedIn === true){
                 $("#" + friend.username).find(".online-sign").attr("src","/images/online.png");
                 if(peerConn === null || roomID === userData.username){
-                    $("#chatBtn-" + friend.username).removeClass("disabled");
+                    enableFriendChatButton(friend.username);
                 }
                 if(player !== null){
                     $("#add-" + friend.username).removeClass("disabled");
@@ -276,7 +276,7 @@ function updateUserLoginStatus(username, isLoggedIn) {
             }
             else{
                 $("#" + friend.username).find(".online-sign").attr("src","/images/offline.png");
-                $("#chatBtn-" + friend.username).addClass("disabled");
+                disableFriendChatButton(friend.username);
                 $("#add-" + friend.username).addClass("disabled");
             }
         }
@@ -284,22 +284,12 @@ function updateUserLoginStatus(username, isLoggedIn) {
 }
 
 function acceptJoinPlayerRequest(event) {
-    // $("#joinplayer-notification").closeModal();
     var requestingUsername = event.data;
     var dest = "/user/" + requestingUsername + "/join";
     $.get(dest, function (src) {
         initializePlayer(requestingUsername, decodeURIComponent(src));
     });
-    // messenger.subscribeToPlayer(requestingUsername, player.subscriptionCallback);
-
 }
-
-// function getUserPhoto() {
-//     var dest = "/user/" + userData.username + "/photo";
-//     $.get(dest, function (response) {
-//         userData.photo = response;
-//     });
-// }
 
 function getUserFriendRequests() {
     var dest = "/user/" + userData.username + "/friend-requests-notifications";
@@ -322,6 +312,7 @@ function updateFriendRequestModal() {
             + "<p>Date: " + date.toLocaleString() + "</p></div>"
             + "<div class='col s6 m6 l6'><a id='decline-" + request.requestingUsername + "' class='btn waves-effect waves-light red right'><i class='material-icons'>" + "clear" + "</i></a>"
             + "<a id='accept-" + request.requestingUsername + "' class='btn waves-effect waves-light green right'><i class='material-icons'>" + "done" + "</i></a></div>";
+
         $("#friend-requests-list").append(li).on("click", "#decline-" + request.requestingUsername, function () {
             declineFriend(request.requestingUsername);
         }).on("click", "#accept-" + request.requestingUsername, function () {
@@ -355,18 +346,12 @@ function declineFriend(requesting) {
     });
 }
 
-// function removeFriendRequestFromHtml(requestingUsername) {
-//     $("#request-"+ requestingUsername).remove();
-// }
-
 function onWebSocketConnection() {
     messenger.subscribeToUser(userSubscriptionCallBack);
 }
 
 function sendUserLogin() {
     messenger.sendUserLogin(userData.friends);
-    // initRTC();
-    // initCreateRTCRoom();
 }
 
 function userSubscriptionCallBack(message, headers) {
@@ -376,12 +361,12 @@ function userSubscriptionCallBack(message, headers) {
     switch (msg.event) {
         case "login":
             console.log(msg.username + " logged in.");
-            Materialize.toast(msg.username + " logged in", 2000);
+            toast(msg.username + " logged in", 2000);
             updateUserLoginStatus(msg.username, true);
             break;
         case "logout":
             console.log(msg.username + " logged out.");
-            Materialize.toast(msg.username + " logged out", 2000);
+            toast(msg.username + " logged out", 2000);
             updateUserLoginStatus(msg.username, false);
             break;
         case "invite":
@@ -394,15 +379,17 @@ function userSubscriptionCallBack(message, headers) {
             break;
         case "friendAccepted":
             console.log(msg.username + " accepted your friend request");
-            Materialize.toast(msg.username + " accepted your friend request", 2000);
+            toast(msg.username + " accepted your friend request", 2000);
             addFriendToUser(msg.username);
             break;
         case "RTCRoomID":
             console.log("RTC room id: " + msg.roomID.roomID);
-            disableConnectedFriendChatButton(msg.roomID.username);
-            onReceiveRTCRoomID(msg.roomID.roomID);
+            onReceiveRTCRoomID(msg.roomID.roomID, msg.roomID.username);
             break;
     }
+}
+function toast(msg, time) {
+    Materialize.toast(msg, time, 'blue accent-3');
 }
 
 function showJoinToPlayerModal(username) {
@@ -757,8 +744,12 @@ function onWebSocketConnectionError(error) {
 
 //WRTC
 ////////////////////////////////////////////////////////////////////////////////
-function disableConnectedFriendChatButton(username) {
+function disableFriendChatButton(username) {
     $('#chatBtn-' + username).addClass("disabled");
+}
+
+function enableFriendChatButton(username) {
+    $('#chatBtn-' + username).removeClass("disabled");
 }
 
 function initRTCCall(username) {
@@ -783,11 +774,13 @@ function getRoomID() {
 }
 
 
-function onReceiveRTCRoomID(newRoomID) {
-    roomID = newRoomID;
-    initRTCConnection();
-    peerConn.join(roomID);
-    //TODO:disable all video chat buttons
+function onReceiveRTCRoomID(newRoomID, username) {
+    if(roomID === null){
+        disableFriendChatButton(username);
+        roomID = newRoomID;
+        initRTCConnection();
+        peerConn.join(roomID);
+    }
 }
 
 
@@ -831,23 +824,85 @@ function initRTCConnection(username) {
             $("#local-chat-container")[0].innerHTML = prepareLocalVideoChatCard(event.userid);
             $('#chatcard-' + event.userid)[0].appendChild(video);
             document.getElementById("exitChat").onclick = exitChat;
-            // $('#chatcard-' + event.userid).on("click", "#exitChat", exitChat);
-
         }
     };
 
-    peerConn.onstreamended = function (event) {
-        // e.mediaElement.parentNode.removeChild(e.mediaElement);
+    // peerConn.onstreamended = function (event) {
+    //     alert(event.userid + " has left");
+    // };
+
+    // peerConn.onleave = function (event) {
+    //     alert(event.userid + " has left");
+    // }
+
+    peerConn.onstreamended = function(event) {
+        var mediaElement = document.getElementById(event.streamid);
+        if(mediaElement) {
+            if(event.type === "local"){
+                $("#local-chat-container").empty();
+            }
+            removeRemoteVideoChatCards(event);
+            enableOnlineFriendsChatButtons();
+            roomID = null;
+        }
+    };
+
+    peerConn.onEntireSessionClosed = function(event) {
+        peerConn.attachStreams.forEach(function(stream) {
+            stream.stop();
+        });
+        if(peerConn.userid === event.userid) return;
+        toast('Entire chat has been closed by: ' + event.userid, 3000);
+    };
+
+    peerConn.onUserStatusChanged = function (event) {
+        if(event.status === "offline"){
+            var username = event.userid;
+            $("#chatlist-" + username).remove();
+            if(peerConn.isInitiator){
+                $.each(userData.friends, function (index, friend) {
+                    if(friend.username === username){
+                        if(friend.loggedIn){
+                            enableFriendChatButton(username);
+                        }
+                    }
+                });
+            }
+            toast(event.userid + ' has left the chat', 2000);
+        }
     };
 }
 
+function removeRemoteVideoChatCards() {
+    $(".remote-item").remove();
+}
+
 function exitChat() {
-    alert("I want to exit chat!!!");
+    this.disabled = true;
+    if(peerConn.isInitiator){
+        peerConn.closeEntireSession(function () {
+            toast("Entire chat has been closed", 2000);
+        });
+    }
+    else{
+        peerConn.leave();
+        peerConn.attachStreams.forEach(function(stream) {
+            stream.stop();
+        });
+    }
 }
 
 function disableAllChatButtons() {
     $.each(userData.friends, function (index, friend) {
-        disableConnectedFriendChatButton(friend.username);
+        disableFriendChatButton(friend.username);
+    });
+}
+
+function enableOnlineFriendsChatButtons() {
+    $.each(userData.friends, function (index, friend) {
+        if(friend.loggedIn){
+            enableFriendChatButton(friend.username);
+        }
     });
 }
 
@@ -861,7 +916,7 @@ function prepareLocalVideoChatCard(userid) {
 }
 
 function prepareRemoteVideoChatCard(userid) {
-    var chat = "<li class='collection-item white-text blue accent-3 chat-collection'>"
+    var chat = "<li id='chatlist-" + userid + "' class='collection-item white-text blue accent-3 chat-collection remote-item'>"
         + "<p class='chat-title'>" + userid + "</p>"
         + "<div id='chatcard-" + userid + "'>"
         + "</div></li>";
