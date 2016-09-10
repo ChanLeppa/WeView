@@ -54,7 +54,7 @@ function initPageButtons() {
 }
 
 function initUserDetails() {
-    var details = "<br><div class='chip'><img src='" + findIconPathByIconName(userData.icon) + "' alt='Contact Person'>" + userData.username + "</div>";
+    var details = "<div class='chip right'><img src='" + findIconPathByIconName(userData.icon) + "' alt='Contact Person'>" + userData.username + "</div>";
     $("#user-details").empty().html(details);
 }
 
@@ -267,7 +267,9 @@ function updateUserLoginStatus(username, isLoggedIn) {
 
             if(isLoggedIn === true){
                 $("#" + friend.username).find(".online-sign").attr("src","/images/online.png");
-                $("#chatBtn-" + friend.username).removeClass("disabled");
+                if(peerConn === null || roomID === userData.username){
+                    $("#chatBtn-" + friend.username).removeClass("disabled");
+                }
                 if(player !== null){
                     $("#add-" + friend.username).removeClass("disabled");
                 }
@@ -814,6 +816,10 @@ function initRTCConnection(username) {
         video.controls = false;
         video.className += "video-chat";
 
+        if(roomID !== userData.username){
+            disableAllChatButtons();
+        }
+
         if (event.type === "remote") {
             $("#chat-collection").append(prepareRemoteVideoChatCard(event.userid));
             $('#chatcard-' + event.userid)[0].appendChild(video);
@@ -824,158 +830,41 @@ function initRTCConnection(username) {
             }
             $("#local-chat-container")[0].innerHTML = prepareLocalVideoChatCard(event.userid);
             $('#chatcard-' + event.userid)[0].appendChild(video);
+            document.getElementById("exitChat").onclick = exitChat;
+            // $('#chatcard-' + event.userid).on("click", "#exitChat", exitChat);
+
         }
     };
 
     peerConn.onstreamended = function (event) {
-        e.mediaElement.parentNode.removeChild(e.mediaElement);
+        // e.mediaElement.parentNode.removeChild(e.mediaElement);
     };
 }
 
+function exitChat() {
+    alert("I want to exit chat!!!");
+}
 
-function prepareLocalVideoChatCard(username) {
-    var chat = "<p class='chat-title'>" + username + "</p>"
-        + "<div id='chatcard-" + username + "'>"
+function disableAllChatButtons() {
+    $.each(userData.friends, function (index, friend) {
+        disableConnectedFriendChatButton(friend.username);
+    });
+}
+
+function prepareLocalVideoChatCard(userid) {
+    var exitBtn = "<div class='col s4 m4' id='exitChatDiv'><a id='exitChat' class='btn-floating waves-effect waves-light red right'>"
+        + "<i class='material-icons'>exit_to_app</i></a></div>";
+    var chat = "<div class='row'><p class='chat-title col s8 m8'>" + userid + "</p>" + exitBtn + "</div>"
+        + "<div id='chatcard-" + userid + "'>"
         + "</div>";
     return chat;
 }
 
 function prepareRemoteVideoChatCard(userid) {
-    var chat = "<li class='collection-item blue accent-3 white-text chat-collection'><p class='chat-title'>" + userid + "</p>"
+    var chat = "<li class='collection-item white-text blue accent-3 chat-collection'>"
+        + "<p class='chat-title'>" + userid + "</p>"
         + "<div id='chatcard-" + userid + "'>"
         + "</div></li>";
     return chat;
-
 }
-// function onRTCRoomSubscriptionCallback(message, headers) {
-//     var data = JSON.parse(message.body);
-//     console.log("Server sent:" + message.body);
-//
-//     var usename = msg.candidate.username || msg.offer.username || msg.answer.username;
-//
-//     if (username !== userData.username) {
-//         switch (msg.event) {
-//             case "RTCCandidate":
-//                 onRTCCandidate(msg.candidate);
-//                 break;
-//             case "RTCOffer":
-//                 onRTCOffer(msg.offer);
-//                 break;
-//             case "RTCAnswer":
-//                 onRTCAnswer(msg.answer);
-//                 break;
-//         }
-//     }
-//
-// }
-//
-// function initRTC() {
-//
-//     messenger.subscribeToRTCRoom("rtc-room", onRTCRoomSubscriptionCallback);
-//
-//     var configuration = {
-//         "iceServers": [{ "url": "stun:stun.1.google.com:19302" }]
-//     };
-//
-//     if (peerConn == null) {
-//         peerConn = new RTCPeerConnection(configuration);
-//     }
-//
-//     peerConn.onaddstream = function (event) {
-//         //TODO: Enter a username in tag id
-//         selfView.append('<video id="remote-chat-window"></video>');
-//         remoteView = $('#remote-chat-window')[0];
-//         remoteView.height = 200;
-//         remoteView.width = 250;
-//         remoteView.src = URL.createObjectURL(event.stream);
-//     };
-//
-//     peerConn.onopen = function () {
-//         console.log("RTC connection established")
-//     };
-//
-//     peerConn.onerror = function (error) {
-//         console.log("ERROR: RTC connection error: " + error);
-//     };
-//
-//     peerConn.onicecandidate = function (event) {
-//         if (event.candidate) {
-//             messenger.sendRTCCandidate("rtc-room", JSON.stringify({"username": userData.username ,"candidate": event.candidate}));
-//         }
-//     };
-//
-//     navigator.getUserMedia = getUserMedia();
-//
-//     $('#chat').click(createRTCOffer);
-//
-// }
-//
-// function createRTCOffer(username) {
-//     navigator.getUserMedia({video: true, audio: true}, function (stream) {
-//         selfView.height = 200;
-//         selfView.width = 250;
-//         selfView.src = URL.createObjectURL(stream);
-//         peerConn.addStream(stream);
-//         peerConn.createOffer(function (offer) {
-//             messenger.sendRTCOffer("rtc-room", JSON.stringify({"username": userData.username ,"offer": offer}));
-//             peerConn.setLocalDescription(offer);
-//         }, showCantCreateOffer);
-//     }, getUserMediaError);
-// }
-//
-// function onRTCOffer(offer) {
-//     navigator.getUserMedia({video: true, audio: true}, function (stream) {
-//         peerConn.addStream(stream);
-//         peerConn.setRemoteDescription(new RTCSessionDescription(offer));
-//         peerConn.createAnswer(function (answer) {
-//             peerConn.setLocalDescription(answer);
-//             messenger.sendRTCAnswer("rtc-room", JSON.stringify({"username": userData.username ,"answer": answer}));
-//         });
-//     }, getUserMediaError);
-// }
-//
-// function onRTCAnswer(answer) {
-//     peerConn.setRemoteDescription(new RTCSessionDescription(answer));
-// }
-//
-// function onRTCCandidate(candidate) {
-//     peerConn.addIceCandidate(new RTCIceCandidate(candidate));
-// }
-//
-// function onRTCCandidateCallback(event) {
-//     var signal = JSON.parse(event);
-//     peerConn.addIceCandidate(new RTCIceCandidate(signal.candidate));
-// }
-//
-//
-// function showCantCreateOffer() {
-//     alert("Cant create RTC offer!!!");
-// }
-//
-// function hasGetUserMedia() {
-//     return !!(navigator.getUserMedia || navigator.webkitGetUserMedia ||
-//     navigator.mozGetUserMedia || navigator.msGetUserMedia);
-// }
-//
-// function getActualUserMedia() {
-//     return navigator.getUserMedia || navigator.webkitGetUserMedia ||
-//         navigator.mozGetUserMedia || navigator.msGetUserMedia;
-// }
-//
-// function getUserMediaError(error) {
-//     console.log("Error: GetUserMedia Rejected, ", error);
-// }
-//
-// function getUserMedia() {
-//     var result;
-//
-//     if (hasGetUserMedia()) {
-//         result = getActualUserMedia();
-//     } else {
-//         alert('getUserMedia() is not supported in your browser');
-//     }
-//
-//     return result;
-// }
-//end wrtc
-///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////

@@ -10,7 +10,6 @@ window.WeviewYoutubePlayer = (function(Weview, $, undefined)
         this.onYouTubeIframeAPIReady = function (i_OnPlayerReady) {
             var videoId = this.getYoutubeVideoId(this.m_YoutubeVideoUrl);
             this.m_Player = new window.YT.Player('video-placeholder', {
-                width: 990.16,
                 height: 556.95,
                 videoId: videoId,
                 playerVars: {

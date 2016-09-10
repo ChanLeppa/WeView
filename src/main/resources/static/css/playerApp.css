@@ -66,7 +66,7 @@ video::-webkit-media-controls-enclosure {
 
 .video-chat {
     border-radius: 15px;
-    border: 3px solid black;
+    border: 0;
 }
 
 .chat-title{
@@ -74,10 +74,35 @@ video::-webkit-media-controls-enclosure {
     margin-top: 5px;
 }
 
-.chat-collection{
-    /*padding-right: 5px !important;*/
-    /*padding-left: 5px !important;*/
+.chat-collection {
     padding: 5px !important;
+}
+
+#chat-collection {
+    border: 0;
+    margin-top: 5px;
+}
+
+iframe {
+    width: 100%;
+}
+
+.chip {
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
+#local-chat-container > .row {
+    margin-bottom: 5px;
+}
+
+#exitChatDiv {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+#user-details {
+    margin: 0;
 }
 
 /*textarea input[type=text]:focus {*/
