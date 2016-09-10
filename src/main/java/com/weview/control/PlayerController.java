@@ -38,7 +38,7 @@ public class PlayerController {
 
         playerRepository.removeSubscriber(username, subscriberUsername);
 
-        return username + " unsubscribed from player";
+        return subscriberUsername + " unsubscribed from player";
     }
 
     @MessageMapping("/user/{username}/player/canplay")
@@ -128,6 +128,13 @@ public class PlayerController {
         }
 
         return psd;
+    }
+
+    @MessageMapping("/user/{username}/player/unsubscribe-all-subscribers")
+    @SendTo("/topic/user/{username}/player")
+    public String removeAllSubscribers(@DestinationVariable String username) {
+
+        return "All unsubscribe from player " + username;
     }
 
 }

@@ -39,4 +39,12 @@ public class PlayerRestController {
 
         return userPlayerRepository.getPlayerData(usernameToJoin).getSrc();
     }
+
+    @RequestMapping(value = "/user/{username}/remove-player")
+    public String removePlayer(@PathVariable("username") String username) {
+
+        userPlayerRepository.removePlayer(username);
+
+        return username + "'s player has been removed";
+    }
 }

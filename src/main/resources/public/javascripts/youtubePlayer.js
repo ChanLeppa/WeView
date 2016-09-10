@@ -1,11 +1,14 @@
 window.WeviewYoutubePlayer = (function(Weview, $, undefined)
 {
+    var youtubeTag = '<div id="video-placeholder" class="video-placeholder"></div>';
+
     var YoutubePlayer = function(i_YoutubeVideoUrl) {
 
         $.getScript("https://www.youtube.com/iframe_api");
         this.m_YoutubeVideoUrl = i_YoutubeVideoUrl;
         this.m_Player = null;
         this.m_UpdateBarInterval = null;
+        this.m_Type = 'youtube';
 
         this.onYouTubeIframeAPIReady = function (i_OnPlayerReady) {
             var videoId = this.getYoutubeVideoId(this.m_YoutubeVideoUrl);
@@ -35,6 +38,10 @@ window.WeviewYoutubePlayer = (function(Weview, $, undefined)
             this.m_UpdateBarInterval = setInterval(function () {
                 updateYouTubeProgressBar();
             }, 100)
+        };
+
+        this.clearProgressBarInterval = function() {
+            clearInterval(this.m_UpdateBarInterval);
         };
 
         this.getYoutubeVideoId = function(i_URL) {
@@ -71,6 +78,9 @@ window.WeviewYoutubePlayer = (function(Weview, $, undefined)
             if(playerSyncData.includes("subscribed to player")){
                 onUserSubscribedToPlayer(playerSyncData);
             }
+            else if (playerSyncData.includes("All unsubscribe from player ")) {
+                onUnsubscribeAllCallback();
+            }
             if(playerSyncData !== "CanPlay updated")
             {
                 playerSyncData = $.parseJSON(playerSyncData);
@@ -98,11 +108,8 @@ window.WeviewYoutubePlayer = (function(Weview, $, undefined)
                         updateYouTubeProgressBar();
                         break;
                     case "SRC":
-                        this.doPause();
                         console.log(playerSyncData.message);
-                        //TODO: notify of changed src
-                        var newSrc = this.getYoutubeVideoId(playerSyncData.src);
-                        this.m_Player.loadVideoById(newSrc);
+                        onSrcChange(playerSyncData.src);
                         break;
                     case "ERROR":
                         console.log(playerSyncData.message);
@@ -110,6 +117,12 @@ window.WeviewYoutubePlayer = (function(Weview, $, undefined)
                         break;
                 }
             }
+
+            this.changeSrc = function(i_Src) {
+                this.doPause();
+                var newSrc = this.getYoutubeVideoId(i_Src);
+                this.m_Player.loadVideoById(newSrc);
+            };
         };
 
         // this.sync = function(pageX){
@@ -130,6 +143,7 @@ window.WeviewYoutubePlayer = (function(Weview, $, undefined)
 
     YoutubePlayer.prototype = {
         get Player() { return this.m_Player; },
+        get Type() { return this.m_Type; },
         get YoutubeVideoUrl() { return this.m_YoutubeVideoUrl; }
     };
 
@@ -139,6 +153,7 @@ window.WeviewYoutubePlayer = (function(Weview, $, undefined)
 
 
     return {
+        youtubeTag: youtubeTag,
         YoutubePlayer: YoutubePlayer,
         isYoutubeSrc: isYoutubeSrc
     }

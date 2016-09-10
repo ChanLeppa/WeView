@@ -4,12 +4,16 @@ var userData = null;
 var videoControls;
 var playerSyncData;
 var player = null;
+var youtubePlayer = null;
+var youtubeIframe = null;
+var videoPlayer = null;
 var timeDrag = false;
 var selfView = null;
 var remoteView = null;
 var roomID = null;
 var peerConn = null;
 var localMediaStream = null;
+var weviewYoutubeVideoLink = "https://www.youtube.com/watch?v=WjecjXenxOA";
 
 $(onLoad());
 
@@ -18,9 +22,12 @@ function onLoad() {
     videoControls = $("#video-controls").html();
     $("#video-controls").empty();
     initUser()
-        .then(updateDropboxControls);
+        .then(updateDropboxControls)
+        // .then(loadInitialYoutubePlayer);
     initVideoLinkButton();
 }
+
+$(window).unload(logout);
 
 function initPageButtons() {
     $(".dropdown-button").dropdown();
@@ -168,6 +175,29 @@ function logout() {
     //TODO: add logout of the user and ridirect to the home page
     //TODO: if the user is subscribed to video we need to unsubscribe him
     //TODO: notify all friends the the user logged out
+    if (player != null && 
+        messenger.PlayerID === userData.username) {
+        var dest = "/user/" + userData.username + "/remove-player";
+        messenger.sendUnsubscribeAllUsers()
+                .then(function () {
+                    $.post(dest, function (response) {
+                        console.log("Server sent: " + response);
+                        messenger.sendUserLogout(userData.friends);
+                        dest = "/logout";
+                        $.post(dest, {username : userData.username}, function (response) {
+                            window.location.href = response;
+                        });
+                    });
+                });
+    }
+    else {
+        messenger.sendUserLogout(userData.friends);
+        dest = "/logout";
+        $.post(dest, {username : userData.username}, function (response) {
+            window.location.href = response;
+        });
+    }
+
 }
 
 function showUserFriends() {
@@ -303,7 +333,7 @@ function updateFriendRequestModal() {
     var requests = userData.friendRequests;
     $(".badge").text(requests.length);
     $("#friend-requests-list").empty();
-    
+
     $.each(requests, function (index, request) {
         var date = new Date(request.date);
         var li = "<li class='collection-item black-text row' id='request-" + request.requestingUsername + "'>"
@@ -407,6 +437,46 @@ function onNewSrcChosen(src) {
     }
 }
 
+function onUnsubscribeAllCallback() {
+    messenger.unsubscribeFromPlayer();
+    //TODO: Remove the actual player from screen
+    if (player.Type === 'youtube') {
+        player.clearProgressBarInterval();
+        youtubeIframe = $('#video-placeholder').detach();
+    }
+    else {
+        $('#video-container').empty();
+    }
+
+    player = null;
+}
+
+function onSrcChange(src) {
+    //TODO: notify of changed src
+    if (WeviewYoutubePlayer.isYoutubeSrc(src)) {
+        if(player.Type === 'html') {
+            player = new WeviewYoutubePlayer.YoutubePlayer(src);
+            $('#video-controls').empty().append(videoControls);
+            initializeYouTubePlayerControls();
+        }
+        else {
+            player.changeSrc(src);
+        }
+    }
+    else {
+        if(player.Type !== 'html') {
+            player.changeSrc(src);
+        }
+        else {
+            player.clearProgressBarInterval();
+            player = new WeviewVideoPlayer.VideoPlayer(src);
+            $('#video-controls').empty().append(videoControls);
+            player.initializeVideoEvents(onCanPlay);
+            initializeVideoPlayerControls();
+        }
+    }
+}
+
 function playerExists() {
     var isExists = false;
 
@@ -457,9 +527,14 @@ function initializePlayer(playerID, src) {
 
 //Youtube
 ///////////////////////////////////////////////////////////////////////////
+function loadInitialYoutubePlayer() {
+    onNewSrcChosen(weviewYoutubeVideoLink);
+}
+
 function initializeYoutubePlayer(playerID, src) {
-    player = new WeviewYoutubePlayer.YoutubePlayer(src);
+    youtubePlayer = player = new WeviewYoutubePlayer.YoutubePlayer(src);
     messenger.subscribeToPlayer(playerID, videoSubscriptionCallback);
+    $('#video-container').empty().append(WeviewYoutubePlayer.youtubeTag);
     initializeYouTubePlayerControls();
 }
 
@@ -548,7 +623,7 @@ function onYoutubeStopPressed() {
 //video
 //////////////////////////////////////////////////////////////////////////
 function initializeVideoPlayer(playerID, src) {
-    player = new window.WeviewVideoPlayer.VideoPlayer(src);
+    videoPlayer = player = new window.WeviewVideoPlayer.VideoPlayer(src);
     player.initializeVideoEvents(onCanPlay);
     messenger.subscribeToPlayer(playerID, videoSubscriptionCallback);
     initializeVideoPlayerControls();
@@ -696,6 +771,8 @@ function updateDropboxControls() {
     else {
         initDropBoxSignInButton();
     }
+
+    return;
 }
 
 function initDropBoxSignInButton(){
@@ -767,7 +844,6 @@ function getRoomID() {
     var id;
 
     if (roomID === null) {
-        // id = peerConn.token();
         id = userData.username;
     }
     return id;
@@ -826,14 +902,6 @@ function initRTCConnection(username) {
             document.getElementById("exitChat").onclick = exitChat;
         }
     };
-
-    // peerConn.onstreamended = function (event) {
-    //     alert(event.userid + " has left");
-    // };
-
-    // peerConn.onleave = function (event) {
-    //     alert(event.userid + " has left");
-    // }
 
     peerConn.onstreamended = function(event) {
         var mediaElement = document.getElementById(event.streamid);

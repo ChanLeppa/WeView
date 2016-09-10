@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -52,7 +54,7 @@ public class UserRestController {
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
-    public String logout(@RequestParam String username) {
+    public String logout(HttpServletResponse response, @RequestParam String username) throws IOException {
 
         if (!loggedInUserRepository.isLoggedin(username)) {
             throw new UserNotLoggedInException();
@@ -62,7 +64,7 @@ public class UserRestController {
 
         //TODO: Should we destroy the user's player? What if others continue to watch? Unsubscribe with ref count?
 
-        return "redirect: /";
+        return "/";
     }
 
     @RequestMapping(value = "/signup", method = RequestMethod.POST)

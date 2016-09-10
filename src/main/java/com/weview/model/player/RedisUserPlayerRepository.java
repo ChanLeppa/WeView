@@ -1,5 +1,6 @@
 package com.weview.model.player;
 
+import com.weview.control.exceptions.PlayerNotExistsException;
 import com.weview.model.player.playerdb.PlayerRepository;
 import com.weview.model.player.playerdb.PlayerSubscriberData;
 import com.weview.model.player.playerdb.PlayerSynchronizationData;
@@ -37,11 +38,16 @@ public class RedisUserPlayerRepository implements PlayerRepository {
     }
 
     @Override
-    public synchronized void updatePlayerTime(String playerID, Double time) {
-        PlayerSynchronizationData psd = getPlayerData(playerID);
-        removePlayer(playerID);
-        psd.setTime(time);
-        addPlayer(playerID, psd);
+    public synchronized void updatePlayerTime(String playerID, Double time) throws PlayerNotExistsException{
+        if (doesPlayerExist(playerID)) {
+            PlayerSynchronizationData psd = getPlayerData(playerID);
+            removePlayer(playerID);
+            psd.setTime(time);
+            addPlayer(playerID, psd);
+        }
+        else {
+            throw new PlayerNotExistsException();
+        }
     }
 
     @Override
@@ -50,19 +56,29 @@ public class RedisUserPlayerRepository implements PlayerRepository {
     }
 
     @Override
-    public synchronized void addSubscriber(String playerID, PlayerSubscriberData subscriber) {
-        PlayerSynchronizationData psd = getPlayerData(playerID);
-        removePlayer(playerID);
-        psd.addSubscriber(subscriber);
-        addPlayer(playerID, psd);
+    public synchronized void addSubscriber(String playerID, PlayerSubscriberData subscriber) throws PlayerNotExistsException{
+        if (doesPlayerExist(playerID)) {
+            PlayerSynchronizationData psd = getPlayerData(playerID);
+            removePlayer(playerID);
+            psd.addSubscriber(subscriber);
+            addPlayer(playerID, psd);
+        }
+        else {
+            throw new PlayerNotExistsException();
+        }
     }
 
     @Override
-    public synchronized void removeSubscriber(String playerID, String subscriberID) {
-        PlayerSynchronizationData psd = getPlayerData(playerID);
-        removePlayer(playerID);
-        psd.removeSubscriber(subscriberID);
-        addPlayer(playerID, psd);
+    public synchronized void removeSubscriber(String playerID, String subscriberID) throws PlayerNotExistsException {
+        if (doesPlayerExist(playerID)) {
+            PlayerSynchronizationData psd = getPlayerData(playerID);
+            removePlayer(playerID);
+            psd.removeSubscriber(subscriberID);
+            addPlayer(playerID, psd);
+        }
+        else {
+            throw new PlayerNotExistsException();
+        }
     }
 
     @Override
@@ -76,19 +92,29 @@ public class RedisUserPlayerRepository implements PlayerRepository {
     }
 
     @Override
-    public synchronized void updateSubscriberToCanPlay(String playerID, String subscriberID) {
-        PlayerSubscriberData psd = getSubscriber(playerID, subscriberID);
-        removeSubscriber(playerID, subscriberID);
-        psd.setCanPlay();
-        addSubscriber(playerID, psd);
+    public synchronized void updateSubscriberToCanPlay(String playerID, String subscriberID) throws PlayerNotExistsException{
+        if (doesPlayerExist(playerID)) {
+            PlayerSubscriberData psd = getSubscriber(playerID, subscriberID);
+            removeSubscriber(playerID, subscriberID);
+            psd.setCanPlay();
+            addSubscriber(playerID, psd);
+        }
+        else {
+            throw new PlayerNotExistsException();
+        }
     }
 
     @Override
-    public synchronized void updateSubscriberToCannotPlay(String playerID, String subscriberID) {
-        PlayerSubscriberData psd = getSubscriber(playerID, subscriberID);
-        removeSubscriber(playerID, subscriberID);
-        psd.setCannotPlay();
-        addSubscriber(playerID, psd);
+    public synchronized void updateSubscriberToCannotPlay(String playerID, String subscriberID) throws PlayerNotExistsException{
+        if (doesPlayerExist(playerID)) {
+            PlayerSubscriberData psd = getSubscriber(playerID, subscriberID);
+            removeSubscriber(playerID, subscriberID);
+            psd.setCannotPlay();
+            addSubscriber(playerID, psd);
+        }
+        else {
+            throw new PlayerNotExistsException();
+        }
     }
 
     @Override
@@ -107,19 +133,29 @@ public class RedisUserPlayerRepository implements PlayerRepository {
     }
 
     @Override
-    public synchronized void updateSubscriber(String playerID, PlayerSubscriberData subscriber) {
-        PlayerSynchronizationData psd = getPlayerData(playerID);
-        removePlayer(playerID);
-        psd.updateSubscriber(subscriber);
-        addPlayer(playerID, psd);
+    public synchronized void updateSubscriber(String playerID, PlayerSubscriberData subscriber) throws PlayerNotExistsException {
+        if (doesPlayerExist(playerID)) {
+            PlayerSynchronizationData psd = getPlayerData(playerID);
+            removePlayer(playerID);
+            psd.updateSubscriber(subscriber);
+            addPlayer(playerID, psd);
+        }
+        else {
+            throw new PlayerNotExistsException();
+        }
     }
 
     @Override
-    public synchronized void updatePlayerSrc(String playerID, String src) {
-        PlayerSynchronizationData psd = getPlayerData(playerID);
-        removePlayer(playerID);
-        psd.setTime(0d);
-        psd.setSrc(src);
-        addPlayer(playerID, psd);
+    public synchronized void updatePlayerSrc(String playerID, String src) throws PlayerNotExistsException {
+        if (doesPlayerExist(playerID)) {
+            PlayerSynchronizationData psd = getPlayerData(playerID);
+            removePlayer(playerID);
+            psd.setTime(0d);
+            psd.setSrc(src);
+            addPlayer(playerID, psd);
+        }
+        else {
+            throw new PlayerNotExistsException();
+        }
     }
 }

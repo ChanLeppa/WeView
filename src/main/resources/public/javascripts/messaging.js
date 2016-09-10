@@ -13,6 +13,7 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
         this.k_PlayerUrl = '/player';
         this.k_SubscribeUrl = '/subscribe';
         this.k_UnsubscribeUrl = '/unsubscribe';
+        this.k_UnsubscribeAllUrl = '/unsubscribe-all-subscribers';
         this.k_FriendLoginUrl = '/friend-login';
         this.k_FriendLogoutUrl = '/friend-logout';
         this.k_InviteUrl = '/invite';
@@ -93,6 +94,7 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
             var dest = this.getPlayerUrl() + this.k_UnsubscribeUrl;
             this.send(dest, this.m_Username);
             this.unsubscribe(this.m_PlayerSubscription);
+            this.m_PlayerID = null;
         };
 
         this.subscribeToRTCRoom = function (i_RoomID, i_Callback) {
@@ -119,10 +121,10 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
             var userPrefix = this.k_UserPrefix;
             var friendLogoutUrl = this.k_FriendLogoutUrl;
             var username = this.m_Username;
-            var send = this.send;
+            var stompClient = this.m_StompClient;
             $.each(i_Friends, function (i_Index, i_Friend) {
                 var dest = destUrlPrefix + userPrefix + '/' + i_Friend + friendLogoutUrl;
-                send(dest, {}, username);
+                stompClient.send(dest, {}, username);
             })
         };
 
@@ -197,6 +199,15 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
         this.sendRoomID = function (i_Username, i_RoomID) {
             var dest = this.k_DestUrlPrefix + this.k_UserPrefix + '/' + i_Username + this.k_RTCPrefixUrl;
             this.send(dest, i_RoomID);
+        };
+
+        this.sendUnsubscribeAllUsers = function () {
+            var dest = this.getPlayerUrl() + this.k_UnsubscribeAllUrl;
+            var stompClient = this.m_StompClient;
+            return new Promise(function (resolve, reject) {
+                stompClient.send(dest, {});
+                resolve();
+            });
         };
     };
 

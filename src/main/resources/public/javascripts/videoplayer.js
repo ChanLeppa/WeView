@@ -7,6 +7,7 @@ window.WeviewVideoPlayer = (function(WeviewVideoPlayer, $, undefined)
         this.timeDrag = false;
         appendVideoTag();
         this.m_Video = $("#video")[0];
+        this.m_Type = 'html';
 
         this.initializeVideoEvents = function(onCanPlay) {
             this.m_Video.src = this.m_Src;
@@ -21,6 +22,9 @@ window.WeviewVideoPlayer = (function(WeviewVideoPlayer, $, undefined)
             console.log("Server sent:" + message.body);
             if(playerSyncData.includes("subscribed to player")){
                 onUserSubscribedToPlayer(playerSyncData);
+            }
+            else if (playerSyncData.includes("All unsubscribe from player ")) {
+                onUnsubscribeAllCallback();
             }
             else if(playerSyncData !== "CanPlay updated")
             {
@@ -47,10 +51,9 @@ window.WeviewVideoPlayer = (function(WeviewVideoPlayer, $, undefined)
                         this.m_Video.currentTime = playerSyncData.time;
                         break;
                     case "SRC":
-                        this.doPause();
                         console.log(playerSyncData.message);
+                        onSrcChange(playerSyncData.src);
                         //TODO: notify of changed src
-                        this.m_Video.src = playerSyncData.src;
                         break;
                     case "ERROR":
                         console.log(playerSyncData.message);
@@ -58,6 +61,11 @@ window.WeviewVideoPlayer = (function(WeviewVideoPlayer, $, undefined)
                         break;
                 }
             }
+        };
+
+        this.changeSrc = function (i_Src) {
+            this.doPause();
+            this.m_Video.src = i_Src;
         };
 
         this.onloadedmetadata = function() {
@@ -89,13 +97,14 @@ window.WeviewVideoPlayer = (function(WeviewVideoPlayer, $, undefined)
         };
 
         function appendVideoTag() {
-            $('.video-placeholder').empty().prepend(videoTag);
+            $('#video-container').empty().prepend(videoTag);
         }
     };
 
     VideoPlayer.prototype = {
         get Src(){ return this.m_Src; },
         set Src(i_Src){ this.m_Src = i_Src; },
+        get Type() { return this.m_Type; },
         get Video(){ return this.m_Video }
     };
 
