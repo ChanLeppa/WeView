@@ -48,12 +48,21 @@ public class DropboxController {
     }
 
     @RequestMapping(value = "user/{username}/is-dbxtoken", method = RequestMethod.GET)
-    public Boolean checkForAccessToken(@PathVariable("username") String username) {
-        //TODO: is nessesery
+    public Boolean checkForAccessToken(@PathVariable("username") String username,
+                                       HttpServletRequest request) {
+        HttpSession session = request.getSession();
         User user = userRepository.findByUsername(username);
+
         if (user == null) {
             throw new UserNotFoundException();
         }
+
+        String usernameSession = (String)session.getAttribute("username");
+
+        if(usernameSession == null || !usernameSession.equals(username)){
+            return false;
+        }
+
         return (user.getDbxToken() != null);
     }
 

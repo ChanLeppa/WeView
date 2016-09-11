@@ -445,14 +445,7 @@ function onUnsubscribeAllCallback() {
 }
 
 function clearVideoContainer() {
-
-    if(player.Type === 'youtube') {
-        youtubeIframe = $('#video-placeholder').detach();
-    }
-    else {
-        $('#video-container').empty();
-    }
-
+    $('#video-container').empty();
 }
 
 function onSrcChange(src) {
@@ -479,6 +472,8 @@ function swtichPlayerFromHTMLToYoutube(src) {
     clearVideoContainer();
     if(youtubePlayer != null) {
         player = youtubePlayer;
+        $("#video-container").append(youtubeIframe);
+        player.onPlayerReady();
         player.changeSrc(src);
     }
     else {
@@ -486,6 +481,7 @@ function swtichPlayerFromHTMLToYoutube(src) {
     }
 
     $('#video-controls').empty().append(videoControls);
+    clearControlsEvents();
     initializeYouTubePlayerControls();
 }
 
@@ -494,8 +490,21 @@ function swtichPlayerFromYoutubeToHTML(src) {
     clearVideoContainer();
     player = new WeviewVideoPlayer.VideoPlayer(src);
     $('#video-controls').empty().append(videoControls);
+    clearControlsEvents();
     player.initializeVideoEvents(onCanPlay);
     initializeVideoPlayerControls();
+}
+
+function clearControlsEvents() {
+    $('#play-pause-button').off('click');
+    $('#stop-button').off('click');
+    $('#mute-button').off('click');
+    $('#vol-inc-button').off('click');
+    $('#vol-dec-button').off('click');
+    $('#fullscreen').off('click');
+    $('.progress-bar').off('mousedown');
+    $(document).off('mouseup');
+    $(document).off('mousemove');
 }
 
 function playerExists() {
@@ -530,12 +539,10 @@ function createPlayer(src) {
 }
 
 function updatePlayerSrc(src) {
-    //TODO: update progress bar
     messenger.updatePlayerSrc(src);
 }
 
 function initializePlayer(playerID, src) {
-    //TODO: depends on the src (youtube or other)
     $('#video-controls').empty().append(videoControls);
 
     if (WeviewYoutubePlayer.isYoutubeSrc(src) === true) {
@@ -564,6 +571,8 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onYouTubePlayerReady() {
+    youtubeIframe = $('#video-container').html();
+    // $('#video-container').attr("mozallowfullscreen");
     player.onPlayerReady();
 }
 
@@ -571,7 +580,7 @@ function updateYouTubeProgressBar() {
     var duration = player.Player.getDuration();
     var currentTime = player.Player.getCurrentTime();
     setValuesToProgressBar(duration, currentTime);
-};
+}
 
 function initializeYouTubePlayerControls() {
     // progressBar = $('#progress-bar');
@@ -583,7 +592,15 @@ function initializeYouTubePlayerControls() {
     $('#vol-dec-button').click(onYoutubeVolumeDown);
     $('#fullscreen').click(function() {
         //TODO:not working
-        $('#video-placeholder').webkitEnterFullscreen();
+        // var youtube = $('#youtube-placeholder');
+        if (youtubeIframe.requestFullscreen) {
+            youtubeIframe.requestFullscreen();
+        } else if (youtubeIframe.mozRequestFullScreen) {
+            youtubeIframe.mozRequestFullScreen(); // Firefox
+        } else if (youtubeIframe.webkitRequestFullscreen) {
+            youtubeIframe.webkitRequestFullscreen(); // Chrome and Safari
+        }
+        return false;
     });
 
     $('.progress-bar').mousedown(function(e) {
@@ -657,7 +674,14 @@ function initializeVideoPlayerControls() {
     $('#vol-inc-button').click(onVideoVolumeUp);
     $('#vol-dec-button').click(onVideoVolumeDown);
     $('#fullscreen').on('click', function() {
-        player.Video.webkitEnterFullscreen();
+        //player.Video.webkitEnterFullscreen();
+        if (player.Video.requestFullscreen) {
+            player.Video.requestFullscreen();
+        } else if (player.Video.mozRequestFullScreen) {
+            player.Video.mozRequestFullScreen(); // Firefox
+        } else if (player.Video.webkitRequestFullscreen) {
+            player.Video.webkitRequestFullscreen(); // Chrome and Safari
+        }
         return false;
     });
 
@@ -781,17 +805,20 @@ function setValuesToProgressBar(duration, currentTime){
 //Dropbox
 /////////////////////////////////////////////////////////////////////////////////////
 function updateDropboxControls() {
-    if(userData.dbxTokenExists === true) {
-        $('#reg-dropbox-button').remove();
-        $('#reg-dropbox-list').append("<a href='#dropbox-modal' id='choose-video-dropbox-button' class='modal-trigger light-blue-text text-accent-3'>Choose video to watch</a>");
-        $('.modal-trigger#choose-video-dropbox-button').leanModal();
-        $('#reg-dropbox-list').on("click", "#choose-video-dropbox-button", function() {
-            getFileNames();
-        });
-    }
-    else {
-        initDropBoxSignInButton();
-    }
+    var dest = userData.username + "/is-dbxtoken";
+    $.get(dest,function (response) {
+        if(response === true) {
+            $('#reg-dropbox-button').remove();
+            $('#reg-dropbox-list').append("<a href='#dropbox-modal' id='choose-video-dropbox-button' class='modal-trigger light-blue-text text-accent-3'>Choose video to watch</a>");
+            $('.modal-trigger#choose-video-dropbox-button').leanModal();
+            $('#reg-dropbox-list').on("click", "#choose-video-dropbox-button", function() {
+                getFileNames();
+            });
+        }
+        else {
+            initDropBoxSignInButton();
+        }
+    });
 
     return;
 }
