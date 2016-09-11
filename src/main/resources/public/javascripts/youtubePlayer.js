@@ -1,9 +1,10 @@
 window.WeviewYoutubePlayer = (function(Weview, $, undefined)
 {
-    var youtubeTag = '<div id="video-placeholder" class="video-placeholder"></div>';
+    var youtubeTag = '<div id="youtube-placeholder" class="video-placeholder"></div>';
 
     var YoutubePlayer = function(i_YoutubeVideoUrl) {
 
+        appendYoutubeTag();
         $.getScript("https://www.youtube.com/iframe_api");
         this.m_YoutubeVideoUrl = i_YoutubeVideoUrl;
         this.m_Player = null;
@@ -12,7 +13,7 @@ window.WeviewYoutubePlayer = (function(Weview, $, undefined)
 
         this.onYouTubeIframeAPIReady = function (i_OnPlayerReady) {
             var videoId = this.getYoutubeVideoId(this.m_YoutubeVideoUrl);
-            this.m_Player = new window.YT.Player('video-placeholder', {
+            this.m_Player = new window.YT.Player('youtube-placeholder', {
                 height: 556.95,
                 videoId: videoId,
                 playerVars: {
@@ -81,7 +82,7 @@ window.WeviewYoutubePlayer = (function(Weview, $, undefined)
             else if (playerSyncData.includes("All unsubscribe from player ")) {
                 onUnsubscribeAllCallback();
             }
-            if(playerSyncData !== "CanPlay updated")
+            else if(playerSyncData !== "CanPlay updated")
             {
                 playerSyncData = $.parseJSON(playerSyncData);
 
@@ -124,6 +125,10 @@ window.WeviewYoutubePlayer = (function(Weview, $, undefined)
                 this.m_Player.loadVideoById(newSrc);
             };
         };
+
+        function appendYoutubeTag() {
+            $('#video-container').empty().prepend(youtubeTag);
+        }
 
         // this.sync = function(pageX){
         //     var currentTime = getUpdatedTime(pageX, this.m_Player.getDuration());

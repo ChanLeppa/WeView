@@ -27,8 +27,6 @@ function onLoad() {
     initVideoLinkButton();
 }
 
-$(window).unload(logout);
-
 function initPageButtons() {
     $(".dropdown-button").dropdown();
     $(".modal-trigger#linkBtn").leanModal({
@@ -172,32 +170,27 @@ function initVideoLinkButton() {
 
 
 function logout() {
-    //TODO: add logout of the user and ridirect to the home page
-    //TODO: if the user is subscribed to video we need to unsubscribe him
-    //TODO: notify all friends the the user logged out
-    if (player != null && 
-        messenger.PlayerID === userData.username) {
+    if (player != null && messenger.PlayerID === userData.username) {
         var dest = "/user/" + userData.username + "/remove-player";
         messenger.sendUnsubscribeAllUsers()
                 .then(function () {
                     $.post(dest, function (response) {
                         console.log("Server sent: " + response);
-                        messenger.sendUserLogout(userData.friends);
-                        dest = "/logout";
-                        $.post(dest, {username : userData.username}, function (response) {
-                            window.location.href = response;
-                        });
+                        sendLogout();
                     });
                 });
     }
     else {
-        messenger.sendUserLogout(userData.friends);
-        dest = "/logout";
-        $.post(dest, {username : userData.username}, function (response) {
-            window.location.href = response;
-        });
+       sendLogout();
     }
+}
 
+function sendLogout() {
+    messenger.sendUserLogout(userData.friends);
+    dest = "/logout";
+    $.post(dest, {username : userData.username}, function (response) {
+        window.location.href = response;
+    });
 }
 
 function showUserFriends() {
@@ -418,6 +411,7 @@ function userSubscriptionCallBack(message, headers) {
             break;
     }
 }
+
 function toast(msg, time) {
     Materialize.toast(msg, time, 'blue accent-3');
 }
@@ -439,42 +433,69 @@ function onNewSrcChosen(src) {
 
 function onUnsubscribeAllCallback() {
     messenger.unsubscribeFromPlayer();
-    //TODO: Remove the actual player from screen
     if (player.Type === 'youtube') {
         player.clearProgressBarInterval();
+        clearVideoContainer();
+    }
+    else {
+        clearVideoContainer();
+    }
+
+    player = null;
+}
+
+function clearVideoContainer() {
+
+    if(player.Type === 'youtube') {
         youtubeIframe = $('#video-placeholder').detach();
     }
     else {
         $('#video-container').empty();
     }
 
-    player = null;
 }
 
 function onSrcChange(src) {
-    //TODO: notify of changed src
     if (WeviewYoutubePlayer.isYoutubeSrc(src)) {
         if(player.Type === 'html') {
-            player = new WeviewYoutubePlayer.YoutubePlayer(src);
-            $('#video-controls').empty().append(videoControls);
-            initializeYouTubePlayerControls();
+            swtichPlayerFromHTMLToYoutube(src);
         }
-        else {
+        else if (player.Type === 'youtube'){
             player.changeSrc(src);
         }
     }
     else {
-        if(player.Type !== 'html') {
+        if(player.Type === 'html') {
             player.changeSrc(src);
         }
-        else {
-            player.clearProgressBarInterval();
-            player = new WeviewVideoPlayer.VideoPlayer(src);
-            $('#video-controls').empty().append(videoControls);
-            player.initializeVideoEvents(onCanPlay);
-            initializeVideoPlayerControls();
+        else if(player.Type === 'youtube') {
+            swtichPlayerFromYoutubeToHTML(src);
         }
     }
+}
+
+function swtichPlayerFromHTMLToYoutube(src) {
+
+    clearVideoContainer();
+    if(youtubePlayer != null) {
+        player = youtubePlayer;
+        player.changeSrc(src);
+    }
+    else {
+        youtubePlayer = player = new WeviewYoutubePlayer.YoutubePlayer(src);
+    }
+
+    $('#video-controls').empty().append(videoControls);
+    initializeYouTubePlayerControls();
+}
+
+function swtichPlayerFromYoutubeToHTML(src) {
+    player.clearProgressBarInterval();
+    clearVideoContainer();
+    player = new WeviewVideoPlayer.VideoPlayer(src);
+    $('#video-controls').empty().append(videoControls);
+    player.initializeVideoEvents(onCanPlay);
+    initializeVideoPlayerControls();
 }
 
 function playerExists() {

@@ -123,7 +123,7 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
             var username = this.m_Username;
             var stompClient = this.m_StompClient;
             $.each(i_Friends, function (i_Index, i_Friend) {
-                var dest = destUrlPrefix + userPrefix + '/' + i_Friend + friendLogoutUrl;
+                var dest = destUrlPrefix + userPrefix + '/' + i_Friend.username + friendLogoutUrl;
                 stompClient.send(dest, {}, username);
             })
         };
