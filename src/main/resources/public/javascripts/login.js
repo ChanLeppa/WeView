@@ -104,6 +104,7 @@ $.postJSON = function(url, data, callback) {
         },
         'type': 'POST',
         'url': url,
+        'crossDomain': true,
         'data': JSON.stringify(data),
         'dataType': 'text',
         'success': callback,
