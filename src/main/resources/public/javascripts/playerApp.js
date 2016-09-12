@@ -572,7 +572,8 @@ function onYouTubeIframeAPIReady() {
 
 function onYouTubePlayerReady() {
     youtubeIframe = $('#video-container').children();
-    $('#youtube-placeholder').attr("allowfullscreen");
+    // $('iframe').attr("allowfullscreen");
+    // youtubeIframe.setAttribute('allowFullScreen', '');
     player.onPlayerReady();
 }
 
