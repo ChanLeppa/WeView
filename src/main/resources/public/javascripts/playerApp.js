@@ -571,7 +571,7 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onYouTubePlayerReady() {
-    youtubeIframe = $('#video-container').html();
+    youtubeIframe = $('#video-container').children();
     $('#youtube-placeholder').attr("allowfullscreen");
     player.onPlayerReady();
 }
