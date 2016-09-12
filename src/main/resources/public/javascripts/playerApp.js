@@ -572,7 +572,7 @@ function onYouTubeIframeAPIReady() {
 
 function onYouTubePlayerReady() {
     youtubeIframe = $('#video-container').html();
-    // $('#video-container').attr("mozallowfullscreen");
+    $('#youtube-placeholder').attr("allowfullscreen");
     player.onPlayerReady();
 }
 
@@ -583,8 +583,6 @@ function updateYouTubeProgressBar() {
 }
 
 function initializeYouTubePlayerControls() {
-    // progressBar = $('#progress-bar');
-
     $('#play-pause-button').click(toggleYoutubePlay);
     $('#stop-button').click(onYoutubeStopPressed);
     $('#mute-button').click(toggleYoutubeMute);
@@ -592,7 +590,6 @@ function initializeYouTubePlayerControls() {
     $('#vol-dec-button').click(onYoutubeVolumeDown);
     $('#fullscreen').click(function() {
         //TODO:not working
-        // var youtube = $('#youtube-placeholder');
         if (youtubeIframe.requestFullscreen) {
             youtubeIframe.requestFullscreen();
         } else if (youtubeIframe.mozRequestFullScreen) {
