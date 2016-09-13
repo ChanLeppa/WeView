@@ -190,25 +190,36 @@ function isValidVideoSrc(src) {
 }
 
 function logout() {
-    removePlayerFromServer()
-        .then(sendLogout, sendLogout);
+    doesPlayerExistInServer()
+        .then(removePlayerFromServer)
+        .then(sendLogout)
+        .catch(sendLogout);
+}
+
+function doesPlayerExistInServer() {
+    return new Promise(function (resolve, reject) {
+        var dest = "/user/" + userData.username + "/does-player-exist";
+        $.get(dest, function (response) {
+            if(response === true) {
+                resolve();
+            }
+            else {
+                reject("The user is not the owner of the player, therefor he can't remove it");
+            }
+        });
+    });
 }
 
 function removePlayerFromServer() {
     return new Promise(function (resolve, reject) {
-        if (player != null && messenger.PlayerID === userData.username) {
-            var dest = "/user/" + userData.username + "/remove-player";
-            messenger.sendUnsubscribeAllUsers()
-                .then(function () {
-                    $.post(dest, function (response) {
-                        console.log("Server sent: " + response);
-                        resolve();
-                    });
+        var dest = "/user/" + userData.username + "/remove-player";
+        messenger.sendUnsubscribeAllUsers()
+            .then(function () {
+                $.post(dest, function (response) {
+                    console.log("Server sent: " + response);
+                    resolve();
                 });
-        }
-        else {
-            reject("The user is not the owner of the player, therefor he can't remove it");
-        }
+            });
     });
 }
 
@@ -488,7 +499,7 @@ function userSubscriptionCallBack(message, headers) {
 
 function showJoinToPlayerModal(username) {
     $("#joinplayer-accept-btn").off('click');
-    $("#joinplayer-accept-btn").click(username ,acceptJoinPlayerRequest);
+    $("#joinplayer-accept-btn").click(username, acceptJoinPlayerRequest);
     $("#joinplayer-text").html("").html(username + " invited you to watch a video together");
     $("#joinplayer-notification").openModal();
 }
@@ -630,14 +641,16 @@ function loadInitialYoutubePlayer() {
 function initializeYoutubePlayer(playerID, src) {
     if(youtubePlayer == null){
         youtubePlayer = player = new WeviewYoutubePlayer.YoutubePlayer(src);
+        $('#video-container').empty().append(WeviewYoutubePlayer.youtubeTag);
     }
     else{
         player = youtubePlayer;
+        $("#video-container").append(youtubeIframe);
+        player.onPlayerReady();
         player.changeSrc(src);
     }
 
     messenger.subscribeToPlayer(playerID, videoSubscriptionCallback);
-    $('#video-container').empty().append(WeviewYoutubePlayer.youtubeTag);
     initializeYouTubePlayerControls();
 }
 
