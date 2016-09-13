@@ -29,32 +29,36 @@ function onLoad() {
 
 function initPageButtons() {
     $(".dropdown-button").dropdown();
+
     $(".modal-trigger#linkBtn").leanModal({
         complete: restartLinkModal
     });
+
     $(".modal-trigger#searchFriendsBtn").leanModal({
         complete: restartSearchModal
     });
-    $(".modal-trigger#friend-requestsBtn").leanModal({
-        // ready: updateFriendRequest
-    });
+
+    $(".modal-trigger#friend-requestsBtn").leanModal();
     $("#logoutBtn").click(logout);
+
     $("#search-input").change(function () {
         if ($('#search-input').val().length > 0) {
-            $('#searchBtn').removeClass('disabled');
+            enableButton('#searchBtn');
         }
         else {
-            $('#searchBtn').addClass('disabled');
+            disableButton('#searchBtn');
         }
     });
+
     $("#link-URL").change(function () {
         if ($('#link-URL').val().length > 0) {
-            $('#btnVideoLink').removeClass('disabled');
+            enableButton('#btnVideoLink');
         }
         else {
-            $('#btnVideoLink').addClass('disabled');
+            disableButton('#btnVideoLink');
         }
     });
+
     $("#searchBtn").click(searchFriend);
 }
 
@@ -94,17 +98,18 @@ function getUserFriends() {
 }
 
 function searchFriend() {
-    $("#search-result").empty();
+    var searchResDiv = $("#search-result");
+    searchResDiv.empty();
     var friendResult;
     var searchParam = $('#search-input').val();
 
     if(searchParam === userData.username || searchParam === userData.email){
         friendResult = "<div class='center-align card-panel blue accent-3'><span class='white-text'>It's you :)</span></div>";
-        $("#search-result").append(friendResult);
+        searchResDiv.append(friendResult);
     }
     else if(isSearchParamMyFriend(searchParam)){
         friendResult = "<div class='center-align card-panel blue accent-3'><span class='white-text'>" + searchParam + " is already your friend!</span></div>";
-        $("#search-result").append(friendResult);
+        searchResDiv.append(friendResult);
     }
     else{
         sendSearchRequest(searchParam);
@@ -145,17 +150,6 @@ function sendFriendRequest(event) {
     $.post(dest);
 }
 
-function restartSearchModal() {
-    $("#search-result").empty();
-    $('#search-input').val("");
-    $('#searchBtn').addClass('disabled');
-}
-
-function restartLinkModal() {
-    $("#link-URL").val("");
-    $("#btnVideoLink").addClass('disabled');
-}
-
 function initVideoLinkButton() {
     $('#btnVideoLink').click(function() {
         var linkTag = $('#link-URL');
@@ -167,7 +161,6 @@ function initVideoLinkButton() {
         onNewSrcChosen(videoSrc);
     });
 }
-
 
 function logout() {
     if (player != null && messenger.PlayerID === userData.username) {
@@ -205,14 +198,14 @@ function showFriend(index, friend) {
         + "<img src='" + findIconPathByIconName(friend.icon) + "' alt='user avatar' class='circle'>"
         + "<span class='title'>" + friend.username + "</span>"
         + "<p>" + friend.firstName + " " + friend.lastName + "</p>"
-        + "<a id='add-" + friend.username + "' class='btn-floating waves-effect waves-light green disabled'><i class='material-icons'>" + "add" + "</i></a>";
+        + "<button id='add-" + friend.username + "' class='btn-floating waves-effect waves-light green disabled' disabled><i class='material-icons'>" + "add" + "</i></button>";
 
     if(friend.loggedIn === true){
         li = li + "<a id='chatBtn-" + friend.username + "' class='btn-floating waves-effect waves-light blue'><i class='material-icons'>" + "voice_chat" + "</i></a>"
                 + "<img class='online-sign secondary-content' src='/images/online.png' alt='online' class='circle'></li>";
     }
     else{
-        li = li + "<a id='chatBtn-" + friend.username + "' class='btn-floating waves-effect waves-light blue disabled'><i class='material-icons'>" + "voice_chat" + "</i></a>"
+        li = li + "<button id='chatBtn-" + friend.username + "' class='btn-floating waves-effect waves-light blue disabled' disabled><i class='material-icons'>" + "voice_chat" + "</i></button>"
                 + "<img class='online-sign secondary-content' src='/images/offline.png' alt='online' class='circle'></li>";
     }
 
@@ -221,7 +214,7 @@ function showFriend(index, friend) {
     });
 
     $("#user-friends").on("click", "#chatBtn-" + friend.username, function () {
-        disableFriendChatButton(friend.username);
+        disableButton("#chatBtn-" + friend.username);
         initRTCCall(friend.username);
     });
 }
@@ -229,7 +222,7 @@ function showFriend(index, friend) {
 function enableAddFriendToWatchButton(){
     $.each(userData.friends, function(index, friend){
         if(friend.loggedIn === true){
-            $("#add-" + friend.username).removeClass("disabled");
+            enableButton("#add-" + friend.username);
         }
     });
 }
@@ -278,12 +271,11 @@ function onUserSubscribedToPlayer(playerSyncData) {
     var username = playerSyncData.split(" ")[0];
     if (username !== userData.username) {
         toast(playerSyncData, 3000);
-        $("#add-" + username).addClass("disabled");
+        disableButton("#add-" + username);
     }
 }
 
 function updateUserLoginStatus(username, isLoggedIn) {
-    //TODO: check if the user subscribed to player??? and delete him?
     $.each(userData.friends, function (index, friend) {
         if(friend.username === username){
             friend.loggedIn = isLoggedIn;
@@ -291,16 +283,16 @@ function updateUserLoginStatus(username, isLoggedIn) {
             if(isLoggedIn === true){
                 $("#" + friend.username).find(".online-sign").attr("src","/images/online.png");
                 if(peerConn === null || roomID === userData.username){
-                    enableFriendChatButton(friend.username);
+                    enableButton('#chatBtn-' + friend.username);
                 }
                 if(player !== null){
-                    $("#add-" + friend.username).removeClass("disabled");
+                    enableButton("#add-" + friend.username);
                 }
             }
             else{
                 $("#" + friend.username).find(".online-sign").attr("src","/images/offline.png");
-                disableFriendChatButton(friend.username);
-                $("#add-" + friend.username).addClass("disabled");
+                disableButton('#chatBtn-' + friend.username);
+                disableButton("#add-" + friend.username);
             }
         }
     })
@@ -398,7 +390,7 @@ function userSubscriptionCallBack(message, headers) {
             break;
         case "acceptInvite":
             console.log(msg.username + " accepted your invitation to watch.");
-            $("#add-" + msg.username).addClass("disabled");
+            disableButton("#add-" + msg.username);
             break;
         case "friendAccepted":
             console.log(msg.username + " accepted your friend request");
@@ -410,10 +402,6 @@ function userSubscriptionCallBack(message, headers) {
             onReceiveRTCRoomID(msg.roomID.roomID, msg.roomID.username);
             break;
     }
-}
-
-function toast(msg, time) {
-    Materialize.toast(msg, time, 'blue accent-3');
 }
 
 function showJoinToPlayerModal(username) {
@@ -442,10 +430,6 @@ function onUnsubscribeAllCallback() {
     }
 
     player = null;
-}
-
-function clearVideoContainer() {
-    $('#video-container').empty();
 }
 
 function onSrcChange(src) {
@@ -496,6 +480,7 @@ function swtichPlayerFromYoutubeToHTML(src) {
 }
 
 function clearControlsEvents() {
+    $('#video-topscreen').off('click');
     $('#play-pause-button').off('click');
     $('#stop-button').off('click');
     $('#mute-button').off('click');
@@ -584,6 +569,7 @@ function updateYouTubeProgressBar() {
 }
 
 function initializeYouTubePlayerControls() {
+    $('#video-topscreen').click(toggleYoutubePlay);
     $('#play-pause-button').click(toggleYoutubePlay);
     $('#stop-button').click(onYoutubeStopPressed);
     $('#mute-button').click(toggleYoutubeMute);
@@ -666,6 +652,7 @@ function initializeVideoPlayer(playerID, src) {
 }
 
 function initializeVideoPlayerControls() {
+    $('#video-topscreen').click(toggleVideoPlay);
     $('#play-pause-button').click(toggleVideoPlay);
     $('#stop-button').click(onVideoStopPressed);
     $('#mute-button').click(toggleVideoMute);
@@ -806,30 +793,57 @@ function updateDropboxControls() {
     var dest = userData.username + "/is-dbxtoken";
     $.get(dest,function (response) {
         if(response === true) {
-            $('#reg-dropbox-button').remove();
-            $('#reg-dropbox-list').append("<a href='#dropbox-modal' id='choose-video-dropbox-button' class='modal-trigger light-blue-text text-accent-3'>Choose video to watch</a>");
-            $('.modal-trigger#choose-video-dropbox-button').leanModal();
-            $('#reg-dropbox-list').on("click", "#choose-video-dropbox-button", function() {
-                getFileNames();
-            });
+            setDropboxFilesModal();
         }
         else {
             initDropBoxSignInButton();
         }
     });
+}
 
-    return;
+function setDropboxFilesModal() {
+    $('#reg-dropbox-button').remove();
+    $('#reg-dropbox-list').append("<a href='#dropbox-modal' id='choose-video-dropbox-button' class='modal-trigger light-blue-text text-accent-3'>Choose video to watch</a>");
+    $('.modal-trigger#choose-video-dropbox-button').leanModal();
+    $('#reg-dropbox-list').on("click", "#choose-video-dropbox-button", function() {
+        getFileNames();
+    });
 }
 
 function initDropBoxSignInButton(){
     $('#reg-dropbox-button').click(function(){
         var dest = "/user/" + userData.username + "/dropbox";
         $.get(dest, function(response) {
-            location.href = response;
+            $("#loginToDbx-modal").openModal();
+            $("#dbxauth-link").html(response);
         });
-    })
+    });
+
+    $("#authcode-input").change(function () {
+        if ($('#authcode-input').val().length > 0) {
+            enableButton('#sendAuthCodeBtn');
+        }
+        else {
+            disableButton('#sendAuthCodeBtn');
+        }
+    });
+
+    $('#sendAuthCodeBtn').click(function () {
+        var dest = userData.username + "/dbxsendauth";
+        var code = $('#authcode-input').val();
+        $.get(dest, {authcode : code}, function (response) {
+            $("#loginToDbx-modal").closeModal();
+            restartDbxLoginModal();
+            setDropboxFilesModal();
+        });
+    });
 }
 
+function restartDbxLoginModal() {
+    $("#dbxauth-link").html("");
+    $('#authcode-input').val("");
+    disableButton('#sendAuthCodeBtn');
+}
 function getFileNames(){
     var dest = "/user/" + userData.username + "/filenames";
     $.get(dest, function(response) {
@@ -839,7 +853,6 @@ function getFileNames(){
 }
 
 function addDropboxFileNameToHtml(index, fileName){
-    //first chaeck the video format...if it is video only then add to the page
     var b = "<li class='collection-item'><div>" + fileName + "<a href='#' id='dbx-button" + index + "' class='secondary-content'><i class='material-icons blue-text text-accent-2'>send</i></a></div></li>";
 
     $('div#filenames').append(b).on("click", "#dbx-button" + index, function () {
@@ -853,27 +866,8 @@ function addDropboxFileNameToHtml(index, fileName){
 //end dropbox
 ///////////////////////////////////////////////////////////////////////////////
 
-function getUsername() {
-    var url = $(location).attr('href');
-    var splitURL = url.split("/");
-    return splitURL[splitURL.length - 1];
-}
-
-function onWebSocketConnectionError(error) {
-    console.log(error);
-    alert("Error: Unable to connect to websocket.");
-}
-
-
-//WRTC
+//Chat and Web RTC
 ////////////////////////////////////////////////////////////////////////////////
-function disableFriendChatButton(username) {
-    $('#chatBtn-' + username).addClass("disabled");
-}
-
-function enableFriendChatButton(username) {
-    $('#chatBtn-' + username).removeClass("disabled");
-}
 
 function initRTCCall(username) {
     if (roomID === null) {
@@ -898,13 +892,13 @@ function getRoomID() {
 
 function onReceiveRTCRoomID(newRoomID, username) {
     if(roomID === null){
-        disableFriendChatButton(username);
+        disableButton("#chatBtn-" + username);
+        // disableFriendChatButton(username);
         roomID = newRoomID;
         initRTCConnection();
         peerConn.join(roomID);
     }
 }
-
 
 function initRTCConnection(username) {
     peerConn = new RTCMultiConnection();
@@ -977,7 +971,8 @@ function initRTCConnection(username) {
                 $.each(userData.friends, function (index, friend) {
                     if(friend.username === username){
                         if(friend.loggedIn){
-                            enableFriendChatButton(username);
+                            enableButton("#chatBtn-" + username);
+                            // enableFriendChatButton(username);
                         }
                     }
                 });
@@ -1008,14 +1003,14 @@ function exitChat() {
 
 function disableAllChatButtons() {
     $.each(userData.friends, function (index, friend) {
-        disableFriendChatButton(friend.username);
+        disableButton("#chatBtn-" + friend.username);
     });
 }
 
 function enableOnlineFriendsChatButtons() {
     $.each(userData.friends, function (index, friend) {
         if(friend.loggedIn){
-            enableFriendChatButton(friend.username);
+            enableButton("#chatBtn-" + friend.username);
         }
     });
 }
@@ -1023,17 +1018,57 @@ function enableOnlineFriendsChatButtons() {
 function prepareLocalVideoChatCard(userid) {
     var exitBtn = "<div class='col s4 m4' id='exitChatDiv'><a id='exitChat' class='btn-floating waves-effect waves-light red right'>"
         + "<i class='material-icons'>exit_to_app</i></a></div>";
-    var chat = "<div class='row'><p class='chat-title col s8 m8'>" + userid + "</p>" + exitBtn + "</div>"
+    return "<div class='row'><p class='chat-title col s8 m8'>" + userid + "</p>" + exitBtn + "</div>"
         + "<div id='chatcard-" + userid + "'>"
         + "</div>";
-    return chat;
 }
 
 function prepareRemoteVideoChatCard(userid) {
-    var chat = "<li id='chatlist-" + userid + "' class='collection-item white-text blue accent-3 chat-collection remote-item'>"
+    return"<li id='chatlist-" + userid + "' class='collection-item white-text blue accent-3 chat-collection remote-item'>"
         + "<p class='chat-title'>" + userid + "</p>"
         + "<div id='chatcard-" + userid + "'>"
         + "</div></li>";
-    return chat;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//Utils /General functions
+///////////////////////////////////////////////////////////////////////////////
+function getUsername() {
+    var url = $(location).attr('href');
+    var splitURL = url.split("/");
+    return splitURL[splitURL.length - 1];
+}
+
+function onWebSocketConnectionError(error) {
+    console.log(error);
+    alert("Error: Unable to connect to websocket.");
+}
+
+function restartSearchModal() {
+    $("#search-result").empty();
+    $('#search-input').val("");
+    disableButton('#searchBtn');
+}
+
+function restartLinkModal() {
+    $("#link-URL").val("");
+    disableButton("#btnVideoLink");
+}
+
+function toast(msg, time) {
+    Materialize.toast(msg, time, 'blue accent-3');
+}
+
+function clearVideoContainer() {
+    $('#video-container').empty();
+}
+
+function disableButton(selector) {
+    $(selector).addClass("disabled").prop("disabled", true);
+}
+
+function enableButton(selector) {
+    $(selector).removeClass("disabled").prop("disabled", false);
+}
+////////////////////////////////////////////////////////////////////////////////

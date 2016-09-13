@@ -3,8 +3,8 @@ body {
 }
 
 #center-page {
-    margin-top: 20px;
-    z-index: 1000;
+    margin-top: 40px;
+    /*z-index: 1000;*/
 }
 
 #video-controls {
@@ -33,6 +33,10 @@ body {
     width: 0;
     height: 100%;
     background-color: #bdbdbd;
+}
+
+video {
+    margin-bottom: 0;
 }
 
 video::-webkit-media-controls {
@@ -90,6 +94,7 @@ iframe {
 .chip {
     margin-top: 5px;
     margin-bottom: 0;
+    margin-right: 0;
 }
 
 #local-chat-container > .row {
@@ -105,17 +110,25 @@ iframe {
     margin: 0;
 }
 
-/*textarea input[type=text]:focus {*/
-    /*border-bottom: 1px solid #00b0ff;*/
-    /*box-shadow: 0 1px 0 0 #00b0ff;*/
-/*}*/
+#video-screen{
+    position: relative;
+    width: 100%;
+    height: 556.95px;
+    margin-bottom: 0px;
+}
+#video-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
 
-/*.overlay {*/
-    /*position: absolute;*/
-    /*height: inherit;*/
-    /*background: #000;*/
-    /*opacity: 0.9;*/
-    /*top :0;*/
-    /*left :0;*/
-    /*z-index: 999;*/
-/*}*/
+#video-topscreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+}

@@ -17,9 +17,7 @@ public class DropboxManager {
     private DbxAppInfo appInfo = new DbxAppInfo("rz82vb6w1c2dsgd", "7np3pwsphspipdv");
     private DbxRequestConfig reqConfig;
     private DbxWebAuth webAuth;
-    private final String ridirectUriFinish = "http://localhost:8080/dropbox-finish";
-//    private Map<String, String> userAccessToken = new HashMap<>();
-//    private Map<String, String> sessionPlayerID = new HashMap<>();
+//    private final String ridirectUriFinish = "http://localhost:8080/dropbox-finish";
 
     public DropboxManager() {
 //        try {
@@ -31,37 +29,35 @@ public class DropboxManager {
         webAuth = new DbxWebAuth(reqConfig, appInfo);
     }
 
-//    public void saveAccessToken(String token, User user){
-//        if(token != null && !token.isEmpty() && user != null)
-//        {
-//            user.setDbxToken(token);
-////            this.userAccessToken.put(username, token);
-//        }
-//    }
-
-//    public String getAccessTokenByPlayerID(String playerID){
-//        //can return null..need to check after calling to the method
-//        //take from database
-//        return userAccessToken.get(playerID);
-//    }
-
-    public String getToDropboxRedirectUri(HttpSession session, String sessionKey){
-        DbxSessionStore csrfTokenStore = new DbxStandardSessionStore(session, sessionKey);
-        DbxWebAuth.Request authRequest = DbxWebAuth.newRequestBuilder()
-                .withRedirectUri(ridirectUriFinish, csrfTokenStore).build();
-
-        return webAuth.authorize(authRequest);
+    public String getDropboxNoRedirectUri(){
+        DbxWebAuth.Request webAuthRequest = DbxWebAuth.newRequestBuilder().withNoRedirect().build();
+        return webAuth.authorize(webAuthRequest);
     }
 
-    public String getAccessToken(HttpSession session, String sessionKey, Map paramMap)
-            throws DbxWebAuth.NotApprovedException, DbxWebAuth.BadRequestException, DbxException,
-            DbxWebAuth.CsrfException, DbxWebAuth.BadStateException, DbxWebAuth.ProviderException {
-
-        DbxSessionStore csrfTokenStore = new DbxStandardSessionStore(session, sessionKey);
-        DbxAuthFinish authFinish = webAuth.finishFromRedirect(ridirectUriFinish, csrfTokenStore, paramMap);
+    public String getAccessToken(String authCode) throws DbxException {
+        DbxAuthFinish authFinish = null;
+            authFinish = webAuth.finishFromCode(authCode);
 
         return authFinish.getAccessToken();
     }
+
+//    public String getToDropboxRedirectUri(HttpSession session, String sessionKey){
+//        DbxSessionStore csrfTokenStore = new DbxStandardSessionStore(session, sessionKey);
+//        DbxWebAuth.Request authRequest = DbxWebAuth.newRequestBuilder()
+//                .withRedirectUri(ridirectUriFinish, csrfTokenStore).build();
+//
+//        return webAuth.authorize(authRequest);
+//    }
+//
+//    public String getAccessToken(HttpSession session, String sessionKey, Map paramMap)
+//            throws DbxWebAuth.NotApprovedException, DbxWebAuth.BadRequestException, DbxException,
+//            DbxWebAuth.CsrfException, DbxWebAuth.BadStateException, DbxWebAuth.ProviderException {
+//
+//        DbxSessionStore csrfTokenStore = new DbxStandardSessionStore(session, sessionKey);
+//        DbxAuthFinish authFinish = webAuth.finishFromRedirect(ridirectUriFinish, csrfTokenStore, paramMap);
+//
+//        return authFinish.getAccessToken();
+//    }
 
     public List<String> getListOfFileNames(String path, String token) throws DbxException {
         DbxClientV2 client = new DbxClientV2(reqConfig, token);

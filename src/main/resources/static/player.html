@@ -56,8 +56,13 @@
                     </div>
                 </div>
                 <div id="center-page" class="col s8 m8 l8">
-                    <div id="video-container">
+                    <div class="row" id="video-screen">
+                        <div id="video-container">
 
+                        </div>
+                        <div id="video-topscreen">
+
+                        </div>
                     </div>
                     <div id="video-controls" class="controls row black">
                         <div class="col s4 m2 l2" id="play-controls">
@@ -86,17 +91,11 @@
                             <button id="vol-dec-button" type="button" class="volume-minus waves-effect waves-light btn blue accent-3" title="deccrease volume">
                                 <i class="tiny material-icons">volume_down</i>
                             </button>
-                            <!--<button id="light-btn" type="button" class="waves-effect waves-light btn blue accent-3" title="light">-->
-                                <!--<i class="tiny material-icons">aspect_ratio</i>-->
-                            <!--</button>-->
                             <button id="fullscreen" type="button" class="full-screen waves-effect waves-light btn blue accent-3" title="full screen">
                                 <i class="tiny material-icons">aspect_ratio</i>
                             </button>
                         </div>
                     </div>
-                    <!--<div class="row" id="time-data">-->
-                        <!--<h6 class="center-align white-text">Time: <span id="current">0.0</span> of <span id="duration"></span> Played:<span id="percentage">0</span>%</h6>-->
-                    <!--</div>-->
                 </div>
                 <div class="col s2 m2 l2">
                     <div class="row" id="user-details">
@@ -121,7 +120,7 @@
             <p id="link-dbx"></p>
         </div>
         <div class="modal-footer grey">
-            <button type="close" class="modal-action modal-close btn waves-effect waves-light blue accent-3">Close</button>
+            <button type="close" class="modal-action modal-close btn-flat waves-effect waves-light">Close</button>
         </div>
     </div>
     <ul id="dbx-menu" class="dropdown-content">
@@ -135,8 +134,8 @@
             </div>
         </div>
         <div class="modal-footer grey">
-            <button type="close" class="modal-action modal-close btn waves-effect waves-light blue accent-3 right">Close</button>
-            <button id="btnVideoLink" class="btn waves-effect waves-light blue accent-3 disabled right" type="submit">Submit
+            <button type="close" class="modal-action modal-close btn-flat waves-effect waves-light right">Close</button>
+            <button id="btnVideoLink" class="btn waves-effect waves-light blue accent-3 disabled right" type="submit" disabled>Submit
                 <i class="material-icons right">send</i>
             </button>
         </div>
@@ -150,7 +149,7 @@
                 </div>
             </div>
             <div class="row">
-                <button id="searchBtn" class="btn waves-effect waves-light blue accent-3 disabled right">Search
+                <button id="searchBtn" class="btn waves-effect waves-light blue accent-3 disabled right" disabled>Search
                     <i class="material-icons right">search</i>
                 </button>
             </div>
@@ -162,7 +161,7 @@
             </div>
         </div>
         <div class="modal-footer grey">
-            <button type="close" class="modal-action modal-close btn waves-effect waves-light blue accent-3 right">Close</button>
+            <button type="close" class="modal-action modal-close btn-flat waves-effect waves-light right">Close</button>
         </div>
     </div>
     <div id="joinplayer-notification" class="modal">
@@ -171,7 +170,7 @@
             <p id="joinplayer-text"></p>
         </div>
         <div class="modal-footer grey">
-            <a class="modal-action modal-close waves-effect waves-light accent-3 btn-flat">Decline</a>
+            <a class="modal-action modal-close waves-effect waves-light btn-flat">Decline</a>
             <a id="joinplayer-accept-btn" class="modal-action modal-close waves-effect waves-light blue accent-3 btn">Accept</a>
         </div>
     </div>
@@ -181,6 +180,28 @@
             <ul id="friend-requests-list"class="collection">
 
             </ul>
+        </div>
+        <div class="modal-footer grey">
+            <a class="modal-action modal-close waves-effect waves-light accent-3 btn-flat">Close</a>
+        </div>
+    </div>
+    <div id="loginToDbx-modal" class="modal">
+        <div class="modal-content grey darken-3 white-text">
+            <h4>Login to your dropbox</h4>
+            <div class="row">
+                <div class="input-field col s12 m12 l12">
+                    <p>1) Go to the following link: </p>
+                    <p class="blue-text text-accent-3" id="dbxauth-link"></p>
+                    <p>2) Click "Allow" (you might have to login first) and copy the code</p>
+                    <p>3) Enter the authorization code here:</p>
+                    <input placeholder="Authorization code" id="authcode-input" type="text">
+                </div>
+            </div>
+            <div class="row">
+                <button id="sendAuthCodeBtn" class="btn waves-effect waves-light blue accent-3 disabled right" disabled>Send code
+                    <i class="material-icons right">send</i>
+                </button>
+            </div>
         </div>
         <div class="modal-footer grey">
             <a class="modal-action modal-close waves-effect waves-light accent-3 btn-flat">Close</a>

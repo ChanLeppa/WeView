@@ -4,7 +4,12 @@ $(onLoad);
 
 function onLoad() {
     $('.parallax').parallax();
-    $('.modal-trigger').leanModal();
+    $('.modal-trigger#btnLogin, .modal-trigger#nav-loginBtn').leanModal({
+        complete: restartLoginModal
+    });
+    $('.modal-trigger#btnRegister, .modal-trigger#nav-signupBtn').leanModal({
+        complete: restartSignupModal
+    });
     $('select').material_select();
     signupForm = $('#signup-form');
     loginForm = $('#login-form');
@@ -14,6 +19,20 @@ function onLoad() {
     initButtons();
 }
 
+function restartLoginModal(){
+    $('#username_login').val("");
+    $('#password_login').val("");
+    disableButton('#submit-login');
+}
+
+function restartSignupModal(){
+    $('#fname').val("");
+    $('#lname').val("");
+    $('#username_signup').val("");
+    $('#password_signup').val("");
+    $('#email').val("");
+    disableButton('#submit-signup');
+}
 function initButtons() {
     $('#lname, #fname, #username_signup, #password_signup, #email').change(validateSignupFileds);
     $('#username_login, #password_login').change(validateLoginFileds);
@@ -37,11 +56,10 @@ function validateSignupFileds(){
         $('#password_signup').val().length > 0 &&
         $('#email').val().length > 0 &&
         signupForm.valid()) {
-
-        $('#submit-signup').removeClass('disabled');
+        enableButton('#submit-signup');
     }
     else {
-        $('#submit-signup').addClass('disabled');
+        disableButton('#submit-signup');
     }
 }
 
@@ -50,18 +68,12 @@ function validateLoginFileds(){
     if ($('#username_login').val().length > 0 &&
         $('#password_login').val().length > 0 &&
         loginForm.valid()) {
-
-        $('#submit-login').removeClass('disabled');
+        enableButton('#submit-login');
     }
     else {
-        $('#submit-login').addClass('disabled');
+        disableButton('#submit-login');
     }
 }
-
-// function guestLogin() {
-//     console.log("gusetLogin");
-//     $.get("/guest", userRedirect);
-// }
 
 function submitSignup() {
     var userSignupData = {
@@ -96,6 +108,17 @@ function userLogin(userLoginData) {
 function userRedirect(response) {
     window.location.href = response;
 }
+
+// the same methodes in playerAPP
+////////////////////////////////////////////////////////////////////////
+function disableButton(selector) {
+    $(selector).addClass("disabled").prop("disabled", true);
+}
+
+function enableButton(selector) {
+    $(selector).removeClass("disabled").prop("disabled", false);
+}
+/////////////////////////////////////////////////////////////////////////
 
 $.postJSON = function(url, data, callback) {
     return jQuery.ajax({
