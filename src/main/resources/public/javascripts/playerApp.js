@@ -44,7 +44,7 @@ function initPageButtons() {
     $(".modal-trigger#friend-requestsBtn").leanModal();
     $("#logoutBtn").click(logout);
 
-    $("#search-input").change(function () {
+    $("#search-input").keyup(function () {
         if ($('#search-input').val().length > 0) {
             enableButton('#searchBtn');
         }
@@ -53,7 +53,8 @@ function initPageButtons() {
         }
     });
 
-    $("#link-URL").change(function () {
+    $("#link-URL").keyup(function () {
+        $("#invalid-link-msg").empty();
         if ($('#link-URL').val().length > 0) {
             enableButton('#btnVideoLink');
         }
@@ -173,8 +174,7 @@ function initVideoLinkButton() {
             onNewSrcChosen(videoSrc);
         }
         else {
-            //TODO: Show error message
-            alert("At the moment Weview accepts only valid Youtube links");
+            $("#invalid-link-msg").html("At the moment Weview accepts only valid Youtube links");
         }
     });
 }
@@ -338,7 +338,7 @@ function onUserUnsubscribedFromPlayer(playerSyncData) {
     var username = playerSyncData.split(" ")[0];
     if (username !== userData.username) {
         toast(playerSyncData, 3000);
-        //TODO: Enable add user to playr button
+        enableButton("#add-" + username);
     }
 }
 
@@ -614,7 +614,13 @@ function loadInitialYoutubePlayer() {
 }
 
 function initializeYoutubePlayer(playerID, src) {
-    youtubePlayer = player = new WeviewYoutubePlayer.YoutubePlayer(src);
+    if(youtubePlayer == null){
+        youtubePlayer = player = new WeviewYoutubePlayer.YoutubePlayer(src);
+    }
+    else{
+        player = youtubePlayer;
+        player.changeSrc(src);
+    }
     messenger.subscribeToPlayer(playerID, videoSubscriptionCallback);
     $('#video-container').empty().append(WeviewYoutubePlayer.youtubeTag);
     initializeYouTubePlayerControls();
@@ -907,12 +913,14 @@ function initDropBoxSignInButton(){
     $('#reg-dropbox-button').click(function(){
         var dest = "/user/" + userData.username + "/dropbox";
         $.get(dest, function(response) {
-            $("#loginToDbx-modal").openModal();
+            $("#loginToDbx-modal").openModal({
+                complete : restartDbxLoginModal
+            });
             $("#dbxauth-link").html(response);
         });
     });
 
-    $("#authcode-input").change(function () {
+    $("#authcode-input").keyup(function () {
         if ($('#authcode-input').val().length > 0) {
             enableButton('#sendAuthCodeBtn');
         }
@@ -1146,6 +1154,7 @@ function restartSearchModal() {
 
 function restartLinkModal() {
     $("#link-URL").val("");
+    $("#invalid-link-msg").empty();
     disableButton("#btnVideoLink");
 }
 

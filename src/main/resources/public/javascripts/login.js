@@ -34,8 +34,8 @@ function restartSignupModal(){
     disableButton('#submit-signup');
 }
 function initButtons() {
-    $('#lname, #fname, #username_signup, #password_signup, #email').change(validateSignupFileds);
-    $('#username_login, #password_login').change(validateLoginFileds);
+    $('#lname, #fname, #username_signup, #password_signup, #email').keyup(validateSignupFileds);
+    $('#username_login, #password_login').keyup(validateLoginFileds);
     $('#submit-signup').click(submitSignup);
     $('#submit-login').click(submitLogin);
 
