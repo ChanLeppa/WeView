@@ -27,7 +27,7 @@ function onLoad() {
     initUser()
         .then(updateDropboxControls)
         // .then(loadInitialYoutubePlayer);
-    initVideoLinkButton();
+
 }
 
 function initPageButtons() {
@@ -69,6 +69,8 @@ function initPageButtons() {
     }).on('mouseleave', '#video-screen', function () {
         $('#btn-leave-player').hide();
     });
+
+    initVideoLinkButton();
 }
 
 function initUserDetails() {
@@ -88,7 +90,7 @@ function initUser() {
                 .then(sendUserLogin)
                 .catch(onWebSocketConnectionError);
             getUserFriendRequests();
-            setInterval(getUserFriendRequests, 60000);
+            setInterval(getUserFriendRequests, 15000);
             initUserDetails();
             resolve();
         });
@@ -163,12 +165,28 @@ function initVideoLinkButton() {
     $('#btnVideoLink').click(function() {
         var linkTag = $('#link-URL');
         var videoSrc = linkTag[0].value;
-        linkTag.trigger('autoresize');
-        linkTag.val('');
-        linkTag.trigger('autoresize');
-        $("#link-menu").closeModal();
-        onNewSrcChosen(videoSrc);
+        if(isValidVideoSrc(videoSrc)) {
+            linkTag.trigger('autoresize');
+            linkTag.val('');
+            linkTag.trigger('autoresize');
+            $("#link-menu").closeModal();
+            onNewSrcChosen(videoSrc);
+        }
+        else {
+            //TODO: Show error message
+            alert("At the moment Weview accepts only valid Youtube links");
+        }
     });
+}
+
+function isValidVideoSrc(src) {
+    var isValid = false;
+
+    if(WeviewYoutubePlayer.isYoutubeSrc(src)) {
+        isValid = true;
+    }
+
+    return isValid;
 }
 
 function logout() {
