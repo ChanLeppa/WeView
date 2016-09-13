@@ -60,6 +60,8 @@ function initPageButtons() {
     });
 
     $("#searchBtn").click(searchFriend);
+
+    $("#btn-leave-player").click(leavePlayer);
 }
 
 function initUserDetails() {
@@ -163,19 +165,26 @@ function initVideoLinkButton() {
 }
 
 function logout() {
-    if (player != null && messenger.PlayerID === userData.username) {
-        var dest = "/user/" + userData.username + "/remove-player";
-        messenger.sendUnsubscribeAllUsers()
+    removePlayerFromServer()
+        .then(sendLogout, sendLogout);
+}
+
+function removePlayerFromServer() {
+    return new Promise(function (resolve, reject) {
+        if (player != null && messenger.PlayerID === userData.username) {
+            var dest = "/user/" + userData.username + "/remove-player";
+            messenger.sendUnsubscribeAllUsers()
                 .then(function () {
                     $.post(dest, function (response) {
                         console.log("Server sent: " + response);
-                        sendLogout();
+                        resolve();
                     });
                 });
-    }
-    else {
-       sendLogout();
-    }
+        }
+        else {
+            reject("The user is not the owner of the player, therefor he can't remove it");
+        }
+    });
 }
 
 function sendLogout() {
@@ -185,6 +194,30 @@ function sendLogout() {
         window.location.href = response;
     });
 }
+
+function leavePlayer() {
+
+    if(player != null) {
+        if(messenger.PlayerID === userData.username) {
+            removePlayerFromServer();
+        }
+
+        messenger.unsubscribeFromPlayer();
+        disposePlayer();
+    }
+}
+
+function disposePlayer() {
+    if (player.Type === 'youtube') {
+        player.clearProgressBarInterval();
+    }
+
+    clearVideoContainer();
+    $("#video-controls").empty();
+    clearControlsEvents();
+    player = null;
+}
+
 
 function showUserFriends() {
     var friends = userData.friends;
@@ -272,6 +305,14 @@ function onUserSubscribedToPlayer(playerSyncData) {
     if (username !== userData.username) {
         toast(playerSyncData, 3000);
         disableButton("#add-" + username);
+    }
+}
+
+function onUserUnsubscribedFromPlayer(playerSyncData) {
+    var username = playerSyncData.split(" ")[0];
+    if (username !== userData.username) {
+        toast(playerSyncData, 3000);
+        //TODO: Enable add user to playr button
     }
 }
 
@@ -421,15 +462,7 @@ function onNewSrcChosen(src) {
 
 function onUnsubscribeAllCallback() {
     messenger.unsubscribeFromPlayer();
-    if (player.Type === 'youtube') {
-        player.clearProgressBarInterval();
-        clearVideoContainer();
-    }
-    else {
-        clearVideoContainer();
-    }
-
-    player = null;
+    disposePlayer();
 }
 
 function onSrcChange(src) {
@@ -475,7 +508,7 @@ function swtichPlayerFromYoutubeToHTML(src) {
     player = new WeviewVideoPlayer.VideoPlayer(src);
     $('#video-controls').empty().append(videoControls);
     clearControlsEvents();
-    player.initializeVideoEvents(onCanPlay);
+    player.initializeVideoEvents(onCanPlay, onCannotPlay);
     initializeVideoPlayerControls();
 }
 
@@ -627,7 +660,7 @@ function toggleYoutubeMute(){
 }
 
 function toggleYoutubePlay(){
-    playerSyncData = preparePlayerSyncData(player.Player.getCurrentTime());
+    playerSyncData = preparePlayerSyncData();
     if (player.Player.getPlayerState() !== window.YT.PlayerState.PLAYING){
         messenger.onPlayPressed(playerSyncData);
     } else{
@@ -636,7 +669,7 @@ function toggleYoutubePlay(){
 }
 
 function onYoutubeStopPressed() {
-    playerSyncData = preparePlayerSyncData(player.Player.getCurrentTime());
+    playerSyncData = preparePlayerSyncData();
     messenger.onStopPressed(playerSyncData);
 }
 //end of youtube
@@ -646,7 +679,7 @@ function onYoutubeStopPressed() {
 //////////////////////////////////////////////////////////////////////////
 function initializeVideoPlayer(playerID, src) {
     videoPlayer = player = new window.WeviewVideoPlayer.VideoPlayer(src);
-    player.initializeVideoEvents(onCanPlay);
+    player.initializeVideoEvents(onCanPlay, onCannotPlay);
     messenger.subscribeToPlayer(playerID, videoSubscriptionCallback);
     initializeVideoPlayerControls();
 }
@@ -690,7 +723,7 @@ function initializeVideoPlayerControls() {
 }
 
 function toggleVideoPlay(){
-    playerSyncData = preparePlayerSyncData(player.Video.currentTime);
+    playerSyncData = preparePlayerSyncData();
     if (player.Video.paused){
         messenger.onPlayPressed(playerSyncData);
     } else{
@@ -719,7 +752,7 @@ function onVideoVolumeDown() {
 }
 
 function onVideoStopPressed() {
-    playerSyncData = preparePlayerSyncData(player.Video.currentTime);
+    playerSyncData = preparePlayerSyncData();
     messenger.onStopPressed(playerSyncData);
 }
 
@@ -729,8 +762,18 @@ function videoSubscriptionCallback(message, headers){
     player.subscriptionCallback(message, headers);
 }
 
+function sendCanPlay() {
+    messenger.sendCanPlay();
+}
+
 function onCanPlay() {
-    messenger.onCanPlay();
+    playerSyncData = preparePlayerSyncData();
+    messenger.onPlayPressed(playerSyncData);
+}
+
+function onCannotPlay() {
+    playerSyncData = preparePlayerSyncData();
+    messenger.onPausePressed(playerSyncData);
 }
 
 function changeButtonType(button, valueToSet, valueToChange, innerHtml){
@@ -757,7 +800,21 @@ function formatTime(time){
 }
 
 function preparePlayerSyncData(currentTime){
-    return  {time : parseFloat(currentTime).toFixed(1)};
+    var time;
+    if(currentTime !== undefined) {
+        time = currentTime;
+    }
+    else {
+        if(player.Type === 'html') {
+            time = player.Video.currentTime;
+        }
+        else if(player.Type === 'youtube') {
+            time = player.Player.getCurrentTime();
+        }
+    }
+
+    playerSyncData = {time : parseFloat(time).toFixed(1)};
+    return  {time : parseFloat(time).toFixed(1)};
 }
 
 function getUpdatedTime(x, duration) {

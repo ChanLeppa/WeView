@@ -9,9 +9,11 @@ window.WeviewVideoPlayer = (function(WeviewVideoPlayer, $, undefined)
         this.m_Video = $("#video")[0];
         this.m_Type = 'html';
 
-        this.initializeVideoEvents = function(onCanPlay) {
+        this.initializeVideoEvents = function(onCanPlay, onCannotPlay) {
             this.m_Video.src = this.m_Src;
-            this.m_Video.oncanplay = onCanPlay;
+            this.m_Video.oncanplay = sendCanPlay;
+            // this.m_Video.onplaying = onCanPlay;
+            // this.m_Video.onwaiting = onCannotPlay;
             this.m_Video.ontimeupdate = this.updateProgressBar;
             this.m_Video.onvolumechange = this.onVolumeChangeEvent;
             this.m_Video.onloadedmetadata = this.onloadedmetadata;
@@ -23,10 +25,13 @@ window.WeviewVideoPlayer = (function(WeviewVideoPlayer, $, undefined)
             if(playerSyncData.includes("subscribed to player")){
                 onUserSubscribedToPlayer(playerSyncData);
             }
+            else if(playerSyncData.includes("unsubscribed from player")) {
+                onUserUnsubscribedFromPlayer(playerSyncData);
+            }
             else if (playerSyncData.includes("All unsubscribe from player ")) {
                 onUnsubscribeAllCallback();
             }
-            else if(playerSyncData !== "CanPlay updated")
+            else if(playerSyncData !== "CannotPlay updated" || playerSyncData !== "CanPlay updated")
             {
                 playerSyncData = $.parseJSON(playerSyncData);
 

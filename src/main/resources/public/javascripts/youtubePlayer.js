@@ -29,7 +29,7 @@ window.WeviewYoutubePlayer = (function(Weview, $, undefined)
 
         this.onPlayerReady = function () {
             console.log("Youtube player ready!");
-            onCanPlay();
+            sendCanPlay();
             updateYouTubeProgressBar();
 
             if(this.m_UpdateBarInterval !== null){
@@ -79,10 +79,13 @@ window.WeviewYoutubePlayer = (function(Weview, $, undefined)
             if(playerSyncData.includes("subscribed to player")){
                 onUserSubscribedToPlayer(playerSyncData);
             }
+            else if(playerSyncData.includes("unsubscribed from player")) {
+                onUserUnsubscribedFromPlayer(playerSyncData);
+            }
             else if (playerSyncData.includes("All unsubscribe from player ")) {
                 onUnsubscribeAllCallback();
             }
-            else if(playerSyncData !== "CanPlay updated")
+            else if(playerSyncData !== "CannotPlay updated" && playerSyncData !== "CanPlay updated")
             {
                 playerSyncData = $.parseJSON(playerSyncData);
 

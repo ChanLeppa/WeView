@@ -6,6 +6,7 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
         this.k_SubscriptionUrlPrefix = '/topic';
         this.k_UserPrefix = '/user';
         this.k_CanPlayUrl = '/canplay';
+        this.k_CannotPlayUrl = '/cannotplay';
         this.k_PlayUrl = '/play';
         this.k_PauseUrl = '/pause';
         this.k_StopUrl = '/stop';
@@ -143,8 +144,13 @@ window.WeviewSocketMessenger = (function(Weview, $, undefined)
             this.send(dest, this.m_Username);
         };
 
-        this.onCanPlay = function () {
+        this.sendCanPlay = function () {
             var dest = this.getPlayerUrl() + this.k_CanPlayUrl;
+            this.send(dest, this.m_Username);
+        };
+
+        this.sendCannotPlay = function () {
+            var dest = this.getPlayerUrl() + this.k_CannotPlayUrl;
             this.send(dest, this.m_Username);
         };
 
