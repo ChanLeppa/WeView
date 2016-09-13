@@ -31,14 +31,13 @@ public class PlayerRestController {
     }
 
     @RequestMapping(value = "/user/{usernameToJoin}/join", method = RequestMethod.GET)
-    public PlayerSynchronizationData joinPlayer(@PathVariable("usernameToJoin") String usernameToJoin)
-            throws PlayerNotExistsException {
+    public String joinPlayer(@PathVariable("usernameToJoin") String usernameToJoin) {
 
         if (!userPlayerRepository.doesPlayerExist(usernameToJoin)) {
             throw new PlayerNotExistsException();
         }
 
-        return userPlayerRepository.getPlayerData(usernameToJoin);
+        return userPlayerRepository.getPlayerData(usernameToJoin).getSrc();
     }
 
     @RequestMapping(value = "/user/{username}/remove-player", method = RequestMethod.POST)

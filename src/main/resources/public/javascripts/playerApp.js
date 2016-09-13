@@ -354,7 +354,7 @@ function onUserUnsubscribedFromPlayer(playerSyncData) {
     var username = playerSyncData.split(" ")[0];
     if (username !== userData.username) {
         toast(playerSyncData, 3000);
-        // enableButton("#add-" + username);
+        enableButton("#add-" + username);
     }
 }
 
@@ -384,10 +384,10 @@ function updateUserLoginStatus(username, isLoggedIn) {
 function acceptJoinPlayerRequest(event) {
     var requestingUsername = event.data;
     var dest = "/user/" + requestingUsername + "/join";
-    $.get(dest, function (playerSyncDataResponse) {
-        playerSyncData = playerSyncDataResponse;
-        playerSyncData.src = decodeURIComponent(playerSyncDataResponse.src);
-        initializePlayer(requestingUsername, playerSyncData.src);
+    $.get(dest, function (src) {
+        // playerSyncData = playerSyncDataResponse;
+        // playerSyncData.src = decodeURIComponent(playerSyncDataResponse.src);
+        initializePlayer(requestingUsername, decodeURIComponent(src));
     });
 }
 
@@ -568,6 +568,7 @@ function swtichPlayerFromYoutubeToHTML(src) {
 function resetVideoControls() {
     $('#video-controls').empty().append(videoControls);
     $("#leave-btn-container").empty().append(exitPlayerBtn);
+    $("#btn-leave-player").off('click');
     $("#btn-leave-player").click(leavePlayer);
 }
 
@@ -661,7 +662,7 @@ function onYouTubeIframeAPIReady() {
 function onYouTubePlayerReady() {
     youtubeIframe = $('#video-container').children();
     player.onPlayerReady();
-    setCurrentTimeFromPlayerSyncData();
+    // setCurrentTimeFromPlayerSyncData();
 }
 
 function updateYouTubeProgressBar() {
@@ -749,7 +750,7 @@ function onYoutubeStopPressed() {
 function initializeVideoPlayer(playerID, src) {
     videoPlayer = player = new window.WeviewVideoPlayer.VideoPlayer(src);
     player.initializeVideoEvents(onCanPlay, onCannotPlay);
-    setCurrentTimeFromPlayerSyncData();
+    // setCurrentTimeFromPlayerSyncData();
     messenger.subscribeToPlayer(playerID, videoSubscriptionCallback);
     initializeVideoPlayerControls();
 }
@@ -1034,7 +1035,6 @@ function getRoomID() {
 function onReceiveRTCRoomID(newRoomID, username) {
     if(roomID === null){
         disableButton("#chatBtn-" + username);
-        // disableFriendChatButton(username);
         roomID = newRoomID;
         initRTCConnection();
         peerConn.join(roomID);
@@ -1113,7 +1113,6 @@ function initRTCConnection(username) {
                     if(friend.username === username){
                         if(friend.loggedIn){
                             enableButton("#chatBtn-" + username);
-                            // enableFriendChatButton(username);
                         }
                     }
                 });

@@ -74,6 +74,11 @@ window.WeviewYoutubePlayer = (function(Weview, $, undefined)
             // this.updateYouTubeProgressBar();
         };
 
+        this.changeSrc = function(i_Src) {
+            // this.doPause();
+            var newSrc = this.getYoutubeVideoId(i_Src);
+            this.m_Player.loadVideoById(newSrc);
+        };
 
         this.subscriptionCallback = function(message, headers) {
             var playerSyncData = message.body;
@@ -123,12 +128,6 @@ window.WeviewYoutubePlayer = (function(Weview, $, undefined)
                         break;
                 }
             }
-
-            this.changeSrc = function(i_Src) {
-                this.doPause();
-                var newSrc = this.getYoutubeVideoId(i_Src);
-                this.m_Player.loadVideoById(newSrc);
-            };
         };
 
         function appendYoutubeTag() {
