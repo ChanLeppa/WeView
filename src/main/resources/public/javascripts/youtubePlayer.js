@@ -25,6 +25,8 @@ window.WeviewYoutubePlayer = (function(Weview, $, undefined)
                     'onReady': i_OnPlayerReady
                 }
             });
+
+            setHeight('#youtube-placeholder');
         };
 
         this.onPlayerReady = function () {

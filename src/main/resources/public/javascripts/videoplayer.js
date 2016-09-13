@@ -31,7 +31,7 @@ window.WeviewVideoPlayer = (function(WeviewVideoPlayer, $, undefined)
             else if (playerSyncData.includes("All unsubscribe from player ")) {
                 onUnsubscribeAllCallback();
             }
-            else if(playerSyncData !== "CannotPlay updated" || playerSyncData !== "CanPlay updated")
+            else if(playerSyncData !== "CannotPlay updated" && playerSyncData !== "CanPlay updated")
             {
                 playerSyncData = $.parseJSON(playerSyncData);
 

@@ -562,6 +562,7 @@ function updatePlayerSrc(src) {
 
 function initializePlayer(playerID, src) {
     $('#video-controls').empty().append(videoControls);
+    setHeight("#video-screen");
 
     if (WeviewYoutubePlayer.isYoutubeSrc(src) === true) {
         initializeYoutubePlayer(playerID, src);
@@ -1127,5 +1128,11 @@ function disableButton(selector) {
 
 function enableButton(selector) {
     $(selector).removeClass("disabled").prop("disabled", false);
+}
+
+function setHeight(selector) {
+    var width = $("#center-page").width();
+    var height = (9 * width) / 16;
+    $(selector).css('height', height);
 }
 ////////////////////////////////////////////////////////////////////////////////

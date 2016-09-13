@@ -15,7 +15,7 @@ body {
     padding: 0px;
 }
 
-#play-pause-button, #stop-button, #mute-button, #vol-dec-button, #vol-inc-button, #fullscreen {
+#play-pause-button, #stop-button, #mute-button, #vol-dec-button, #vol-inc-button, #fullscreen, #btn-leave-player {
     padding-left: 15px;
     padding-right: 15px;
 }
@@ -113,10 +113,9 @@ iframe {
 #video-screen{
     position: relative;
     width: 100%;
-    height: 556.95px;
     margin-bottom: 0px;
 }
-#video-container {
+#video-container, #video-topscreen {
     position: absolute;
     top: 0;
     left: 0;
@@ -125,10 +124,9 @@ iframe {
 }
 
 #video-topscreen {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
     z-index: 5;
+}
+
+#leave-btn-container {
+    margin-bottom: 1px;
 }
