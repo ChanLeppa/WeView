@@ -134,21 +134,6 @@ window.WeviewYoutubePlayer = (function(Weview, $, undefined)
         function appendYoutubeTag() {
             $('#video-container').empty().prepend(youtubeTag);
         }
-
-        // this.sync = function(pageX){
-        //     var currentTime = getUpdatedTime(pageX, this.m_Player.getDuration());
-        //     // syncBean = {
-        //     //     callBackName: "Sync",
-        //     //     time : parseFloat(currentTime).toFixed(1),
-        //     //     canPlay: true,
-        //     //     playing: !video.paused
-        //     // };
-        //     // onSyncPressed(syncBean); //send to websocket
-        //     player.seekTo(currentTime);
-        //     updateProgressBar();
-        // }
-
-
     };
 
     YoutubePlayer.prototype = {

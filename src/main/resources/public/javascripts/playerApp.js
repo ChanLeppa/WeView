@@ -241,6 +241,9 @@ function disposePlayer() {
     $("#video-controls").empty();
     $("#leave-btn-container").empty();
     clearControlsEvents();
+    if(player.Type === 'youtube') {
+        youtubePlayer = player;
+    }
     player = null;
 }
 
@@ -338,7 +341,7 @@ function onUserUnsubscribedFromPlayer(playerSyncData) {
     var username = playerSyncData.split(" ")[0];
     if (username !== userData.username) {
         toast(playerSyncData, 3000);
-        enableButton("#add-" + username);
+        // enableButton("#add-" + username);
     }
 }
 
@@ -472,6 +475,7 @@ function userSubscriptionCallBack(message, headers) {
 }
 
 function showJoinToPlayerModal(username) {
+    $("#joinplayer-accept-btn").off('click');
     $("#joinplayer-accept-btn").click(username ,acceptJoinPlayerRequest);
     $("#joinplayer-text").html("").html(username + " invited you to watch a video together");
     $("#joinplayer-notification").openModal();
@@ -523,7 +527,6 @@ function swtichPlayerFromHTMLToYoutube(src) {
         youtubePlayer = player = new WeviewYoutubePlayer.YoutubePlayer(src);
     }
 
-    // $('#video-controls').empty().append(videoControls);
     resetVideoControls();
     clearControlsEvents();
     initializeYouTubePlayerControls();
@@ -533,7 +536,6 @@ function swtichPlayerFromYoutubeToHTML(src) {
     player.clearProgressBarInterval();
     clearVideoContainer();
     player = new WeviewVideoPlayer.VideoPlayer(src);
-    // $('#video-controls').empty().append(videoControls);
     resetVideoControls();
     clearControlsEvents();
     player.initializeVideoEvents(onCanPlay, onCannotPlay);
@@ -616,13 +618,15 @@ function loadInitialYoutubePlayer() {
 function initializeYoutubePlayer(playerID, src) {
     if(youtubePlayer == null){
         youtubePlayer = player = new WeviewYoutubePlayer.YoutubePlayer(src);
+        $('#video-container').empty().append(WeviewYoutubePlayer.youtubeTag);
     }
     else{
         player = youtubePlayer;
         player.changeSrc(src);
+        $('#video-container').empty().append(youtubeIframe);
     }
+
     messenger.subscribeToPlayer(playerID, videoSubscriptionCallback);
-    $('#video-container').empty().append(WeviewYoutubePlayer.youtubeTag);
     initializeYouTubePlayerControls();
 }
 
@@ -632,8 +636,6 @@ function onYouTubeIframeAPIReady() {
 
 function onYouTubePlayerReady() {
     youtubeIframe = $('#video-container').children();
-    // $('iframe').attr("allowfullscreen");
-    // youtubeIframe.setAttribute('allowFullScreen', '');
     player.onPlayerReady();
 }
 
