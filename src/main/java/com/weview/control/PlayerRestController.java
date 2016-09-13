@@ -16,7 +16,7 @@ public class PlayerRestController {
 
     @RequestMapping(value = "/user/{username}/create-player", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public String createPlayer(@PathVariable("username") String username, @RequestBody String src) {
+    public String createPlayer(@PathVariable("username") String username, @RequestBody String src) throws PlayerDuplicateException {
 
         if (userPlayerRepository.doesPlayerExist(username)) {
             throw new PlayerDuplicateException();
@@ -31,20 +31,38 @@ public class PlayerRestController {
     }
 
     @RequestMapping(value = "/user/{usernameToJoin}/join", method = RequestMethod.GET)
-    public String joinPlayer(@PathVariable("usernameToJoin") String usernameToJoin) {
+    public PlayerSynchronizationData joinPlayer(@PathVariable("usernameToJoin") String usernameToJoin)
+            throws PlayerNotExistsException {
 
         if (!userPlayerRepository.doesPlayerExist(usernameToJoin)) {
             throw new PlayerNotExistsException();
         }
 
-        return userPlayerRepository.getPlayerData(usernameToJoin).getSrc();
+        return userPlayerRepository.getPlayerData(usernameToJoin);
     }
 
-    @RequestMapping(value = "/user/{username}/remove-player")
+    @RequestMapping(value = "/user/{username}/remove-player", method = RequestMethod.POST)
     public String removePlayer(@PathVariable("username") String username) {
 
         userPlayerRepository.removePlayer(username);
 
         return username + "'s player has been removed";
+    }
+
+    @RequestMapping(value = "/user/{username}/does-player-exist", method = RequestMethod.GET)
+    public Boolean doesPlayerExist(@PathVariable("username") String username) {
+
+        return userPlayerRepository.doesPlayerExist(username);
+    }
+
+    @RequestMapping(value = "/user/{username}/get-player-data", method = RequestMethod.GET)
+    public PlayerSynchronizationData getPlayerData(@PathVariable("username") String username)
+            throws PlayerNotExistsException {
+
+        if (!userPlayerRepository.doesPlayerExist(username)) {
+            throw new PlayerNotExistsException();
+        }
+
+        return userPlayerRepository.getPlayerData(username);
     }
 }

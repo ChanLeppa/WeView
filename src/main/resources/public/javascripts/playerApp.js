@@ -222,7 +222,7 @@ function sendLogout() {
 
 function leavePlayer() {
 
-    if(player != null) {
+    if(player != null ) {
         if(messenger.PlayerID === userData.username) {
             removePlayerFromServer();
         }
@@ -241,9 +241,11 @@ function disposePlayer() {
     $("#video-controls").empty();
     $("#leave-btn-container").empty();
     clearControlsEvents();
+
     if(player.Type === 'youtube') {
         youtubePlayer = player;
     }
+
     player = null;
 }
 
@@ -371,8 +373,10 @@ function updateUserLoginStatus(username, isLoggedIn) {
 function acceptJoinPlayerRequest(event) {
     var requestingUsername = event.data;
     var dest = "/user/" + requestingUsername + "/join";
-    $.get(dest, function (src) {
-        initializePlayer(requestingUsername, decodeURIComponent(src));
+    $.get(dest, function (playerSyncDataResponse) {
+        playerSyncData = playerSyncDataResponse;
+        playerSyncData.src = decodeURIComponent(playerSyncDataResponse.src);
+        initializePlayer(requestingUsername, playerSyncData.src);
     });
 }
 
@@ -433,7 +437,15 @@ function declineFriend(requesting) {
 
 function onWebSocketConnection() {
     messenger.subscribeToUser(userSubscriptionCallBack);
+    // initPlayerIfExists();
 }
+
+// function initPlayerIfExists() {
+//     var dest = "/user/" + userData.username + "/get-player-data";
+//     $.get(dest, function (response) {
+//
+//     });
+// }
 
 function sendUserLogin() {
     messenger.sendUserLogin(userData.friends);
@@ -618,15 +630,14 @@ function loadInitialYoutubePlayer() {
 function initializeYoutubePlayer(playerID, src) {
     if(youtubePlayer == null){
         youtubePlayer = player = new WeviewYoutubePlayer.YoutubePlayer(src);
-        $('#video-container').empty().append(WeviewYoutubePlayer.youtubeTag);
     }
     else{
         player = youtubePlayer;
         player.changeSrc(src);
-        $('#video-container').empty().append(youtubeIframe);
     }
 
     messenger.subscribeToPlayer(playerID, videoSubscriptionCallback);
+    $('#video-container').empty().append(WeviewYoutubePlayer.youtubeTag);
     initializeYouTubePlayerControls();
 }
 
@@ -637,6 +648,7 @@ function onYouTubeIframeAPIReady() {
 function onYouTubePlayerReady() {
     youtubeIframe = $('#video-container').children();
     player.onPlayerReady();
+    setCurrentTimeFromPlayerSyncData();
 }
 
 function updateYouTubeProgressBar() {
@@ -724,8 +736,21 @@ function onYoutubeStopPressed() {
 function initializeVideoPlayer(playerID, src) {
     videoPlayer = player = new window.WeviewVideoPlayer.VideoPlayer(src);
     player.initializeVideoEvents(onCanPlay, onCannotPlay);
+    setCurrentTimeFromPlayerSyncData();
     messenger.subscribeToPlayer(playerID, videoSubscriptionCallback);
     initializeVideoPlayerControls();
+}
+
+function setCurrentTimeFromPlayerSyncData() {
+    if(playerSyncData != null) {
+        if(player.Type === 'html') {
+            player.Video.currentTime = playerSyncData.time;
+        }
+        else if(player.Type === 'youtube') {
+            player.Player.seekTo(playerSyncData.time);
+            player.doPause();
+        }
+    }
 }
 
 function initializeVideoPlayerControls() {
