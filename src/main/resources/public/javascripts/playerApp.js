@@ -2,6 +2,7 @@ var messenger = null;
 var friends;
 var userData = null;
 var videoControls;
+var exitPlayerBtn;
 var playerSyncData;
 var player = null;
 var youtubePlayer = null;
@@ -20,7 +21,9 @@ $(onLoad());
 function onLoad() {
     initPageButtons();
     videoControls = $("#video-controls").html();
+    exitPlayerBtn = $("#leave-btn-container").html();
     $("#video-controls").empty();
+    $("#leave-btn-container").empty();
     initUser()
         .then(updateDropboxControls)
         // .then(loadInitialYoutubePlayer);
@@ -61,7 +64,11 @@ function initPageButtons() {
 
     $("#searchBtn").click(searchFriend);
 
-    $("#btn-leave-player").click(leavePlayer);
+    $(document).on('mouseenter', '#video-screen', function () {
+        $('#btn-leave-player').show();
+    }).on('mouseleave', '#video-screen', function () {
+        $('#btn-leave-player').hide();
+    });
 }
 
 function initUserDetails() {
@@ -214,6 +221,7 @@ function disposePlayer() {
 
     clearVideoContainer();
     $("#video-controls").empty();
+    $("#leave-btn-container").empty();
     clearControlsEvents();
     player = null;
 }
@@ -497,7 +505,8 @@ function swtichPlayerFromHTMLToYoutube(src) {
         youtubePlayer = player = new WeviewYoutubePlayer.YoutubePlayer(src);
     }
 
-    $('#video-controls').empty().append(videoControls);
+    // $('#video-controls').empty().append(videoControls);
+    resetVideoControls();
     clearControlsEvents();
     initializeYouTubePlayerControls();
 }
@@ -506,10 +515,17 @@ function swtichPlayerFromYoutubeToHTML(src) {
     player.clearProgressBarInterval();
     clearVideoContainer();
     player = new WeviewVideoPlayer.VideoPlayer(src);
-    $('#video-controls').empty().append(videoControls);
+    // $('#video-controls').empty().append(videoControls);
+    resetVideoControls();
     clearControlsEvents();
     player.initializeVideoEvents(onCanPlay, onCannotPlay);
     initializeVideoPlayerControls();
+}
+
+function resetVideoControls() {
+    $('#video-controls').empty().append(videoControls);
+    $("#leave-btn-container").empty().append(exitPlayerBtn);
+    $("#btn-leave-player").click(leavePlayer);
 }
 
 function clearControlsEvents() {
@@ -561,7 +577,8 @@ function updatePlayerSrc(src) {
 }
 
 function initializePlayer(playerID, src) {
-    $('#video-controls').empty().append(videoControls);
+    // $('#video-controls').empty().append(videoControls);
+    resetVideoControls();
     setHeight("#video-screen");
 
     if (WeviewYoutubePlayer.isYoutubeSrc(src) === true) {
