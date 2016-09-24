@@ -1,4 +1,4 @@
-package com.weview.persistence.entities;
+package com.weview.model.persistence.entities;
 
 import javax.persistence.*;
 import java.util.HashMap;
@@ -6,6 +6,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * This class is a JPA entity object, used to manage user representation
+ * and to persist the user data in the database
+ */
 @Entity
 public class User {
 

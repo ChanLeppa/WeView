@@ -2,9 +2,8 @@ package com.weview.control;
 
 import com.weview.model.player.PlayerCallback;
 import com.weview.model.player.RedisUserPlayerRepository;
-import com.weview.model.player.playerdb.PlayerRepository;
-import com.weview.model.player.playerdb.PlayerSubscriberData;
-import com.weview.model.player.playerdb.PlayerSynchronizationData;
+import com.weview.model.player.PlayerSubscriberData;
+import com.weview.model.player.PlayerSynchronizationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -12,12 +11,20 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * This class implements the websocket control for the player representation,
+ * it is also in charge of serving the player.html
+ * */
 @Controller
 public class PlayerController {
 
     @Autowired
     private RedisUserPlayerRepository playerRepository;
 
+    /**
+     * This method is the HTTP method to retrieve the player page view
+     * @return player.html view
+     */
     @RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
     public String getPlayerPage() {
         return "/player.html";

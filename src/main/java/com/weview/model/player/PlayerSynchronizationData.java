@@ -1,11 +1,12 @@
-package com.weview.model.player.playerdb;
-
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import com.weview.model.player.PlayerCallback;
+package com.weview.model.player;
 
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * This class represents the player state in the player repository
+ * and is used as the data-transfer-object to and from the client
+ */
 public class PlayerSynchronizationData implements Serializable {
 
     private String src;
@@ -59,14 +60,6 @@ public class PlayerSynchronizationData implements Serializable {
 
         return canPlay;
     }
-
-//    public Boolean getPlaying() {
-//        return playing;
-//    }
-//
-//    public void setPlaying(Boolean playing) {
-//        this.playing = playing;
-//    }
 
     public void addSubscriber(PlayerSubscriberData subscriber) {
         subscribers.put(subscriber.getUsername(), subscriber);

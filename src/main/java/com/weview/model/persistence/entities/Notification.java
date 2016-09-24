@@ -1,8 +1,12 @@
-package com.weview.persistence.entities;
+package com.weview.model.persistence.entities;
 
 import javax.persistence.*;
 import java.util.Date;
 
+/**
+ * This class is a base JPA entity object, all types of user notifications
+ * should derive from this base class
+ */
 @Entity
 public abstract class Notification {
 
@@ -10,10 +14,6 @@ public abstract class Notification {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "notification_id")
     private Long id;
-
-//    @ManyToOne
-//    @JoinColumn(name = "id", nullable = false)
-//    private User user;
 
     private String message;
 
@@ -27,14 +27,6 @@ public abstract class Notification {
         this.message = message;
         this.date = date;
     }
-
-//    public User getUser() {
-//        return user;
-//    }
-//
-//    public void setUser(User user) {
-//        this.user = user;
-//    }
 
     public Long getId() {
         return id;
@@ -55,5 +47,4 @@ public abstract class Notification {
     public void setDate(Date date) {
         this.date = date;
     }
-
 }

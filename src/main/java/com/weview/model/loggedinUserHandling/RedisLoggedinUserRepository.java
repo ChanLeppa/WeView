@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
+/**
+ * This class manages the Redis repository of logged-in users
+ */
 @Component
 public class RedisLoggedinUserRepository implements LoggedinUserRepository {
 

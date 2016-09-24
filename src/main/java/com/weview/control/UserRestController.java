@@ -4,15 +4,14 @@ import com.weview.control.exceptions.*;
 import com.weview.model.UserDataForClient;
 import com.weview.model.UserFriendData;
 import com.weview.model.loggedinUserHandling.RedisLoggedinUserRepository;
-import com.weview.persistence.UserLoginData;
-import com.weview.persistence.entities.FriendRequestNotification;
-import com.weview.persistence.entities.User;
-import com.weview.persistence.UserRepository;
+import com.weview.model.persistence.UserLoginData;
+import com.weview.model.persistence.entities.FriendRequestNotification;
+import com.weview.model.persistence.entities.User;
+import com.weview.model.persistence.UserRepository;
 import com.weview.utils.ExceptionInspector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -21,9 +20,11 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Map;
-import java.util.Set;
 
+/**
+ * This class is the Http RESTFul control, it is in charge of all user
+ * related Http endpoints
+ */
 @RestController
 public class UserRestController {
 

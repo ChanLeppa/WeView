@@ -1,12 +1,14 @@
-package com.weview.model.player.playerdb;
+package com.weview.model.player;
 
 import java.util.Collection;
 
-
-/*Should we split into PlayerRepo and PlayerSubscriberRepo?!?!?*/
+/**
+ * This interface should be implemented to manage the player representation
+ * repository
+ */
 public interface PlayerRepository {
 
-    void addPlayer(String playerID, PlayerSynchronizationData playerData/*, SyncBean or other player representation*/);
+    void addPlayer(String playerID, PlayerSynchronizationData playerData);
 
     void removePlayer(String playerID);
 

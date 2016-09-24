@@ -1,5 +1,9 @@
-package com.weview.persistence;
+package com.weview.model.persistence;
 
+/**
+ * This class is used as a simple data-transfer-object from the client
+ * during login process
+ */
 public class UserLoginData {
 
     private String username;

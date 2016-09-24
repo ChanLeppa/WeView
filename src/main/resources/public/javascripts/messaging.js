@@ -1,3 +1,7 @@
+/**
+ * This class manages all the messaging and connection to the server websocket endpoints
+ * @type {{SocketMessenger}}
+ */
 window.WeviewSocketMessenger = (function(Weview, $, undefined)
 {
     var SocketMessenger = function (i_Username) {

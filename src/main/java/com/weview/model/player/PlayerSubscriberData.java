@@ -1,8 +1,11 @@
-package com.weview.model.player.playerdb;
+package com.weview.model.player;
 
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * This class represents a user that is subscribed to a specific player
+ */
 public class PlayerSubscriberData implements Serializable {
 
     private final String username;

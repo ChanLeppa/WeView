@@ -1,3 +1,8 @@
+/**
+ * This class encapsulates the Youtube API and player management, as well as
+ * the appropriate server callbacks
+ * @type {{videoTag, VideoPlayer}}
+ */
 window.WeviewYoutubePlayer = (function(Weview, $, undefined)
 {
     var youtubeTag = '<div id="youtube-placeholder" class="video-placeholder"></div>';

@@ -1,17 +1,14 @@
 package com.weview.model.dropbox;
 
 import com.dropbox.core.*;
-import com.dropbox.core.v1.DbxEntry;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.*;
-import com.weview.persistence.UserRepository;
-import com.weview.persistence.entities.User;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.servlet.http.HttpSession;
-import java.text.MessageFormat;
 import java.util.*;
 
+/**
+ * This class manages all Dropbox API connectivity
+ */
 public class DropboxManager {
 
     private DbxAppInfo appInfo = new DbxAppInfo("rz82vb6w1c2dsgd", "7np3pwsphspipdv");

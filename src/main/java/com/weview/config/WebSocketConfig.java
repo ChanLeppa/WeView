@@ -39,12 +39,4 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
         }
 
     }
-
-//    private class UserHandshakeHandler extends DefaultHandshakeHandler {
-//
-//        @Override
-//        protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-//            return null;
-//        }
-//    }
 }

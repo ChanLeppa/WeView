@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.text.MessageFormat;
 
+/**
+ * This class is the control for all user related websocket endpoints
+ */
 @Controller
 public class UserWebSocketController {
 

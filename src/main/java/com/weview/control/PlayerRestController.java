@@ -3,11 +3,15 @@ package com.weview.control;
 import com.weview.control.exceptions.PlayerDuplicateException;
 import com.weview.control.exceptions.PlayerNotExistsException;
 import com.weview.model.player.RedisUserPlayerRepository;
-import com.weview.model.player.playerdb.PlayerSynchronizationData;
+import com.weview.model.player.PlayerSynchronizationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * This class is the Http RESTFul control, it is in charge of all player
+ * related Http endpoints
+ */
 @RestController
 public class PlayerRestController {
 

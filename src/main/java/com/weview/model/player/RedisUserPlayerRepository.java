@@ -1,9 +1,6 @@
 package com.weview.model.player;
 
 import com.weview.control.exceptions.PlayerNotExistsException;
-import com.weview.model.player.playerdb.PlayerRepository;
-import com.weview.model.player.playerdb.PlayerSubscriberData;
-import com.weview.model.player.playerdb.PlayerSynchronizationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -12,6 +9,9 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.util.Collection;
 
+/**
+ * This class is used to manage the player representation repository in the Redis database
+ */
 @Component
 public class RedisUserPlayerRepository implements PlayerRepository {
 

@@ -1,21 +1,20 @@
 package com.weview.control;
 
 import com.dropbox.core.DbxException;
-import com.dropbox.core.DbxWebAuth;
 import com.weview.control.exceptions.InvalidAuthDbxCodeException;
 import com.weview.control.exceptions.UserNotFoundException;
 import com.weview.model.dropbox.DropboxManager;
-import com.weview.persistence.UserRepository;
-import com.weview.persistence.entities.User;
+import com.weview.model.persistence.UserRepository;
+import com.weview.model.persistence.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is the control for all endpoints concerning the Dropbox API
+ */
 @RestController
 public class DropboxController {
     @Autowired

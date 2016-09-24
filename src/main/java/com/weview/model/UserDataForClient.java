@@ -1,5 +1,9 @@
 package com.weview.model;
 
+/**
+ * This class is a data-transfer-object used to send basic user data
+ * to the client
+ */
 public class UserDataForClient {
 
     private final String username;

@@ -1,3 +1,7 @@
+/**
+ * This class encapsulates the HTML5 video player management and server callbacks
+ * @type {{videoTag, VideoPlayer}}
+ */
 window.WeviewVideoPlayer = (function(WeviewVideoPlayer, $, undefined)
 {
     var videoTag = "<video id='video' class='player row' preload='auto' width='100%' data-setup='{}'><p>Your browser does not support the video tag.</p></video>";
@@ -12,8 +16,6 @@ window.WeviewVideoPlayer = (function(WeviewVideoPlayer, $, undefined)
         this.initializeVideoEvents = function(onCanPlay, onCannotPlay) {
             this.m_Video.src = this.m_Src;
             this.m_Video.oncanplay = sendCanPlay;
-            // this.m_Video.onplaying = onCanPlay;
-            // this.m_Video.onwaiting = onCannotPlay;
             this.m_Video.ontimeupdate = this.updateProgressBar;
             this.m_Video.onvolumechange = this.onVolumeChangeEvent;
             this.m_Video.onloadedmetadata = this.onloadedmetadata;
