@@ -1,8 +1,11 @@
-package com.weview.model;
+package com.weview.utils;
 
 import java.text.MessageFormat;
 import java.util.Random;
 
+/**
+ * This class is used to generate simple string based identification
+ */
 public class RandomIDGenerator {
 
     private String[] adjectives = {

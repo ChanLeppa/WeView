@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>We View</title>
+    <link rel="icon" href="/images/web_logo.png">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
     <link rel="stylesheet" href="http://fonts.googleapis.com/icon?family=Material+Icons">
@@ -11,7 +12,19 @@
 </head>
 <body>
     <header class="blue accent-3 bz-depth-3">
-        <img class="brand-logo" src="../images/weview_logo_small.png" />
+        <nav class="top-nav">
+            <div class="nav-wrapper blue accent-3 bz-depth-3">
+                <img class="brand-logo" src="../images/weview_logo_small.png" />
+                <ul id="top-nav" class="right hide-on-small-only">
+                    <li>
+                        <a id="nav-loginBtn" class="modal-trigger" data-target="login-modal"><i class="fa fa-user" aria-hidden="true"></i> Login</a>
+                    </li>
+                    <li>
+                        <a id="nav-signupBtn" class="modal-trigger" data-target="signup-modal"><i class="fa fa-user-plus" aria-hidden="true"></i> Sign up</span></a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
     </header>
     <main>
         <div class="parallax-container">
@@ -20,7 +33,7 @@
                 <h3 id="second-line" class="blue-grey-text text-lighten-2">Start watching with your friends and family</h3>
             </div>
             <div class="parallax">
-                <img src="../images/home-office-569153_1920.jpg">
+                <img class="responsive-img" src="../images/home-office-569153_1920.jpg">
             </div>
         </div>
         <div class="section white">
@@ -31,60 +44,64 @@
                 <div class="row">
                     <button id="btnRegister" class="modal-trigger blue accent-3 waves-effect waves-light btn-large col s4 offset-s4" data-target="signup-modal">Sign up</button>
                 </div>
-                <div class="row">
-                    <button id="btnGuest" class="blue accent-3 waves-effect waves-light btn-large col s4 offset-s4">Guest</button>
-                </div>
+                <!--<div class="row">-->
+                    <!--<button id="btnGuest" class="blue accent-3 waves-effect waves-light btn-large col s4 offset-s4">Guest</button>-->
+                <!--</div>-->
             </div>
         </div>
         <div class="parallax-container">
-            <div class="parallax"><img src="../images/popcorn-1433326_1920.jpg"></div>
+            <div class="parallax"><img class="responsive-img" src="../images/popcorn-1433326_1920.jpg"></div>
         </div>
     </main>
 
     <div class="modal" id="signup-modal">
         <div class="modal-content" id="signup-container">
-            <form>
+            <form id="signup-form" method="post" >
                 <div class="row">
                     <div class="input-field col s6">
-                        <input id="firstName" type="text" class="validate">
-                        <label for="firstName" class="light-blue-text text-accent-3">First Name</label>
+                        <label for="fname" class="light-blue-text text-accent-3">First Name</label>
+                        <input id="fname" type="text" class="validate">
                     </div>
                     <div class="input-field col s6">
-                        <input id="lname" type="text" class="validate">
                         <label for="lname" class="light-blue-text text-accent-3">Last Name</label>
+                        <input id="lname" type="text" class="validate">
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s6">
-                        <input id="username-signup" type="text" class="validate">
-                        <label for="username-signup" class="light-blue-text text-accent-3">Username</label>
+                        <label for="username_signup" class="light-blue-text text-accent-3">Username</label>
+                        <input id="username_signup" type="text" class="validate">
                     </div>
                     <div class="input-field col s6">
-                        <input id="password-signup" type="password" class="validate">
-                        <label for="password-signup" class="light-blue-text text-accent-3">Password</label>
+                        <label for="password_signup" class="light-blue-text text-accent-3">Password</label>
+                        <input id="password_signup" type="password" class="validate">
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s6">
+                        <label for="email" class="light-blue-text text-accent-3">Email</label>
                         <input id="email" type="email" class="validate">
-                        <label for="email" class="light-blue-text text-accent-3" data-error="not a valid email">Email</label>
                     </div>
-                    <!--<form>-->
-                    <!--<form action="#">-->
-                    <div class="file-field input-field col s6">
-                        <div class="blue accent-3 btn">
-                            <span>Photo</span>
-                            <input type="file">
-                        </div>
-                        <div class="file-path-wrapper">
-                            <input class="file-path validate" type="text">
-                        </div>
+                    <div class="input-field col s6">
+                        <select id="icons">
+                            <option value="human" data-icon="/images/icons/human-icon.png" class="left circle" selected>Human</option>
+                            <option value="bird" data-icon="/images/icons/bird-icon.png" class="left circle">Bird</option>
+                            <option value="black-cat" data-icon="/images/icons/black-cat-icon.png" class="left circle">Black cat</option>
+                            <option value="cow" data-icon="/images/icons/cow-icon.png" class="left circle">Cow</option>
+                            <option value="crab" data-icon="/images/icons/crab-icon.png" class="left circle">Crab</option>
+                            <option value="dog" data-icon="/images/icons/dog-icon.png" class="left circle">Dog</option>
+                            <option value="pig" data-icon="/images/icons/pig-icon.png" class="left circle">Pig</option>
+                            <option value="sheep" data-icon="/images/icons/sheep-icon.png" class="left circle">Sheep</option>
+                            <option value="squid" data-icon="/images/icons/squid-icon.png" class="left circle">Squid</option>
+                            <option value="turtle" data-icon="/images/icons/turtle-icon.png" class="left circle">Turtle</option>
+                            <option value="whale" data-icon="/images/icons/whale-icon.png" class="left circle">Whale</option>
+                        </select>
+                        <label class="light-blue-text text-accent-3">Select avatar</label>
                     </div>
-                    <!--</form>-->
                 </div>
                 <div class="row right">
                     <a id="cancel-signup" class="modal-action modal-close waves-effect waves-teal btn-flat">Cancel</a>
-                    <button id="submit-signup" class="modal-action modal-close btn waves-effect waves-light blue accent-3" type="submit">Signup <span class="fa fa-sign-in"></span></button>
+                    <button id="submit-signup" class="submit btn waves-effect waves-light blue accent-3" name="action">Signup <span class="fa fa-sign-in"></span></button>
                 </div>
             </form>
         </div>
@@ -92,22 +109,22 @@
 
     <div class="modal" id="login-modal">
         <div class="modal-content" id="login-container">
-            <form>
+            <form id="login-form" method="post">
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="username-login" type="text" class="validate">
-                        <label for="username-login" class="light-blue-text text-accent-3">Username</label>
+                        <label for="username_login" class="light-blue-text text-accent-3">Username</label>
+                        <input id="username_login" type="text" class="validate">
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <input id="password-login" type="password" class="validate">
-                        <label for="password-login" class="light-blue-text text-accent-3">Password</label>
+                        <label for="password_login" class="light-blue-text text-accent-3">Password</label>
+                        <input id="password_login" type="password" class="validate">
                     </div>
                 </div>
                 <div class="row right">
                     <a id="cancel-login" class="modal-action modal-close waves-effect waves-teal btn-flat">Cancel</a>
-                    <button id="submit-login" class="modal-action modal-close btn waves-effect waves-light blue accent-3" type="submit">Login <span class="fa fa-sign-in"></span></button>
+                    <button id="submit-login" class="submit btn waves-effect waves-light blue accent-3" name="action">Login <span class="fa fa-sign-in"></span></button>
                 </div>
             </form>
         </div>
@@ -117,6 +134,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/jquery.validate.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/additional-methods.min.js"></script>
     <script src="/javascripts/login.js"></script>
 </body>
 </html>

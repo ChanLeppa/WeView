@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>We View</title>
+    <link rel="icon" href="/images/web_logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
     <link rel="stylesheet" href="http://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
@@ -17,19 +18,19 @@
             <!--<a href="#" data-activates="mobile-buttons" class="button-collapse"><i class="material-icons">menu</i></a>-->
             <ul id="top-nav" class="right hide-on-small-only">
                 <li>
-                    <a class="modal-trigger" href="#link-menu"><span class="fa fa-external-link"></span> Video Link</a>
+                    <a class="modal-trigger" id="linkBtn" href="#link-menu"><span class="fa fa-external-link"></span> Video Link</a>
                 </li>
                 <li>
-                    <a class="dropdown-button" href="#" data-beloworigin="true" data-activates="dbx-menu"><span class="fa fa-dropbox"></span> Dropbox<i class="material-icons right">arrow_drop_down</i></a>
+                    <a class="dropdown-button" data-beloworigin="true" data-activates="dbx-menu"><span class="fa fa-dropbox"></span> Dropbox<i class="material-icons right">arrow_drop_down</i></a>
                 </li>
                 <li>
-                    <a href="/youtube.html" id="youtube-btn"><i class="fa fa-youtube-play" aria-hidden="true"></i> YouTube</a>
+                    <a class="modal-trigger" href="#friends-search" id="searchFriendsBtn"><i class="fa fa-search" aria-hidden="true"></i> Search friends</a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Login</a>
+                    <a class="modal-trigger" href="#friend-requests" id="friend-requestsBtn" >Friend Requests <span class="new badge white blue-text accent-3-text"></span></a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-user-plus" aria-hidden="true"></i> Sign up</span></a>
+                    <a id="logoutBtn"><i class="fa fa-user-times" aria-hidden="true"></i> Logout</a>
                 </li>
             </ul>
         </div>
@@ -47,10 +48,24 @@
     <main>
         <div id="player-container">
             <div class="row" id="video-controls-container">
-                <div class="col s2 m2 l2 black">
+                <div class="col s2 m2 l2">
+                    <div id="chat-container">
+                        <ul id="chat-collection" class="collection">
+                            <li class="collection-item blue accent-3 white-text chat-collection" id="local-chat-container"></li>
+                        </ul>
+                    </div>
                 </div>
                 <div id="center-page" class="col s8 m8 l8">
-                    <div class="video-container">
+                    <div class="row" id="video-screen">
+                        <div id="video-container">
+
+                        </div>
+                        <div id="video-topscreen">
+
+                        </div>
+                        <div class="row" id="leave-btn-container">
+                            <button id="btn-leave-player" class="btn waves-effect waves-light red right"><i class="material-icons">exit_to_app</i></button>
+                        </div>
                     </div>
                     <div id="video-controls" class="controls row black">
                         <div class="col s4 m2 l2" id="play-controls">
@@ -73,25 +88,25 @@
                             <button id="mute-button" type="button" class="mute waves-effect waves-light btn blue accent-3" title="mute">
                                 <i class="tiny material-icons">volume_off</i>
                             </button>
-                            <button id="vol-inc-button" type="button" class="volume-plus waves-effect waves-light btn blue accent-3" title="increase volume" onclick="onVolumeChanged('+');">
-                                <i class="tiny material-icons">volume_up</i>
-                            </button>
-                            <button id="vol-dec-button" type="button" class="volume-minus waves-effect waves-light btn blue accent-3" title="deccrease volume" onclick="onVolumeChanged('-');">
+                            <button id="vol-dec-button" type="button" class="volume-minus waves-effect waves-light btn blue accent-3" title="deccrease volume">
                                 <i class="tiny material-icons">volume_down</i>
                             </button>
-                            <!--<button id="light-btn" type="button" class="waves-effect waves-light btn blue accent-3" title="light">-->
-                                <!--<i class="tiny material-icons">aspect_ratio</i>-->
-                            <!--</button>-->
+                            <button id="vol-inc-button" type="button" class="volume-plus waves-effect waves-light btn blue accent-3" title="increase volume">
+                                <i class="tiny material-icons">volume_up</i>
+                            </button>
                             <button id="fullscreen" type="button" class="full-screen waves-effect waves-light btn blue accent-3" title="full screen">
                                 <i class="tiny material-icons">aspect_ratio</i>
                             </button>
                         </div>
                     </div>
-                    <!--<div class="row" id="time-data">-->
-                        <!--<h6 class="center-align white-text">Time: <span id="current">0.0</span> of <span id="duration"></span> Played:<span id="percentage">0</span>%</h6>-->
-                    <!--</div>-->
                 </div>
-                <div class="col s2 m2 l2 black">
+                <div class="col s2 m2 l2">
+                    <div class="row" id="user-details">
+
+                    </div>
+                    <ul id="user-friends" class="collection row">
+
+                    </ul>
                 </div>
             </div>
         </div >
@@ -100,41 +115,118 @@
 
     <!--</footer>-->
 
-    <!--video links modal-->
-    <div class="modal grey darken-3" id="dropbox-modal">
-        <div class="modal-content" id="filenames-container">
+    <div class="modal" id="dropbox-modal">
+        <div class="modal-content grey darken-3" id="filenames-container">
             <h4 class="modal-title white-text">Choose video to watch</h4>
             <div class="collection with-header" id="filenames">
             </div>
             <p id="link-dbx"></p>
         </div>
-        <div class="modal-footer grey darken-3">
-            <button type="close" class="modal-action modal-close btn waves-effect waves-light blue accent-3">Close</button>
+        <div class="modal-footer grey">
+            <button type="close" class="modal-action modal-close btn-flat waves-effect waves-light">Close</button>
         </div>
     </div>
-    <!-- dropdown dropbox button -->
     <ul id="dbx-menu" class="dropdown-content">
         <li id="reg-dropbox-list"><a href="#" class="light-blue-text text-accent-3" id="reg-dropbox-button">Login to your dropbox</a></li>
     </ul>
-    <!--video link modal-->
     <div id="link-menu" class="modal">
-        <div class="modal-content" id="videolink-container">
-            <form>
-                <div class="input-field">
-                    <textarea id="link-URL" class="materialize-textarea"></textarea>
-                    <label for="link-URL" class="light-blue-text text-accent-3">Enter link to video you want to watch</label>
-                </div>
-                <button id="btnVideoLink" class="btn waves-effect waves-light blue accent-3" type="submit">Submit
-                    <i class="material-icons right">send</i>
-                </button>
-            </form>
+        <div class="modal-content grey darken-3 white-text" id="videolink-container">
+            <p>Enter a link to a video you would like to watch</p>
+            <div class="input-field">
+                <input placeholder="Link..." id="link-URL" type="text"/>
+            </div>
+            <p class="red-text" id="invalid-link-msg"></p>
+        </div>
+        <div class="modal-footer grey">
+            <button type="close" class="modal-action modal-close btn-flat waves-effect waves-light right">Close</button>
+            <button id="btnVideoLink" class="btn waves-effect waves-light blue accent-3 disabled right" type="submit" disabled>Submit
+                <i class="material-icons right">send</i>
+            </button>
         </div>
     </div>
+    <div id="friends-search" class="modal">
+        <div class="modal-content grey darken-3 white-text">
+            <h4>Search friends by username or email:</h4>
+            <div class="row">
+                <div class="input-field col s12 m12 l12">
+                    <input placeholder="Search..." id="search-input" type="text">
+                </div>
+            </div>
+            <div class="row">
+                <button id="searchBtn" class="btn waves-effect waves-light blue accent-3 disabled right" disabled>Search
+                    <i class="material-icons right">search</i>
+                </button>
+            </div>
+            <div class="divider"></div>
+            <div class="row">
+                <div id="search-result" class="col s4 offset-s4">
+
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer grey">
+            <button type="close" class="modal-action modal-close btn-flat waves-effect waves-light right">Close</button>
+        </div>
+    </div>
+    <div id="joinplayer-notification" class="modal">
+        <div class="modal-content grey darken-3 white-text">
+            <h4>Join friends and watch together</h4>
+            <p id="joinplayer-text"></p>
+        </div>
+        <div class="modal-footer grey">
+            <a class="modal-action modal-close waves-effect waves-light btn-flat">Decline</a>
+            <a id="joinplayer-accept-btn" class="modal-action modal-close waves-effect waves-light blue accent-3 btn">Accept</a>
+        </div>
+    </div>
+    <div id="friend-requests" class="modal bottom-sheet">
+        <div class="modal-content grey darken-3 white-text">
+            <h4>Friend requests</h4>
+            <ul id="friend-requests-list"class="collection">
+
+            </ul>
+        </div>
+        <div class="modal-footer grey">
+            <a class="modal-action modal-close waves-effect waves-light accent-3 btn-flat">Close</a>
+        </div>
+    </div>
+    <div id="loginToDbx-modal" class="modal">
+        <div class="modal-content grey darken-3 white-text">
+            <h4>Login to your dropbox</h4>
+            <div class="row">
+                <div class="input-field col s12 m12 l12">
+                    <p>1) Go to the following link: </p>
+                    <p class="blue-text text-accent-3" id="dbxauth-link"></p>
+                    <p>2) Click "Allow" (you might have to login first) and copy the code</p>
+                    <p>3) Enter the authorization code here:</p>
+                    <input placeholder="Authorization code" id="authcode-input" type="text">
+                </div>
+            </div>
+            <div class="row">
+                <button id="sendAuthCodeBtn" class="btn waves-effect waves-light blue accent-3 disabled right" disabled>Send code
+                    <i class="material-icons right">send</i>
+                </button>
+            </div>
+        </div>
+        <div class="modal-footer grey">
+            <a class="modal-action modal-close waves-effect waves-light accent-3 btn-flat">Close</a>
+        </div>
+    </div>
+    <!--<button id="btn-leave-player" class="btn waves-effect waves-light red">Leave Player <i class="material-icons right"><i class="material-icons">exit_to_app</i></button>-->
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
-<!-- <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/adapterjs/0.13.3/adapter.min.js"></script>-->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/adapterjs/0.13.3/adapter.screenshare.min.js"></script>-->
+
+<script src="https://cdn.webrtc-experiment.com:443/rmc3.min.js"></script>
+<script src="https://cdn.webrtc-experiment.com:443/socket.io.js"></script>
+
+<script src="/javascripts/messaging.js"></script>
+<script src="/javascripts/videoplayer.js"></script>
+<script src="/javascripts/youtubePlayer.js"></script>
 <script src="/javascripts/playerApp.js"></script>
 </body>
 </html>

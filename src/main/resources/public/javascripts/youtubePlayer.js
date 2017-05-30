@@ -1,222 +1,164 @@
-var player;
-var playPauseButton;
-var stopButton;
-var muteButton;
-var volumeinc;
-var volumedec;
-var progressBar;
-var fullscreenButton;
-var timeDrag = false;
-var updateBarInterval;
+/**
+ * This class encapsulates the Youtube API and player management, as well as
+ * the appropriate server callbacks
+ * @type {{videoTag, VideoPlayer}}
+ */
+window.WeviewYoutubePlayer = (function(Weview, $, undefined)
+{
+    var youtubeTag = '<div id="youtube-placeholder" class="video-placeholder"></div>';
 
-////////////////////////////////////////////
-var playerID = getPlayerID();
-var stompClient;
-function getPlayerID() {
-    var url = $(location).attr('href');
-    var splitURL = url.split("/");
-    return splitURL[splitURL.length - 2];
-}
-////////////////////////////////////////////
+    var YoutubePlayer = function(i_YoutubeVideoUrl) {
 
-function onYouTubeIframeAPIReady() {
+        appendYoutubeTag();
+        $.getScript("https://www.youtube.com/iframe_api");
+        this.m_YoutubeVideoUrl = i_YoutubeVideoUrl;
+        this.m_Player = null;
+        this.m_UpdateBarInterval = null;
+        this.m_Type = 'youtube';
 
-    //to recieve the link to a youtube movie
-    player = new YT.Player('youtube-placeholder', {
-        width: 990.16,
-        height: 556.95,
-        videoId: 'RG0wzAPYO7c',
-        playerVars: {
-            'controls': 0,
-            'showinfo': 0,
-            'autohide': 1
-        },
-        events: {
-            'onReady': onPlayerReady
+        this.onYouTubeIframeAPIReady = function (i_OnPlayerReady) {
+            var videoId = this.getYoutubeVideoId(this.m_YoutubeVideoUrl);
+            this.m_Player = new window.YT.Player('youtube-placeholder', {
+                height: 556.95,
+                videoId: videoId,
+                playerVars: {
+                    'controls': 0,
+                    'showinfo': 0,
+                    'autohide': 1
+                },
+                events: {
+                    'onReady': i_OnPlayerReady
+                }
+            });
+
+            setHeight('#youtube-placeholder');
+        };
+
+        this.onPlayerReady = function () {
+            console.log("Youtube player ready!");
+            sendCanPlay();
+            updateYouTubeProgressBar();
+
+            if(this.m_UpdateBarInterval !== null){
+                clearInterval(this.m_UpdateBarInterval);
+            }
+
+            this.m_UpdateBarInterval = setInterval(function () {
+                updateYouTubeProgressBar();
+            }, 100)
+        };
+
+        this.clearProgressBarInterval = function() {
+            clearInterval(this.m_UpdateBarInterval);
+        };
+
+        this.getYoutubeVideoId = function(i_URL) {
+            var urlArray = i_URL.split("/");
+            var lastElem = urlArray[urlArray.length - 1];
+            if(lastElem.includes("v=")){
+                urlArray = lastElem.split("=");
+                lastElem = urlArray[urlArray.length - 1];
+            }
+
+            return lastElem;
+        };
+
+        this.doPause = function(){
+            changeButtonType($('#play-pause-button'), 'play', 'pause', "<i class='tiny material-icons'>play_arrow</i>");
+            this.m_Player.pauseVideo();
+        };
+
+        this.doPlay = function() {
+            changeButtonType($('#play-pause-button'), 'pause', 'play', "<i class='tiny material-icons'>pause</i>");
+            this.m_Player.playVideo();
+        };
+
+        this.doStop = function() {
+            this.doPause();
+            this.m_Player.seekTo(0);
+            // this.updateYouTubeProgressBar();
+        };
+
+        this.changeSrc = function(i_Src) {
+            // this.doPause();
+            var newSrc = this.getYoutubeVideoId(i_Src);
+            this.m_Player.loadVideoById(newSrc);
+        };
+
+        this.subscriptionCallback = function(message, headers) {
+            var playerSyncData = message.body;
+            console.log("Server sent:" + message.body);
+            if(playerSyncData.includes("subscribed to player")){
+                onUserSubscribedToPlayer(playerSyncData);
+            }
+            else if(playerSyncData.includes("unsubscribed from player")) {
+                onUserUnsubscribedFromPlayer(playerSyncData);
+            }
+            else if (playerSyncData.includes("All unsubscribe from player ")) {
+                onUnsubscribeAllCallback();
+            }
+            else if(playerSyncData !== "CannotPlay updated" && playerSyncData !== "CanPlay updated")
+            {
+                playerSyncData = $.parseJSON(playerSyncData);
+
+                switch(playerSyncData.callback) {
+                    case "PLAY":
+                        console.log(playerSyncData.message);
+                        this.m_Player.seekTo(playerSyncData.time);
+                        updateYouTubeProgressBar();
+                        this.doPlay();
+                        break;
+                    case "STOP":
+                        console.log(playerSyncData.message);
+                        this.doStop();
+                        break;
+                    case "PAUSE":
+                        console.log(playerSyncData.message);
+                        this.doPause();
+                        this.m_Player.seekTo(playerSyncData.time);
+                        updateYouTubeProgressBar();
+                        break;
+                    case "SYNC":
+                        console.log(playerSyncData.message);
+                        this.m_Player.seekTo(playerSyncData.time);
+                        updateYouTubeProgressBar();
+                        break;
+                    case "SRC":
+                        console.log(playerSyncData.message);
+                        onSrcChange(playerSyncData.src);
+                        break;
+                    case "ERROR":
+                        console.log(playerSyncData.message);
+                        //TODO: Handle errors
+                        break;
+                }
+            }
+        };
+
+        function appendYoutubeTag() {
+            $('#video-container').empty().prepend(youtubeTag);
         }
-    });
-}
+    };
 
-function onPlayerReady() {
-    initializePlayerControls();
-    updateProgressBar();
+    YoutubePlayer.prototype = {
+        get Player() { return this.m_Player; },
+        get Type() { return this.m_Type; },
+        get YoutubeVideoUrl() { return this.m_YoutubeVideoUrl; }
+    };
 
-    clearInterval(updateBarInterval);
-
-    updateBarInterval = setInterval(function () {
-        updateProgressBar();
-    }, 100)
-}
-
-function getYoutubeVideoId(i_URL) {
-    var urlArray = i_URL.split("/");
-
-    return urlArray[urlArray.length - 1];
-}
-
-function isYoutubeSrc(i_URL) {
-    return i_URL.includes("https://youtu");
-}
-
-// function initializePlayerVideo(videoSource) {
-//     video.src = videoSource;
-//     //video.controls = false;
-//     video.oncanplay = onCanPlay;
-//     video.ontimeupdate = updateProgressBar;
-//     video.onvolumechange = onVolumeChangeEvent;
-//     video.onloadedmetadata = function() {
-//         $('#duration').text(video.duration.toFixed(1));
-//     };
-// }
-
-function initializePlayerControls() {
-    playPauseButton = $('#play-pause-button');
-    stopButton = $('#stop-button');
-    muteButton = $('#mute-button');
-    volumeinc = $('#vol-inc-button');
-    volumedec = $('#vol-dec-button');
-    progressBar = $('#progress-bar');
-    fullscreenButton = $('#fullscreen');
-
-    playPauseButton.click(togglePlay);
-    stopButton.click(doStop);
-    muteButton.click(toggleMute);
-    fullscreenButton.click(function() {
-        var iframe = $('#youtube-placeholder');
-        iframe.webkitEnterFullscreen();
-        // var requestFullScreen = iframe.requestFullScreen || iframe.mozRequestFullScreen || iframe.webkitRequestFullScreen;
-        // if (requestFullScreen) {
-        //     requestFullScreen.bind(iframe)();
-        // }
-    });
-
-    $('.progress-bar').mousedown(function(e) {
-        timeDrag = true;
-        sync(e.pageX);
-    });
-
-    $(document).mouseup(function(e) {
-        if(timeDrag) {
-            timeDrag = false;
-            sync(e.pageX);
-        }
-    });
-
-    $(document).mousemove(function(e) {
-        if(timeDrag) {
-            sync(e.pageX);
-        }
-    });
-}
-
-function doPause(){
-    changeButtonType(playPauseButton, 'play', 'pause', "<i class='tiny material-icons'>play_arrow</i>");
-    player.pauseVideo();
-}
-
-function doPlay() {
-    changeButtonType(playPauseButton, 'pause', 'play', "<i class='tiny material-icons'>pause</i>");
-    player.playVideo();
-}
-
-function doStop() {
-    doPause();
-    player.seekTo(0);
-}
-
-
-function changeButtonType(button, valueToSet, valueToChange, innerHtml){
-    button.html(innerHtml);
-    button.attr("type", valueToSet);
-    button.addClass(valueToSet).removeClass(valueToChange);
-}
-
-function onVolumeChanged(direction){
-    var volume = player.getVolume();
-    if(direction === '+'){
-        player.setVolume(volume === 100 ? 100 : (volume + 5));
-    }
-    else{
-        player.setVolume(volume === 0 ? 0 : (volume - 5));
-    }
-}
-
-function toggleMute(){
-    if (player.isMuted()){
-        player.unMute();
-        changeButtonType(muteButton, 'unmute', 'mute', "<i class='tiny material-icons'>volume_off</i>");
-    } else{
-        player.mute();
-        changeButtonType(muteButton, 'mute', 'unmute', "<i class='tiny material-icons'>volume_mute</i>");
-    }
-}
-
-function togglePlay(){
-    if (player.getPlayerState() !== YT.PlayerState.PLAYING){
-        // onPlayPressed();
-        doPlay();
-    } else{
-        // onPausePressed();
-        doPause();
-    }
-}
-function sync(pageX){
-    var currentTime = getUpdatedTime(pageX, player.getDuration());
-    // syncBean = {
-    //     callBackName: "Sync",
-    //     time : parseFloat(currentTime).toFixed(1),
-    //     canPlay: true,
-    //     playing: !video.paused
-    // };
-    // onSyncPressed(syncBean); //send to websocket
-    player.seekTo(currentTime);
-    updateProgressBar();
-}
-
-// function onSyncPressed(syncBean) {
-//     var dest = '/app/' + playerID + '/sync';
-//     var data = JSON.stringify(syncBean);
-//     stompClient.send(dest, {}, data);
-// }
-
-function updateProgressBar() {
-    var duration = player.getDuration();
-    var currentTime = player.getCurrentTime();
-    setValuesToProgressBar(duration, currentTime);
-}
-
-function setValuesToProgressBar(duration, currentTime) {
-    $('#current').text(formatTime(currentTime));
-    $('#duration').text(formatTime(duration));
-    var percentage = Math.floor((100 / duration) * currentTime);
-    $('#percentage').text(percentage);
-    $('.time-bar').css('width', percentage+'%');
-}
-
-function getUpdatedTime(x, duration) {
-    var progress = $('.progress-bar');
-    var maxduration = duration; //Video duraiton
-    var position = x - progress.offset().left; //Click pos
-    var percentage = 100 * position / progress.width();
-
-    //Check within range
-    if(percentage > 100) {
-        percentage = 100;
-    }
-    if(percentage < 0) {
-        percentage = 0;
+    function isYoutubeSrc(i_URL) {
+        return i_URL.includes("https://youtu") || i_URL.includes("https://www.youtu");
     }
 
-    return maxduration * percentage / 100;
-}
 
-function formatTime(time){
-    time = Math.round(time);
+    return {
+        youtubeTag: youtubeTag,
+        YoutubePlayer: YoutubePlayer,
+        isYoutubeSrc: isYoutubeSrc
+    }
 
-    var minutes = Math.floor(time / 60);
-    var seconds = time - minutes * 60;
+})(window.WeviewYoutubePlayer || {}, jQuery);
 
-    seconds = seconds < 10 ? '0' + seconds : seconds;
 
-    return minutes + ":" + seconds;
-}
+
+

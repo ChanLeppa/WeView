@@ -1,12 +1,14 @@
-package com.weview.model.player.playerdb;
+package com.weview.model.player;
 
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * This class represents a user that is subscribed to a specific player
+ */
 public class PlayerSubscriberData implements Serializable {
 
     private final String username;
-    private String playerID;
     private Boolean canPlay = false;
     private Date time = new Date();
 
@@ -38,11 +40,19 @@ public class PlayerSubscriberData implements Serializable {
         return time;
     }
 
-    public String getPlayerID() {
-        return playerID;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PlayerSubscriberData that = (PlayerSubscriberData) o;
+
+        return username.equals(that.username);
+
     }
 
-    public void setPlayerID(String playerID) {
-        this.playerID = playerID;
+    @Override
+    public int hashCode() {
+        return username.hashCode();
     }
 }

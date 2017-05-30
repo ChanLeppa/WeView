@@ -1,6 +1,6 @@
 package com.weview.config;
 
-import com.weview.model.RandomIDGenerator;
+import com.weview.utils.RandomIDGenerator;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -39,12 +39,4 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
         }
 
     }
-
-//    private class UserHandshakeHandler extends DefaultHandshakeHandler {
-//
-//        @Override
-//        protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-//            return null;
-//        }
-//    }
 }

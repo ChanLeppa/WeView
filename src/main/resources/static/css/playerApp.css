@@ -3,24 +3,19 @@ body {
 }
 
 #center-page {
-    margin-top: 20px;
-    z-index: 1000;
+    margin-top: 40px;
+    /*z-index: 1000;*/
 }
 
 #video-controls {
     margin-bottom: 10px;
-    /*z-index: 2147483647;*/
 }
-
-/*#volume-controls {*/
-    /*align-content: right;*/
-/*}*/
 
 #play-controls, #volume-controls, #time-data, #progress-controls{
     padding: 0px;
 }
 
-#play-pause-button, #stop-button, #mute-button, #vol-dec-button, #vol-inc-button, #fullscreen {
+#play-pause-button, #stop-button, #mute-button, #vol-dec-button, #vol-inc-button, #fullscreen, #btn-leave-player {
     padding-left: 15px;
     padding-right: 15px;
 }
@@ -40,6 +35,10 @@ body {
     background-color: #bdbdbd;
 }
 
+video {
+    margin-bottom: 0;
+}
+
 video::-webkit-media-controls {
     display: none !important;
 }
@@ -48,17 +47,96 @@ video::-webkit-media-controls-enclosure {
     display:none !important;
 }
 
-/*textarea input[type=text]:focus {*/
-    /*border-bottom: 1px solid #00b0ff;*/
-    /*box-shadow: 0 1px 0 0 #00b0ff;*/
-/*}*/
+.online-sign {
+    width: 10px;
+    height: 10px;
+}
 
-/*.overlay {*/
-    /*position: absolute;*/
-    /*height: inherit;*/
-    /*background: #000;*/
-    /*opacity: 0.9;*/
-    /*top :0;*/
-    /*left :0;*/
-    /*z-index: 999;*/
-/*}*/
+#user-friends > .collection-item{
+    font-size: 12px;
+}
+
+#toast-container {
+    top: auto !important;
+    left: auto !important;
+    bottom: 10%;
+    right:5%;
+}
+
+.input-field input[type=text]:focus {
+    border-bottom: 1px solid #00b0ff;
+    box-shadow: 0 1px 0 0 #00b0ff;
+}
+
+.video-chat {
+    border-radius: 15px;
+    border: 0;
+}
+
+.chat-title{
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+.chat-collection {
+    padding: 5px !important;
+}
+
+#chat-collection {
+    border: 0;
+    margin-top: 5px;
+}
+
+iframe {
+    width: 100%;
+}
+
+.chip {
+    margin-top: 5px;
+    margin-bottom: 0;
+    margin-right: 0;
+}
+
+#local-chat-container > .row {
+    margin-bottom: 5px;
+}
+
+#exitChatDiv {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+#user-details {
+    margin: 0;
+}
+
+#video-screen{
+    position: relative;
+    width: 100%;
+    margin-bottom: 0px;
+}
+#video-container, #video-topscreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#video-topscreen {
+    z-index: 5;
+}
+
+#leave-btn-container {
+    margin-bottom: 1px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+}
+
+#invalid-link-msg {
+    margin-bottom: 0;
+    margin-top: 0;
+}

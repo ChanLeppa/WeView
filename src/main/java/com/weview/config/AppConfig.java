@@ -13,7 +13,10 @@ public class AppConfig {
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        return new JedisConnectionFactory();
+        JedisConnectionFactory factory = new JedisConnectionFactory();
+        factory.setUsePool(true);
+        factory.afterPropertiesSet();
+        return factory;
     }
 
     @Bean
